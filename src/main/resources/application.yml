@@ -3,6 +3,7 @@ server:
     encoding:
       charset: UTF-8
       force: true
+  port: 8081
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -30,6 +31,40 @@ logging:
   pattern:
     console: "%d{yyyy/MM/dd-HH:mm:ss} [%thread] %-5level %logger- %msg%n"
     file: "%d{yyyy/MM/dd-HH:mm} [%thread] %-5level %logger- %msg%n"
+
+knife4j:
+  enable: true
+  documents:
+    -
+      #所属分组
+      group: 1.0.0
+      name: OA办公管理系统
+      locations: classpath:md/*
+  setting:
+    #是否显示界面中SwaggerModel功能
+    enableSwaggerModels: true
+    #是否显示界面中"文档管理"功能
+    enableDocumentManage: true
+    #是否启用Host
+    enableHost: false
+    #启用Host后的地址
+    #enableHostText: /api-docs
+    #是否开启请求参数缓存
+    enableRequestCache: true
+    #针对RequestMapping的接口请求类型,在不指定参数类型的情况下,如果不过滤,默认会显示7个类型的接口地址参数,如果开启此配置,默认展示一个Post类型的接口地址
+    enableFilterMultipartApis: false
+    #具体接口的过滤类型
+    enableFilterMultipartApiMethodType: POST
+    language: zh-CN
+  #是否开启一个默认的跨域配置,该功能配合自定义Host使用
+  cors: false
+  #是否开启生产环境保护策略
+  production: false
+  basic:
+    #关闭BasicHttp功能
+    enable: true
+    username: oa-api-doc
+    password: 123456
 
 jwt:
   tokenHeader: Authorization

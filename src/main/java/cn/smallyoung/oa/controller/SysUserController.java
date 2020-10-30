@@ -6,12 +6,15 @@ import cn.smallyoung.oa.entity.sys.SysUser;
 import cn.smallyoung.oa.interfaces.ResponseResultBody;
 import cn.smallyoung.oa.service.sys.SysRoleService;
 import cn.smallyoung.oa.service.sys.SysUserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.WebUtils;
 
@@ -25,8 +28,10 @@ import java.util.List;
  * @date 2020/10/26
  */
 @Slf4j
+@Controller
 @ResponseResultBody
 @RequestMapping("/sys/user")
+@Api(tags = "后台用户管理")
 public class SysUserController {
 
     @Resource
@@ -43,6 +48,7 @@ public class SysUserController {
      * @param limit 页数
      */
     @GetMapping(value = "findAll")
+    @ApiOperation(value = "获取用户列表")
     public Page<SysUser> findAll(@RequestParam(defaultValue = "1") Integer page, javax.servlet.http.HttpServletRequest request,
                                  @RequestParam(defaultValue = "9") Integer limit) {
         return sysUserService.findAll(WebUtils.getParametersStartingWith(request, "search_"),

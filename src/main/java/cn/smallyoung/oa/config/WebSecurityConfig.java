@@ -57,7 +57,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/**/*.css",
                         "/**/*.js",
                         "/swagger-resources/**",
-                        "/v2/api-docs/**"
+                        "/v2/api-docs/**",
+                        "/v2/api-docs-ext/**",
+                        "/webjars/**"
                 )
                 .permitAll()
                 // 对登录注册要允许匿名访问
