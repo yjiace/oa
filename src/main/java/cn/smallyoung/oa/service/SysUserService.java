@@ -65,6 +65,7 @@ public class SysUserService extends BaseService<SysUser, Long> implements UserDe
             role.setPermissions(new ArrayList<>());
             sysUser = new SysUser();
             sysUser.setRole(Collections.singletonList(role));
+            sysUser.setUsername(defaultUserName);
             log.info("通过系统配置账户登录");
         }else{
             sysUser = sysUserDao.findByUsername(username);
