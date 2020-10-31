@@ -72,3 +72,5 @@ jwt:
   secret: smallyoung
   #token有效期一天
   expiration: 3600
+default:
+  password: 123456

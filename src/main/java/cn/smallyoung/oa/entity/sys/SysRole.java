@@ -2,6 +2,8 @@ package cn.smallyoung.oa.entity.sys;
 
 import cn.smallyoung.oa.base.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,6 +18,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@ApiModel("角色对象")
 @Table(name = "t_sys_role")
 public class SysRole extends BaseEntity implements Serializable {
 
@@ -23,15 +26,18 @@ public class SysRole extends BaseEntity implements Serializable {
 
     @Id
     @Column(name = "id" )
+    @ApiModelProperty(notes = "主键ID")
     private Long id;
 
     @Column(name = "name" )
+    @ApiModelProperty(notes = "角色名称")
     private String name;
 
     /**
      * 备注
      */
     @Column(name = "comments" )
+    @ApiModelProperty(notes = "角色备注")
     private String comments;
 
     @ManyToMany(cascade = CascadeType.ALL)
@@ -39,6 +45,7 @@ public class SysRole extends BaseEntity implements Serializable {
             joinColumns = {@JoinColumn(name = "role_id")},
             inverseJoinColumns = {@JoinColumn(name = "user_id")})
     @JsonIgnore
+    @ApiModelProperty(hidden = true)
     private List<SysUser> users;
 
     @ManyToMany(cascade = CascadeType.ALL)
@@ -46,5 +53,6 @@ public class SysRole extends BaseEntity implements Serializable {
             joinColumns = {@JoinColumn(name = "role_id")},
             inverseJoinColumns = {@JoinColumn(name = "permission_id")})
     @JsonIgnore
+    @ApiModelProperty(hidden = true)
     private List<SysPermission> permissions;
 }

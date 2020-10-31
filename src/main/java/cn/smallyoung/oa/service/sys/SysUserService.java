@@ -103,7 +103,7 @@ public class SysUserService extends BaseService<SysUser, Long> implements UserDe
      * @param user        登录用户
      * @param newPassword 新密码
      */
-    public void updatePassword(SysUser user, String newPassword) {
-        sysUserDao.updatePassword(user.getId(), passwordEncoder.encode(newPassword));
+    public Integer updatePassword(SysUser user, String newPassword) {
+        return sysUserDao.updatePassword(user.getId(), passwordEncoder.encode(newPassword));
     }
 }

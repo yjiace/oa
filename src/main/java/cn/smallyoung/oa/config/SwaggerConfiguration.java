@@ -14,6 +14,8 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import javax.servlet.http.HttpSession;
+
 /**
  * @author smallyoung
  * @data 2020/10/29
@@ -42,7 +44,9 @@ public class SwaggerConfiguration {
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("cn.smallyoung.oa"))
                 .paths(PathSelectors.any())
-                .build();
+                .build()
+                //添加忽略类型
+                .ignoredParameterTypes(HttpSession.class);
     }
 
 }
