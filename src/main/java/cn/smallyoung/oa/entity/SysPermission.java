@@ -1,4 +1,4 @@
-package cn.smallyoung.oa.entity.sys;
+package cn.smallyoung.oa.entity;
 
 import cn.smallyoung.oa.base.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -23,6 +23,7 @@ public class SysPermission extends BaseEntity implements Serializable {
 
     @Id
     @Column(name = "id" )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     /**
      * 上级权限
@@ -63,7 +64,7 @@ public class SysPermission extends BaseEntity implements Serializable {
     @Column(name = "type" )
     private Integer type;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "t_sys_role_permission",
             joinColumns = {@JoinColumn(name = "permission_id")},
             inverseJoinColumns = {@JoinColumn(name = "role_id")})

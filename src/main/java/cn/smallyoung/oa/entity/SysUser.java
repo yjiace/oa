@@ -1,4 +1,4 @@
-package cn.smallyoung.oa.entity.sys;
+package cn.smallyoung.oa.entity;
 
 import cn.smallyoung.oa.base.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -35,6 +35,7 @@ public class SysUser extends BaseEntity implements Serializable, UserDetails {
     @Id
     @Column(name = "id" )
     @ApiModelProperty(notes = "主键ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**
@@ -78,7 +79,7 @@ public class SysUser extends BaseEntity implements Serializable, UserDetails {
     @Column(name = "password" )
     private String password;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "t_sys_user_role",
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "role_id")})

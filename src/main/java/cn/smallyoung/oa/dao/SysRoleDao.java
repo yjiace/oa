@@ -1,7 +1,7 @@
-package cn.smallyoung.oa.dao.sys;
+package cn.smallyoung.oa.dao;
 
 import cn.smallyoung.oa.base.BaseDao;
-import cn.smallyoung.oa.entity.sys.SysRole;
+import cn.smallyoung.oa.entity.SysRole;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 

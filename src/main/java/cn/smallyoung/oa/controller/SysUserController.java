@@ -1,24 +1,25 @@
 package cn.smallyoung.oa.controller;
 
 import cn.hutool.core.util.StrUtil;
-import cn.smallyoung.oa.entity.sys.SysUser;
+import cn.smallyoung.oa.entity.SysUser;
 import cn.smallyoung.oa.interfaces.ResponseResultBody;
-import cn.smallyoung.oa.service.sys.SysUserService;
+import cn.smallyoung.oa.service.SysUserService;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.WebUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 
 /**
@@ -26,11 +27,11 @@ import java.time.LocalDateTime;
  * @date 2020/10/26
  */
 @Slf4j
-@Controller
+@RestController
 @ResponseResultBody
 @RequestMapping("/sys/user")
-@Api(tags = "后台用户管理")
-public class SysUserController {
+@Api(tags = "用户模块")
+public class SysUserController extends BaseController<SysUser, Long> {
 
     @Value("${default.password}")
     private String defaultPassword;
@@ -39,23 +40,6 @@ public class SysUserController {
     @Resource
     private BCryptPasswordEncoder passwordEncoder;
 
-    /**
-     * 获取用户列表
-     *
-     * @param page  页码
-     * @param limit 页数
-     */
-    @GetMapping(value = "findAll")
-    @ApiOperation(value = "获取用户列表")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", value = "页码", dataType = "Integer"),
-            @ApiImplicitParam(name = "limit", value = "页数", dataType = "Integer")
-    })
-    public Page<SysUser> findAll(@RequestParam(defaultValue = "1") Integer page, HttpServletRequest request,
-                                 @RequestParam(defaultValue = "9") Integer limit) {
-        return sysUserService.findAll(WebUtils.getParametersStartingWith(request, "search_"),
-                PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, "updateTime")));
-    }
 
     /**
      * 保存用户或者更新用户
@@ -74,23 +58,26 @@ public class SysUserController {
             @ApiImplicitParam(name = "status", value = "状态，Y正常，N冻结", dataType = "String"),
             @ApiImplicitParam(name = "isDelete", value = "删除标识：N正常，Y删除", dataType = "String"),
     })
-    public SysUser save(SysUser user) {
+    public SysUser save(SysUser user, HttpServletResponse response) {
+        Long userId = Long.parseLong(response.getHeader("userId"));
+        log.info("用户{}编辑用户{}", userId, user);
         if (user.getId() == null) {
+            user.setCreator(userId);
             user.setCreateTime(LocalDateTime.now());
-            user.setUpdateTime(LocalDateTime.now());
             user.setStatus("Y");
             user.setPassword(passwordEncoder.encode(defaultPassword));
             user.setIsDelete("N");
         } else {
             SysUser oldUser = sysUserService.findOne(user.getId());
+            user.setCreator(oldUser.getCreator());
             user.setCreateTime(oldUser.getCreateTime());
-            user.setUpdateTime(LocalDateTime.now());
             user.setStatus(oldUser.getStatus());
             user.setPassword(oldUser.getPassword());
-            user.setRole(oldUser.getRole());
             user.setIsDelete(oldUser.getIsDelete());
             user.setRole(oldUser.getRole());
         }
+        user.setUpdater(userId);
+        user.setUpdateTime(LocalDateTime.now());
         return sysUserService.save(user);
     }
 

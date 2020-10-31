@@ -1,8 +1,8 @@
-package cn.smallyoung.oa.service.sys;
+package cn.smallyoung.oa.service;
 
 import cn.smallyoung.oa.base.BaseService;
-import cn.smallyoung.oa.dao.sys.SysRoleDao;
-import cn.smallyoung.oa.entity.sys.SysRole;
+import cn.smallyoung.oa.dao.SysRoleDao;
+import cn.smallyoung.oa.entity.SysRole;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

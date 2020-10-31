@@ -1,7 +1,9 @@
 package cn.smallyoung.oa.config;
 
 import cn.smallyoung.oa.component.JwtAuthenticationTokenFilter;
-import cn.smallyoung.oa.service.sys.SysUserService;
+import cn.smallyoung.oa.component.RestAuthenticationEntryPoint;
+import cn.smallyoung.oa.component.RestfulAccessDeniedHandler;
+import cn.smallyoung.oa.service.SysUserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -32,6 +34,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private SysUserService sysUserService;
     @Resource
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Resource
+    private RestfulAccessDeniedHandler restfulAccessDeniedHandler;
+    @Resource
+    private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -63,7 +69,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 )
                 .permitAll()
                 // 对登录注册要允许匿名访问
-                .antMatchers("/login")
+                .antMatchers("/login","/captcha")
                 .permitAll()
                 //跨域请求会先进行一次options请求
                 .antMatchers(HttpMethod.OPTIONS)
@@ -76,7 +82,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // 添加JWT filter
         httpSecurity.addFilterBefore(jwtAuthenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         //添加自定义未授权和未登录结果返回
-//        httpSecurity.exceptionHandling().accessDeniedHandler(restfulAccessDeniedHandler).authenticationEntryPoint(restAuthenticationEntryPoint);
+        httpSecurity.exceptionHandling().accessDeniedHandler(restfulAccessDeniedHandler).authenticationEntryPoint(restAuthenticationEntryPoint);
     }
 
     @Bean

@@ -1,10 +1,10 @@
-package cn.smallyoung.oa.service.sys;
+package cn.smallyoung.oa.service;
 
 import cn.smallyoung.oa.base.BaseService;
-import cn.smallyoung.oa.dao.sys.SysPermissionDao;
-import cn.smallyoung.oa.entity.sys.SysPermission;
-import cn.smallyoung.oa.entity.sys.SysRole;
-import cn.smallyoung.oa.entity.sys.SysUser;
+import cn.smallyoung.oa.dao.SysPermissionDao;
+import cn.smallyoung.oa.entity.SysPermission;
+import cn.smallyoung.oa.entity.SysRole;
+import cn.smallyoung.oa.entity.SysUser;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

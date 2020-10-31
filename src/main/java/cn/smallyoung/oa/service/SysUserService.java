@@ -1,9 +1,12 @@
-package cn.smallyoung.oa.service.sys;
+package cn.smallyoung.oa.service;
 
 import cn.smallyoung.oa.base.BaseService;
-import cn.smallyoung.oa.dao.sys.SysUserDao;
-import cn.smallyoung.oa.entity.sys.SysUser;
+import cn.smallyoung.oa.dao.SysUserDao;
+import cn.smallyoung.oa.entity.SysRole;
+import cn.smallyoung.oa.entity.SysUser;
 import cn.smallyoung.oa.util.JwtTokenUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,15 +17,22 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * @author smallyoung
  * @date 2020/10/26
  */
-
+@Slf4j
 @Service
 @Transactional(rollbackOn = Exception.class)
 public class SysUserService extends BaseService<SysUser, Long> implements UserDetailsService {
+
+    @Value("${default.user.password}")
+    private String defaultPassword;
+    @Value("${default.user.username}")
+    private String defaultUserName;
 
     @Resource
     private SysUserDao sysUserDao;
@@ -48,15 +58,22 @@ public class SysUserService extends BaseService<SysUser, Long> implements UserDe
      * @return token
      */
     public String login(String username, String password) {
-        if(!"smallyoung".equals(username) && !"J8b36Ie4qL7ayI@N".equals(password)){
-
-        }
-        SysUser sysUser = sysUserDao.findByUsername(username);
-        if (sysUser == null) {
-            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
-        }
-        if (!passwordEncoder.matches(password, sysUser.getPassword())) {
-            throw new BadCredentialsException("密码不正确");
+        SysUser sysUser;
+        if(username.equals(defaultUserName) && password.equals(defaultPassword)){
+            SysRole role = new SysRole();
+            role.setName("admin");
+            role.setPermissions(new ArrayList<>());
+            sysUser = new SysUser();
+            sysUser.setRole(Collections.singletonList(role));
+            log.info("通过系统配置账户登录");
+        }else{
+            sysUser = sysUserDao.findByUsername(username);
+            if (sysUser == null) {
+                throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
+            }
+            if (!passwordEncoder.matches(password, sysUser.getPassword())) {
+                throw new BadCredentialsException("密码不正确");
+            }
         }
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(sysUser, null, sysUser.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
