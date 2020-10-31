@@ -1,6 +1,5 @@
 package cn.smallyoung.oa.component;
 
-import cn.hutool.core.lang.Console;
 import cn.smallyoung.oa.interfaces.ResponseResultBody;
 import cn.smallyoung.oa.util.result.Result;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,7 +41,6 @@ public class ResponseResultBodyAdvice implements ResponseBodyAdvice<Object> {
         if (body instanceof Result) {
             return body;
         }
-        Console.log(body);
         return Result.success(body);
     }
 

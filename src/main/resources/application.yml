@@ -59,7 +59,7 @@ knife4j:
     enableFilterMultipartApiMethodType: POST
     language: zh-CN
   #是否开启一个默认的跨域配置,该功能配合自定义Host使用
-  cors: false
+  cors: true
   #是否开启生产环境保护策略
   production: false
   basic:
@@ -76,7 +76,4 @@ jwt:
   expiration: 3600
 default:
   password: 123456
-  user:
-    username: smallyoung
-    password: J8b36Ie4qL7ayI@N
 

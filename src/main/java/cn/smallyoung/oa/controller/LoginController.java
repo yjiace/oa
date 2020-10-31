@@ -36,6 +36,12 @@ public class LoginController {
 
     private static final String CHAPTER_KEY = "login-captcha";
 
+    @GetMapping("/loginByTest")
+    @ApiOperation(value = "测试，返回登录token")
+    public String loginByTest(){
+        String token = sysUserService.login("smallyoung", "smallyoung");
+        return tokenHead + " " + token;
+    }
     /**
      * 登录
      *
