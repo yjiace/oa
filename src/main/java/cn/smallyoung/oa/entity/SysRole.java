@@ -44,7 +44,7 @@ public class SysRole extends BaseEntity implements Serializable {
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "t_sys_user_role",
             joinColumns = {@JoinColumn(name = "role_id")},
-            inverseJoinColumns = {@JoinColumn(name = "user_id")})
+            inverseJoinColumns = {@JoinColumn(name = "username")})
     @JsonIgnore
     @ApiModelProperty(hidden = true)
     private List<SysUser> users;

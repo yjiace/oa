@@ -3,6 +3,7 @@ package cn.smallyoung.oa.controller;
 import cn.hutool.core.util.StrUtil;
 import cn.smallyoung.oa.entity.SysUser;
 import cn.smallyoung.oa.interfaces.ResponseResultBody;
+import cn.smallyoung.oa.service.SysRoleService;
 import cn.smallyoung.oa.service.SysUserService;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import io.swagger.annotations.Api;
@@ -13,14 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
-import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author smallyoung
@@ -31,15 +28,23 @@ import java.time.LocalDateTime;
 @ResponseResultBody
 @RequestMapping("/sys/user")
 @Api(tags = "用户模块")
-public class SysUserController extends BaseController<SysUser, Long> {
+public class SysUserController extends BaseController<SysUser, String> {
 
     @Value("${default.password}")
     private String defaultPassword;
+    @Resource
+    private SysRoleService sysRoleService;
     @Resource
     private SysUserService sysUserService;
     @Resource
     private BCryptPasswordEncoder passwordEncoder;
 
+    @GetMapping("checkUsername")
+    @ApiOperation(value = "检查用户名是否存在")
+    @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String")
+    public boolean checkUsername(String username){
+        return StrUtil.isBlank(username) || sysUserService.findOne(username) == null;
+    }
 
     /**
      * 保存用户或者更新用户
@@ -50,90 +55,82 @@ public class SysUserController extends BaseController<SysUser, Long> {
     @ApiOperation(value = "保存用户")
     @ApiOperationSupport(ignoreParameters = {"role", "password", "creator", "createTime", "updater", "updateTime", "authorities"})
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "主键ID", dataType = "Long"),
-            @ApiImplicitParam(name = "username", value = "用户名", dataType = "String"),
+            @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String"),
             @ApiImplicitParam(name = "name", value = "姓名", dataType = "String"),
             @ApiImplicitParam(name = "phone", value = "手机号", dataType = "String"),
             @ApiImplicitParam(name = "mobile", value = "电话", dataType = "String"),
-            @ApiImplicitParam(name = "status", value = "状态，Y正常，N冻结", dataType = "String"),
-            @ApiImplicitParam(name = "isDelete", value = "删除标识：N正常，Y删除", dataType = "String"),
     })
-    public SysUser save(SysUser user, HttpServletResponse response) {
-        Long userId = Long.parseLong(response.getHeader("userId"));
-        log.info("用户{}编辑用户{}", userId, user);
-        if (user.getId() == null) {
-            user.setCreator(userId);
-            user.setCreateTime(LocalDateTime.now());
-            user.setStatus("Y");
-            user.setPassword(passwordEncoder.encode(defaultPassword));
-            user.setIsDelete("N");
-        } else {
-            SysUser oldUser = sysUserService.findOne(user.getId());
-            user.setCreator(oldUser.getCreator());
-            user.setCreateTime(oldUser.getCreateTime());
+    public SysUser save(SysUser user) {
+        if(StrUtil.hasBlank(user.getUsername())){
+            throw new NullPointerException("参数错误");
+        }
+        SysUser oldUser = sysUserService.findOne(user.getUsername());
+        if(oldUser != null){
             user.setStatus(oldUser.getStatus());
             user.setPassword(oldUser.getPassword());
             user.setIsDelete(oldUser.getIsDelete());
             user.setRole(oldUser.getRole());
+        }else{
+            user.setStatus("Y");
+            user.setIsDelete("N");
+            user.setPassword(passwordEncoder.encode(defaultPassword));
         }
-        user.setUpdater(userId);
-        user.setUpdateTime(LocalDateTime.now());
         return sysUserService.save(user);
     }
 
     /**
      * 更改用户状态
      *
-     * @param id     需要更改状态的用户ID
+     * @param username     需要更改状态的用户名
      * @param status 需要更改用户的状态：Y，启用；N，禁用
      */
     @PostMapping(value = "updateStatus")
     @ApiOperation(value = "修改用户状态")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "用户id", required = true, dataType = "Long"),
+            @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String"),
             @ApiImplicitParam(name = "status", value = "状态：Y，启用；N，禁用", required = true, dataType = "String")
     })
-    public Integer updateStatus(Long id, String status) {
-        if (id == null || StrUtil.hasBlank(status)) {
+    public Integer updateStatus(String username, String status) {
+        if (StrUtil.hasBlank(status, username)) {
             throw new NullPointerException("参数错误");
         }
-        return sysUserService.updateStatus(id, status);
+        return sysUserService.updateStatus(username, status);
     }
 
     /**
      * 重置密码
      *
-     * @param id       需要重置密码的用户ID
+     * @param username       需要重置密码的用户名
      */
     @PostMapping(value = "resetPassword")
     @ApiOperation(value = "重置密码")
-    @ApiImplicitParam(name = "id", value = "用户id", required = true, dataType = "Long")
-    public Integer resetPassword(Long id) {
-        if (id == null) {
+    @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String")
+    public Integer resetPassword(String username) {
+        if (StrUtil.hasBlank(username)) {
             throw new NullPointerException("参数错误");
         }
-        return sysUserService.resetPassword(id, defaultPassword);
+        return sysUserService.resetPassword(username, defaultPassword);
     }
 
     /**
      * 修改密码
      *
-     * @param id          需要修改密码的用户ID
+     * @param username          需要修改密码的用户名
      * @param oldPassword 旧密码
      * @param newPassword 新密码
      */
     @PostMapping(value = "updatePassword")
     @ApiOperation(value = "修改密码")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "用户id", required = true, dataType = "Long"),
+            @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String"),
             @ApiImplicitParam(name = "oldPassword", value = "旧密码", required = true, dataType = "String"),
             @ApiImplicitParam(name = "newPassword", value = "新密码", required = true, dataType = "String")
     })
-    public Integer updatePassword(Long id, String oldPassword, String newPassword) {
-        if (id == null || StrUtil.hasBlank(oldPassword, newPassword)) {
+    public Integer updatePassword(String username, String oldPassword, String newPassword) {
+        if (StrUtil.hasBlank(oldPassword, newPassword, username)) {
             throw new NullPointerException("参数错误");
         }
-        SysUser user = new SysUser();
+        SysUser user = sysUserService.findOne(username);
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
             throw new UsernameNotFoundException(String.format("Wrong password with password '%s'.", newPassword));
         }
@@ -143,15 +140,33 @@ public class SysUserController extends BaseController<SysUser, Long> {
     /**
      * 删除
      *
-     * @param id 需要删除的用户ID
+     * @param username 需要删除的用户名
      */
     @DeleteMapping(value = "delete")
     @ApiOperation(value = "删除用户")
-    @ApiImplicitParam(name = "id", value = "用户id", required = true, dataType = "Long")
-    public Integer deleteUser(Long id) {
-        if (id == null) {
+    @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String")
+    public Integer deleteUser(String username) {
+        if (StrUtil.hasBlank(username)) {
             throw new NullPointerException("参数错误");
         }
-        return sysUserService.updateIsDelete(id, "N");
+        return sysUserService.updateIsDelete(username, "N");
+    }
+
+    @PostMapping("updateRole")
+    @ApiOperation(value = "设置用户角色")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "roles[]", value = "角色ID集合", required = true, dataType = "List"),
+    })
+    public SysUser updateRole(String username, @RequestParam(value = "roles[]") List<Long> roles){
+        if (StrUtil.hasBlank(username)) {
+            throw new NullPointerException("参数错误");
+        }
+        SysUser user = sysUserService.findOne(username);
+        if (user == null) {
+            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
+        }
+        user.setRole(sysRoleService.findByIdInAndIsDelete(roles));
+        return sysUserService.save(user);
     }
 }

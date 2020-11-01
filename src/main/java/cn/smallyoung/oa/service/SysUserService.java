@@ -23,7 +23,7 @@ import javax.transaction.Transactional;
 @Slf4j
 @Service
 @Transactional(rollbackOn = Exception.class)
-public class SysUserService extends BaseService<SysUser, Long> implements UserDetailsService {
+public class SysUserService extends BaseService<SysUser, String> implements UserDetailsService {
 
     @Resource
     private SysUserDao sysUserDao;
@@ -50,6 +50,7 @@ public class SysUserService extends BaseService<SysUser, Long> implements UserDe
      * @return token
      */
     public String login(String username, String password) {
+        System.out.println(passwordEncoder.encode("smallyoung"));
         SysUser sysUser = sysUserDao.findByUsername(username);
         if (sysUser == null) {
             throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
@@ -66,34 +67,34 @@ public class SysUserService extends BaseService<SysUser, Long> implements UserDe
     /**
      * 根据ID修改用户状态
      *
-     * @param id     用户ID
-     * @param status 用户状态标识
+     * @param username 用户名
+     * @param status   用户状态标识
      * @return 修改成功条数
      */
-    public Integer updateStatus(Long id, String status) {
-        return sysUserDao.updateStatus(id, status);
+    public Integer updateStatus(String username, String status) {
+        return sysUserDao.updateStatus(username, status);
     }
 
     /**
      * 根据ID删除用户--修改删除标识
      *
-     * @param id       用户ID
+     * @param username 用户名
      * @param isDelete 修改删除字段标识
      * @return 修改成功条数
      */
-    public Integer updateIsDelete(Long id, String isDelete) {
-        return sysUserDao.updateIsDelete(id, isDelete);
+    public Integer updateIsDelete(String username, String isDelete) {
+        return sysUserDao.updateIsDelete(username, isDelete);
     }
 
     /**
      * 重置密码
      *
-     * @param id       用户ID
+     * @param username 用户名
      * @param password 密码
      * @return 修改成功条数
      */
-    public Integer resetPassword(Long id, String password) {
-        return sysUserDao.updatePassword(id, passwordEncoder.encode(password));
+    public Integer resetPassword(String username, String password) {
+        return sysUserDao.updatePassword(username, passwordEncoder.encode(password));
     }
 
     /**
@@ -103,6 +104,6 @@ public class SysUserService extends BaseService<SysUser, Long> implements UserDe
      * @param newPassword 新密码
      */
     public Integer updatePassword(SysUser user, String newPassword) {
-        return sysUserDao.updatePassword(user.getId(), passwordEncoder.encode(newPassword));
+        return sysUserDao.updatePassword(user.getUsername(), passwordEncoder.encode(newPassword));
     }
 }

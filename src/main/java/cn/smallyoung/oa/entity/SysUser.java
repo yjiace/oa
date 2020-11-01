@@ -29,19 +29,12 @@ public class SysUser extends BaseEntity implements Serializable, UserDetails {
 
 
     private static final long serialVersionUID = -1419339429097967881L;
-    /**
-     * 主键
-     */
-    @Id
-    @Column(name = "id" )
-    @ApiModelProperty(notes = "主键ID")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     /**
      * 用户名
      */
-    @Column(name = "username" )
+    @Id
+    @Column(name = "user_name" )
     @ApiModelProperty(notes = "用户名")
     private String username;
 
@@ -81,7 +74,7 @@ public class SysUser extends BaseEntity implements Serializable, UserDetails {
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "t_sys_user_role",
-            joinColumns = {@JoinColumn(name = "user_id")},
+            joinColumns = {@JoinColumn(name = "username")},
             inverseJoinColumns = {@JoinColumn(name = "role_id")})
     @JsonIgnore
     @ApiModelProperty(hidden = true)

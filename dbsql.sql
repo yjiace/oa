@@ -5,8 +5,8 @@ CREATE TABLE `oa`.`t_sys_permission`  (
   `parent_id` int NOT NULL,
   `name` varchar(50) NOT NULL,
   `val` varchar(50) NOT NULL,
-  `url` varchar(255) NOT NULL,
-  `icon` varchar(50) NULL,
+  `url` varchar(255),
+  `icon` varchar(50) ,
   `order_number` int NOT NULL,
   `type` int NOT NULL,
   `creator` int NOT NULL,
@@ -30,19 +30,18 @@ CREATE TABLE `oa`.`t_sys_role` (
 );
 
 CREATE TABLE `oa`.`t_sys_user` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) NOT NULL,
+  `user_name` varchar(50) NOT NULL,
   `status` varchar(1) NOT NULL DEFAULT 'Y',
   `password` varchar(255) NOT NULL,
-  `name` varchar(50) NOT NULL,
-  `phone` varchar(20) NOT NULL,
-  `mobile` varchar(20) NOT NULL,
+  `name` varchar(50),
+  `phone` varchar(20),
+  `mobile` varchar(20),
   `creator` int NOT NULL,
   `create_time` datetime NOT NULL,
   `updater` int NOT NULL,
   `update_time` datetime NOT NULL,
   `is_delete` varchar(1) NOT NULL DEFAULT 'N',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`user_name`)
 );
 
 
@@ -53,7 +52,7 @@ CREATE TABLE `oa`.`t_sys_role_permission` (
 
 CREATE TABLE `oa`.`t_sys_user_role` (
   `role_id` int NOT NULL,
-  `user_id` int NOT NULL
+  `user_name` int NOT NULL
 );
 
 ALTER TABLE `oa`.`t_sys_role_permission`
@@ -62,5 +61,5 @@ ALTER TABLE `oa`.`t_sys_role_permission`
 
 ALTER TABLE `oa`.`t_sys_user_role`
   ADD FOREIGN KEY (`role_id`) REFERENCES `oa`.`t_sys_role` (`id`),
-  ADD FOREIGN KEY (`user_id`) REFERENCES `oa`.`t_sys_user` (`id`);
+  ADD FOREIGN KEY (`user_name`) REFERENCES `oa`.`t_sys_user` (`user_name`);
 
