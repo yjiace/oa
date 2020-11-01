@@ -9,9 +9,9 @@ CREATE TABLE `oa`.`t_sys_permission`  (
   `icon` varchar(50) ,
   `order_number` int NOT NULL,
   `type` int NOT NULL,
-  `creator` int NOT NULL,
+  `creator` varchar(50) NOT NULL,
   `create_time` datetime NOT NULL,
-  `updater` int NOT NULL,
+  `updater` varchar(50) NOT NULL,
   `update_time` datetime NOT NULL,
   `is_delete` varchar(1) NOT NULL DEFAULT 'N',
   PRIMARY KEY (`id`)
@@ -21,9 +21,9 @@ CREATE TABLE `oa`.`t_sys_role` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   `comments` varchar(50),
-  `creator` int NOT NULL,
+  `creator` varchar(50) NOT NULL,
   `create_time` datetime NOT NULL,
-  `updater` int NOT NULL,
+  `updater` varchar(50) NOT NULL,
   `update_time` datetime NOT NULL,
   `is_delete` varchar(1) NOT NULL DEFAULT 'N',
   PRIMARY KEY (`id`)
@@ -36,9 +36,9 @@ CREATE TABLE `oa`.`t_sys_user` (
   `name` varchar(50),
   `phone` varchar(20),
   `mobile` varchar(20),
-  `creator` int NOT NULL,
+  `creator` varchar(50) NOT NULL,
   `create_time` datetime NOT NULL,
-  `updater` int NOT NULL,
+  `updater` varchar(50) NOT NULL,
   `update_time` datetime NOT NULL,
   `is_delete` varchar(1) NOT NULL DEFAULT 'N',
   PRIMARY KEY (`user_name`)
@@ -52,7 +52,7 @@ CREATE TABLE `oa`.`t_sys_role_permission` (
 
 CREATE TABLE `oa`.`t_sys_user_role` (
   `role_id` int NOT NULL,
-  `user_name` int NOT NULL
+  `user_name` varchar(50) NOT NULL
 );
 
 ALTER TABLE `oa`.`t_sys_role_permission`

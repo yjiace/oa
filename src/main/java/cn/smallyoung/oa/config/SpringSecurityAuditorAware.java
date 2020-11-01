@@ -1,6 +1,5 @@
 package cn.smallyoung.oa.config;
 
-import cn.smallyoung.oa.entity.SysUser;
 import cn.smallyoung.oa.service.SysUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
@@ -25,9 +24,8 @@ public class SpringSecurityAuditorAware implements AuditorAware<String> {
     @Override
     public Optional<String> getCurrentAuditor() {
         UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken)SecurityContextHolder.getContext().getAuthentication();
-        SysUser user = sysUserService.loadUserByUsername(authentication.getName());
-        log.info("审计获取用户{}", user.getUsername());
-        return Optional.of(user.getUsername());
+        log.info("审计获取用户{}", authentication.getName());
+        return Optional.of(authentication.getName());
     }
 
 }

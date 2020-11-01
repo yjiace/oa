@@ -18,8 +18,8 @@ public interface SysUserDao extends BaseDao<SysUser, String> {
      * @param username 用户名
      * @return 查询到的用户实体
      */
-    @Query("select u from SysUser u where u.username = ?1 and u.status = 'Y' ")
-    SysUser findByUsername(String username);
+    @Query("select u from SysUser u where u.username = ?1 and u.status = 'Y' and u.isDelete = 'N' ")
+    SysUser findEffectiveByUsername(String username);
 
     /**
      * 修改用户状态--启用、未启用

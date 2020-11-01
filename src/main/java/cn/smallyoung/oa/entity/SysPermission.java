@@ -4,6 +4,7 @@ import cn.smallyoung.oa.base.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -64,11 +65,9 @@ public class SysPermission extends BaseEntity implements Serializable {
     @Column(name = "type" )
     private Integer type;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "t_sys_role_permission",
-            joinColumns = {@JoinColumn(name = "permission_id")},
-            inverseJoinColumns = {@JoinColumn(name = "role_id")})
     @JsonIgnore
+    @Where(clause = " is_delete = 'N' ")
+    @ManyToMany(mappedBy="permissions", fetch = FetchType.LAZY)
     private List<SysRole> roles;
 
     /**

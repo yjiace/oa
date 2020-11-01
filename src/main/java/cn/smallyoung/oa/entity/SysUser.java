@@ -6,12 +6,14 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -72,20 +74,19 @@ public class SysUser extends BaseEntity implements Serializable, UserDetails {
     @Column(name = "password" )
     private String password;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "t_sys_user_role",
-            joinColumns = {@JoinColumn(name = "username")},
-            inverseJoinColumns = {@JoinColumn(name = "role_id")})
     @JsonIgnore
     @ApiModelProperty(hidden = true)
-    private List<SysRole> role;
+    @Where(clause = " is_delete = 'N' ")
+    @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+    @JoinTable(name = "t_sys_user_role", joinColumns = {@JoinColumn(name = "user_name")}, inverseJoinColumns = {@JoinColumn(name = "role_id")})
+    private List<SysRole> roles = new ArrayList<>();
 
     @Override
     @Transient
     @JsonIgnore
     @ApiModelProperty(hidden = true)
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.getRole().stream()
+        return this.getRoles().stream()
                 .map(SysRole::getPermissions)
                 .flatMap(Collection::stream)
                 .filter(p -> "N".equals(p.getIsDelete()))

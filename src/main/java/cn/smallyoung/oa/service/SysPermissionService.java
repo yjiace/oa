@@ -6,9 +6,9 @@ import cn.smallyoung.oa.entity.SysPermission;
 import cn.smallyoung.oa.entity.SysRole;
 import cn.smallyoung.oa.entity.SysUser;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +18,7 @@ import java.util.Optional;
  * @date 2020/10/26
  */
 @Service
-@Transactional(rollbackOn = Exception.class)
+@Transactional(readOnly = true)
 public class SysPermissionService extends BaseService<SysPermission, Long> {
 
     @Resource
@@ -44,6 +44,7 @@ public class SysPermissionService extends BaseService<SysPermission, Long> {
      * @param isDelete 权限删除标识
      * @return 修改成功条数
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer updateStatus(Long id, String isDelete) {
         return sysPermissionDao.updateStatus(id, isDelete);
     }
@@ -55,6 +56,7 @@ public class SysPermissionService extends BaseService<SysPermission, Long> {
      * @param permIds 权限列表
      * @return 是否成功
      */
+    @Transactional(rollbackFor = Exception.class)
     public boolean updateRolePermission(Long roleId, Long[] permIds) {
         Optional<SysRole> roleOptional = sysRoleService.findById(roleId);
         if(roleOptional.isPresent()){

@@ -6,9 +6,11 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,19 +43,16 @@ public class SysRole extends BaseEntity implements Serializable {
     @ApiModelProperty(notes = "角色备注")
     private String comments;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "t_sys_user_role",
-            joinColumns = {@JoinColumn(name = "role_id")},
-            inverseJoinColumns = {@JoinColumn(name = "username")})
     @JsonIgnore
     @ApiModelProperty(hidden = true)
+    @Where(clause = " is_delete = 'N' ")
+    @ManyToMany(mappedBy="roles", fetch = FetchType.LAZY)
     private List<SysUser> users;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "t_sys_role_permission",
-            joinColumns = {@JoinColumn(name = "role_id")},
-            inverseJoinColumns = {@JoinColumn(name = "permission_id")})
     @JsonIgnore
     @ApiModelProperty(hidden = true)
-    private List<SysPermission> permissions;
+    @Where(clause = " is_delete = 'N' ")
+    @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+    @JoinTable(name = "t_sys_role_permission", joinColumns = {@JoinColumn(name = "role_id")}, inverseJoinColumns = {@JoinColumn(name = "permission_id")})
+    private List<SysPermission> permissions = new ArrayList<>();
 }
