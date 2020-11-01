@@ -15,7 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author smallyoung
@@ -139,13 +140,19 @@ public class SysUserController extends BaseController<SysUser, String> {
         return sysUserService.updateIsDelete(username, "Y");
     }
 
+    /**
+     * 设置用户角色
+     *
+     * @param username 用户名
+     * @param roles    角色id集合，逗号分割
+     */
     @PostMapping("updateRole")
     @ApiOperation(value = "设置用户角色")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "roles[]", value = "角色ID集合", required = true, dataType = "List"),
+            @ApiImplicitParam(name = "roles", value = "角色ID集合,逗号分割", required = true, dataType = "String"),
     })
-    public SysUser updateRole(String username, @RequestParam(value = "roles[]") List<Long> roles) {
+    public SysUser updateRole(String username, String roles) {
         if (StrUtil.hasBlank(username)) {
             throw new NullPointerException("参数错误");
         }
@@ -153,7 +160,11 @@ public class SysUserController extends BaseController<SysUser, String> {
         if (user == null) {
             throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
         }
-        user.setRoles(sysRoleService.findByIdInAndIsDelete(roles));
+        if (StrUtil.isNotBlank(roles)) {
+            user.setRoles(sysRoleService.findByIdInAndIsDelete(Stream.of(roles.split(",")).map(String::trim).map(Long::parseLong).collect(Collectors.toList())));
+        } else {
+            user.setRoles(null);
+        }
         return sysUserService.save(user);
     }
 }
