@@ -10,11 +10,17 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.WebUtils;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,7 +33,7 @@ import java.util.stream.Stream;
 @ResponseResultBody
 @RequestMapping("/sys/user")
 @Api(tags = "用户模块")
-public class SysUserController extends BaseController<SysUser, String> {
+public class SysUserController {
 
     @Resource
     private SysRoleService sysRoleService;
@@ -36,8 +42,46 @@ public class SysUserController extends BaseController<SysUser, String> {
     @Resource
     private BCryptPasswordEncoder passwordEncoder;
 
+    /**
+     * 分页查询所有
+     *
+     * @param page  页码
+     * @param limit 页数
+     */
+    @GetMapping(value = "findAll")
+    @ApiOperation(value = "分页查询")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", value = "页码", dataType = "Integer"),
+            @ApiImplicitParam(name = "limit", value = "页数", dataType = "Integer")
+    })
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_FIND')")
+    public Page<SysUser> findAll(@RequestParam(defaultValue = "1") Integer page,
+                                 HttpServletRequest request, @RequestParam(defaultValue = "10") Integer limit) {
+        return sysUserService.findAll(WebUtils.getParametersStartingWith(request, "search_"),
+                PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, "updateTime")));
+    }
+
+    /**
+     * 根据用户名查询详细信息
+     *
+     * @param username 用户名
+     */
+    @GetMapping(value = "findByUsername")
+    @ApiOperation(value = "根据id查询")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_FIND')")
+    @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String")
+    public SysUser findById(String username) {
+        return sysUserService.findById(username).orElse(null);
+    }
+
+    /**
+     * 检查用户是否存在
+     *
+     * @param username 用户名
+     */
     @GetMapping("checkUsername")
     @ApiOperation(value = "检查用户名是否存在")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_SAVE')")
     @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String")
     public boolean checkUsername(String username) {
         return StrUtil.isBlank(username) || sysUserService.findOne(username) == null;
@@ -59,6 +103,7 @@ public class SysUserController extends BaseController<SysUser, String> {
             @ApiImplicitParam(name = "phone", value = "手机号", dataType = "String"),
             @ApiImplicitParam(name = "mobile", value = "电话", dataType = "String"),
     })
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_SAVE')")
     public SysUser save(String username, String name, String phone, String mobile) {
         if (StrUtil.hasBlank(username)) {
             throw new NullPointerException("参数错误");
@@ -78,6 +123,7 @@ public class SysUserController extends BaseController<SysUser, String> {
             @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String"),
             @ApiImplicitParam(name = "status", value = "状态：Y，启用；N，禁用", required = true, dataType = "String")
     })
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_UPDATE_STATUS')")
     public Integer updateStatus(String username, String status) {
         if (StrUtil.hasBlank(status, username)) {
             throw new NullPointerException("参数错误");
@@ -92,6 +138,7 @@ public class SysUserController extends BaseController<SysUser, String> {
      */
     @PostMapping(value = "resetPassword")
     @ApiOperation(value = "重置密码")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_RESET_PASSWORD')")
     @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String")
     public Integer resetPassword(String username) {
         if (StrUtil.hasBlank(username)) {
@@ -114,6 +161,7 @@ public class SysUserController extends BaseController<SysUser, String> {
             @ApiImplicitParam(name = "oldPassword", value = "旧密码", required = true, dataType = "String"),
             @ApiImplicitParam(name = "newPassword", value = "新密码", required = true, dataType = "String")
     })
+    @PreAuthorize("principal.username.equals(#username)")
     public Integer updatePassword(String username, String oldPassword, String newPassword) {
         if (StrUtil.hasBlank(oldPassword, newPassword, username)) {
             throw new NullPointerException("参数错误");
@@ -132,6 +180,7 @@ public class SysUserController extends BaseController<SysUser, String> {
      */
     @DeleteMapping(value = "delete")
     @ApiOperation(value = "删除用户")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_DELETE')")
     @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String")
     public Integer deleteUser(String username) {
         if (StrUtil.hasBlank(username)) {
@@ -152,6 +201,7 @@ public class SysUserController extends BaseController<SysUser, String> {
             @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String"),
             @ApiImplicitParam(name = "roles", value = "角色ID集合,逗号分割", required = true, dataType = "String"),
     })
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_UPDATE_ROLE')")
     public SysUser updateRole(String username, String roles) {
         if (StrUtil.hasBlank(username)) {
             throw new NullPointerException("参数错误");

@@ -70,10 +70,7 @@ public class SysUserService extends BaseService<SysUser, String> implements User
      * @return token
      */
     public String login(String username, String password) {
-        SysUser sysUser = sysUserDao.findEffectiveByUsername(username);
-        if (sysUser == null) {
-            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
-        }
+        SysUser sysUser = loadUserByUsername(username);
         if (!passwordEncoder.matches(password, sysUser.getPassword())) {
             throw new BadCredentialsException("密码不正确");
         }
