@@ -1,14 +1,16 @@
 package cn.smallyoung.oa.aspect;
 
+import cn.hutool.core.annotation.AnnotationUtil;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.json.JSONObject;
 import cn.smallyoung.oa.entity.SysOperationLog;
+import cn.smallyoung.oa.interfaces.DataName;
 import cn.smallyoung.oa.interfaces.SystemOperationLog;
 import cn.smallyoung.oa.service.SysOperationLogService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
@@ -20,10 +22,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
 import javax.annotation.Resource;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -34,7 +38,7 @@ import java.util.function.Function;
 @Component
 public class SysOperationLogAspect {
 
-    private static final Map<String, Function<String, ?>> MAP_TO_FUNCTION = new HashMap<String, Function<String, ?>>(){{
+    private static final Map<String, Function<String, ?>> MAP_TO_FUNCTION = new HashMap<String, Function<String, ?>>() {{
         put("int", Integer::parseInt);
         put("Integer", Integer::parseInt);
         put("long", Long::parseLong);
@@ -69,84 +73,55 @@ public class SysOperationLogAspect {
 
     @Around("controllerAspect()")
     public Object around(ProceedingJoinPoint pjp) throws Throwable {
-        //常见日志实体对象
+        SystemOperationLog systemOperationLog = getSystemOperationLog(pjp);
+        if (systemOperationLog == null) {
+            return pjp.proceed();
+        }
         SysOperationLog sysOperationLog = new SysOperationLog();
         sysOperationLog.setStartTime(LocalDateTime.now());
-        try {
-            log.error("进入切面日志方法");
-            // 拦截的放参数类型
-            Signature sig = pjp.getSignature();
-            MethodSignature methodSignature;
-            if (!(sig instanceof MethodSignature)) {
-                throw new IllegalArgumentException("该注解只能用于方法");
-            }
-            // 拦截的实体类，就是当前正在执行的controller
-            Object target = pjp.getTarget();
-            // 拦截的方法名称。当前正在执行的方法
-            String methodName = pjp.getSignature().getName();
-            JSONObject params = getParam(pjp);
-            //设置请求参数
-            sysOperationLog.setOperateParams(params.toString());
-            methodSignature = (MethodSignature) sig;
-            Class<?>[] parameterTypes = methodSignature.getMethod().getParameterTypes();
-            // 获得被拦截的方法
-            Method method = null;
-            try {
-                method = target.getClass().getMethod(methodName, parameterTypes);
-            } catch (NoSuchMethodException | SecurityException e1) {
-                log.error("ControllerLogAopAspect around error", e1);
-            }
-            if(null == method){
-                return pjp.proceed();
-            }
-            if (!method.isAnnotationPresent(SystemOperationLog.class)) {
-                return pjp.proceed();
-            }
-            SystemOperationLog systemOperationLog = method.getAnnotation(SystemOperationLog.class);
-            sysOperationLog.setModule(systemOperationLog.module());
-            sysOperationLog.setMethod(systemOperationLog.methods());
-            before(systemOperationLog, sysOperationLog, params, systemOperationLog.serviceClass(), systemOperationLog.queryMethod());
-            sysOperationLog.setResultStatus("SUCCESS");
-        }catch (Throwable throwable){
-            sysOperationLog.setResultMsg(throwable.getMessage());
-            sysOperationLog.setResultStatus("ERROR");
+        sysOperationLog.setMethod(systemOperationLog.methods());
+        sysOperationLog.setModule(systemOperationLog.module());
+        JSONObject params = getParam(pjp);
+        sysOperationLog.setParams(params.toString());
+        String value = params.getStr(systemOperationLog.parameterKey());
+        Object oldObject = getOperateBeforeDataByParamType(systemOperationLog.serviceClass(),
+                systemOperationLog.queryMethod(), value, MAP_TO_FUNCTION.get(systemOperationLog.parameterType()));
+        if (oldObject != null) {
+            sysOperationLog.setBeforeData(new JSONObject(oldObject).toString());
         }
-        //执行页面请求模块方法，并返回
-        sysOperationLog.setEndTime(LocalDateTime.now());
+        Object object;
+        //执行service
+        try {
+            object = pjp.proceed();
+        } catch (Exception e) {
+            sysOperationLog.setResultMsg(e.getMessage());
+            sysOperationLog.setResultStatus("ERROR");
+            sysOperationLog.setEndTime(LocalDateTime.now());
+            sysOperationLogService.save(sysOperationLog);
+            return e;
+        }
+        Object newObject = getOperateBeforeDataByParamType(systemOperationLog.serviceClass(),
+                systemOperationLog.queryMethod(), value, MAP_TO_FUNCTION.get(systemOperationLog.parameterType()));
+        if (newObject != null) {
+            sysOperationLog.setBeforeData(new JSONObject(newObject).toString());
+        }
+        sysOperationLog.setContent(updateContent(oldObject, newObject));
         sysOperationLogService.save(sysOperationLog);
-        return pjp.proceed();
+        return object;
     }
 
     public JSONObject getParam(ProceedingJoinPoint pjp) throws NoSuchMethodException, ClassNotFoundException {
         String[] fieldsName = getFieldsName(pjp);
-        if(fieldsName == null || fieldsName.length <= 0){
+        if (fieldsName == null || fieldsName.length <= 0) {
             return null;
         }
         // 拦截的方法参数
         Object[] args = pjp.getArgs();
         JSONObject result = new JSONObject();
         for (int i = 0; i < args.length; i++) {
-            result.set(fieldsName[i] , args[i]);
+            result.set(fieldsName[i], args[i]);
         }
         return result;
-    }
-
-    public void before(SystemOperationLog systemOperationLog, SysOperationLog sysOperationLog,
-                       JSONObject operateParamArray, String serviceClass, String queryMethod){
-        //判断是否需要进行操作前的对象参数查询
-        if(StringUtils.isBlank(systemOperationLog.parameterKey())
-                || StringUtils.isBlank(systemOperationLog.parameterType())
-                || StringUtils.isBlank(systemOperationLog.queryMethod())
-                || StringUtils.isBlank(systemOperationLog.serviceClass())){
-            return;
-        }
-        //参数类型
-        String paramType = systemOperationLog.parameterType();
-        String key = systemOperationLog.parameterKey();
-        String value = operateParamArray.getStr(key);
-        //在此处获取操作前的spring bean的查询方法
-        Object data = getOperateBeforeDataByParamType(serviceClass, queryMethod, value, MAP_TO_FUNCTION.get(paramType));
-        sysOperationLog.setBeforeParams(new JSONObject(data).toString());
     }
 
     /**
@@ -159,8 +134,8 @@ public class SysOperationLogAspect {
      * @see [相关类/方法](可选)
      * @since [产品/模块版本](可选)
      */
-    private Object getOperateBeforeDataByParamType(String serviceClass, String queryMethod, String value, Function<String,?> function){
-        if(function == null){
+    private Object getOperateBeforeDataByParamType(Class<?> serviceClass, String queryMethod, String value, Function<String, ?> function) {
+        if (function == null) {
             return null;
         }
         Object obj = function.apply(value);
@@ -173,10 +148,6 @@ public class SysOperationLogAspect {
 
     /**
      * 返回方法的参数名
-     * @param joinPoint
-     * @return
-     * @throws ClassNotFoundException
-     * @throws NoSuchMethodException
      */
     private static String[] getFieldsName(JoinPoint joinPoint) throws ClassNotFoundException, NoSuchMethodException {
         String classType = joinPoint.getTarget().getClass().getName();
@@ -195,5 +166,47 @@ public class SysOperationLogAspect {
         //获取指定的方法，第二个参数可以不传，但是为了防止有重载的现象，还是需要传入参数的类型
         Method method = Class.forName(classType).getMethod(methodName, classes);
         return pnd.getParameterNames(method);
+    }
+
+    /**
+     * 内容变更说明，默认只记录被@DataName标记的字段
+     */
+    private String updateContent(Object oldObject, Object newObject) {
+        Map<String, Object> oldMap = BeanUtil.beanToMap(oldObject);
+        Map<String, Object> newMap = BeanUtil.beanToMap(newObject);
+        StringBuilder stringBuilder = new StringBuilder();
+        Object val;
+        DataName dataName;
+        for (Map.Entry<String, Object> entry : oldMap.entrySet()) {
+            val = newMap.get(entry.getKey());
+            if (!Objects.equals(val, entry.getValue())) {
+                Field field = ReflectUtil.getField(newObject.getClass(), entry.getKey());
+                dataName = AnnotationUtil.getAnnotation(field, DataName.class);
+                //默认只有注释字段方可增加变更，避免敏感信息泄露
+                if (dataName != null) {
+                    stringBuilder.append("【").append(dataName.name()).append("】从【")
+                            .append(entry.getValue()).append("】改为了【").append(val).append("】;\n");
+                }
+            }
+        }
+        return stringBuilder.toString();
+    }
+
+    private SystemOperationLog getSystemOperationLog(ProceedingJoinPoint pjp) {
+        // 拦截的实体类，就是当前正在执行的controller
+        Object target = pjp.getTarget();
+        // 拦截的方法名称。当前正在执行的方法
+        String methodName = pjp.getSignature().getName();
+        MethodSignature methodSignature = (MethodSignature) pjp.getSignature();
+        Class<?>[] parameterTypes = methodSignature.getMethod().getParameterTypes();
+        // 获得被拦截的方法
+        Method method;
+        try {
+            method = target.getClass().getMethod(methodName, parameterTypes);
+            return method.getAnnotation(SystemOperationLog.class);
+        } catch (NoSuchMethodException | SecurityException e1) {
+            log.error("ControllerLogAopAspect around error", e1);
+        }
+        return null;
     }
 }

@@ -32,11 +32,11 @@ public class SysOperationLog {
     private long id;
 
     /**
-     * 用户名
+     * 操作人
      */
     @CreatedBy
     @Column(name = "username" )
-    @ApiModelProperty(notes = "用户名")
+    @ApiModelProperty(notes = "操作人")
     private String username;
 
     /**
@@ -54,18 +54,32 @@ public class SysOperationLog {
     private String method;
 
     /**
-     * 操作前参数
+     * 请求参数
      */
-    @Column(name = "before_params" )
-    @ApiModelProperty(notes = "操作前参数")
-    private String beforeParams;
+    @Column(name = "params" )
+    @ApiModelProperty(notes = "请求参数")
+    private String params;
 
     /**
-     * 操作时请求参数
+     * 操作前的数据
      */
-    @Column(name = "operate_params" )
-    @ApiModelProperty(notes = "操作时请求参数")
-    private String operateParams;
+    @Column(name = "before_data" )
+    @ApiModelProperty(notes = "操作前的数据")
+    private String beforeData;
+
+    /**
+     * 操作后的数据
+     */
+    @Column(name = "after_data" )
+    @ApiModelProperty(notes = "操作后的数据")
+    private String afterData;
+
+    /**
+     * 说明
+     */
+    @Column(name = "content" )
+    @ApiModelProperty(notes = "说明")
+    private String content;
 
     /**
      * 开始时间
@@ -84,14 +98,14 @@ public class SysOperationLog {
     private LocalDateTime endTime;
 
     /**
-     * 操作状态描述
+     * 操作状态
      */
     @Column(name = "result_status" )
     @ApiModelProperty(notes = "操作状态")
     private String resultStatus;
 
     /**
-     * 操作结果描述
+     * 操作结果
      */
     @Column(name = "result_msg" )
     @ApiModelProperty(notes = "操作结果")

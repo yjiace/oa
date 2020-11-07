@@ -105,7 +105,7 @@ public class SysUserController {
             @ApiImplicitParam(name = "mobile", value = "电话", dataType = "String"),
     })
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_SAVE')")
-    @SystemOperationLog(module="管理用户",methods="编辑用户",serviceClass="sysUserService",
+    @SystemOperationLog(module="管理用户",methods="编辑用户",serviceClass=SysUserService.class,
             queryMethod="findOne",parameterType="String",parameterKey="username")
     public SysUser save(String username, String name, String phone, String mobile) {
         if (StrUtil.hasBlank(username)) {

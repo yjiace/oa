@@ -1,13 +1,17 @@
 package cn.smallyoung.oa.interfaces;
 
+import cn.smallyoung.oa.base.BaseService;
+
 import java.lang.annotation.*;
 
 /**
+ * 记录编辑详细信息的标注
  * @author smallyoung
  */
-@Target({ElementType.PARAMETER, ElementType.METHOD})
-@Retention(RetentionPolicy.RUNTIME)
+
 @Documented
+@Target({ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
 public @interface SystemOperationLog {
 
     /**
@@ -23,7 +27,7 @@ public @interface SystemOperationLog {
     /**
      * 查询的bean名称
      */
-    String serviceClass() default "";
+    Class<?> serviceClass() default BaseService.class;
 
     /**
      * 查询单个详情的bean的方法

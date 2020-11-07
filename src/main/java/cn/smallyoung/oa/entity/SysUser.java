@@ -1,6 +1,7 @@
 package cn.smallyoung.oa.entity;
 
 import cn.smallyoung.oa.base.BaseEntity;
+import cn.smallyoung.oa.interfaces.DataName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -36,6 +37,7 @@ public class SysUser extends BaseEntity implements Serializable, UserDetails {
      * 用户名
      */
     @Id
+    @DataName(name = "用户名")
     @Column(name = "user_name" )
     @ApiModelProperty(notes = "用户名")
     private String username;
@@ -44,12 +46,14 @@ public class SysUser extends BaseEntity implements Serializable, UserDetails {
      * 姓名
      */
     @Column(name = "name" )
+    @DataName(name = "姓名")
     @ApiModelProperty( notes = "姓名")
     private String name;
     /**
      * 手机号
      */
     @Column(name = "phone" )
+    @DataName(name = "手机号")
     @ApiModelProperty(notes = "手机号")
     private String phone;
 
@@ -57,6 +61,7 @@ public class SysUser extends BaseEntity implements Serializable, UserDetails {
      * 电话
      */
     @Column(name = "mobile" )
+    @DataName(name = "电话")
     @ApiModelProperty(notes = "电话")
     private String mobile;
 
@@ -64,6 +69,7 @@ public class SysUser extends BaseEntity implements Serializable, UserDetails {
      * 状态，Y正常，N冻结
      */
     @Column(name = "status" )
+    @DataName(name = "状态")
     @ApiModelProperty(notes = "状态，Y正常，N冻结")
     private String status;
 
