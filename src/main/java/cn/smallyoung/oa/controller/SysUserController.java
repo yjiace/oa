@@ -3,6 +3,7 @@ package cn.smallyoung.oa.controller;
 import cn.hutool.core.util.StrUtil;
 import cn.smallyoung.oa.entity.SysUser;
 import cn.smallyoung.oa.interfaces.ResponseResultBody;
+import cn.smallyoung.oa.interfaces.SystemOperationLog;
 import cn.smallyoung.oa.service.SysRoleService;
 import cn.smallyoung.oa.service.SysUserService;
 import io.swagger.annotations.Api;
@@ -104,6 +105,8 @@ public class SysUserController {
             @ApiImplicitParam(name = "mobile", value = "电话", dataType = "String"),
     })
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_SAVE')")
+    @SystemOperationLog(module="管理用户",methods="编辑用户",serviceClass="sysUserService",
+            queryMethod="findOne",parameterType="String",parameterKey="username")
     public SysUser save(String username, String name, String phone, String mobile) {
         if (StrUtil.hasBlank(username)) {
             throw new NullPointerException("参数错误");

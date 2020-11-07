@@ -69,7 +69,7 @@ public class LoginController {
             throw new SessionAuthenticationException("验证码错误");
         }
         String token = sysUserService.login(username, password);
-        return Dict.create().set("tokenHead", tokenHead).set("token", token);
+        return Dict.create().set("tokenHead", tokenHead).set("token", token).set("username", username);
     }
 
     @GetMapping("/captcha")

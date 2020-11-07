@@ -49,6 +49,7 @@ public class ResponseResultBodyAdvice implements ResponseBodyAdvice<Object> {
      */
     @ExceptionHandler(value = Exception.class)
     public Result<?> handler(Exception e){
+        e.printStackTrace();
         return Result.failure(e.getMessage());
     }
 

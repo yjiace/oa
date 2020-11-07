@@ -59,3 +59,16 @@ ALTER TABLE `oa`.`t_sys_user_role`
   ADD FOREIGN KEY (`role_id`) REFERENCES `oa`.`t_sys_role` (`id`),
   ADD FOREIGN KEY (`user_name`) REFERENCES `oa`.`t_sys_user` (`user_name`);
 
+CREATE TABLE `oa`.`t_sys_operation_log` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `module` varchar(255),
+  `method` varchar(255),
+  `before_params` varchar(8192),
+  `operate_params` varchar(8192),
+  `start_time` datetime,
+  `end_time` datetime,
+  `result_status` varchar(255),
+  `result_msg` varchar(255),
+  PRIMARY KEY (`id`)
+);

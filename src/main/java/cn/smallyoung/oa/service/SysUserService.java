@@ -37,6 +37,11 @@ public class SysUserService extends BaseService<SysUser, String> implements User
     private BCryptPasswordEncoder passwordEncoder;
 
     @Override
+    public SysUser findOne(String username){
+        return super.findOne(username);
+    }
+
+    @Override
     public SysUser loadUserByUsername(String username) throws UsernameNotFoundException {
         SysUser user = sysUserDao.findEffectiveByUsername(username);
         if (user == null) {
