@@ -13,8 +13,6 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
@@ -63,20 +61,9 @@ public class SysOperationLogAspect {
     @Resource
     private ApplicationContext applicationContext;
 
-    /**
-     * 配置接入点,指定controller的类进行切面
-     */
-    @Pointcut("execution(* cn.smallyoung.oa.controller.*.*(..))")
-    private void controllerAspect() {
 
-    }
-
-    @Around("controllerAspect()")
-    public Object around(ProceedingJoinPoint pjp) throws Throwable {
-        SystemOperationLog systemOperationLog = getSystemOperationLog(pjp);
-        if (systemOperationLog == null) {
-            return pjp.proceed();
-        }
+    @Around("@annotation(systemOperationLog)")
+    public Object around(ProceedingJoinPoint pjp, SystemOperationLog systemOperationLog) throws Throwable {
         SysOperationLog sysOperationLog = new SysOperationLog();
         sysOperationLog.setStartTime(LocalDateTime.now());
         sysOperationLog.setMethod(systemOperationLog.methods());
@@ -190,23 +177,5 @@ public class SysOperationLogAspect {
             }
         }
         return stringBuilder.toString();
-    }
-
-    private SystemOperationLog getSystemOperationLog(ProceedingJoinPoint pjp) {
-        // 拦截的实体类，就是当前正在执行的controller
-        Object target = pjp.getTarget();
-        // 拦截的方法名称。当前正在执行的方法
-        String methodName = pjp.getSignature().getName();
-        MethodSignature methodSignature = (MethodSignature) pjp.getSignature();
-        Class<?>[] parameterTypes = methodSignature.getMethod().getParameterTypes();
-        // 获得被拦截的方法
-        Method method;
-        try {
-            method = target.getClass().getMethod(methodName, parameterTypes);
-            return method.getAnnotation(SystemOperationLog.class);
-        } catch (NoSuchMethodException | SecurityException e1) {
-            log.error("ControllerLogAopAspect around error", e1);
-        }
-        return null;
     }
 }
