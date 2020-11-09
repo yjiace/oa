@@ -2,7 +2,6 @@ package cn.smallyoung.oa.dao;
 
 import cn.smallyoung.oa.base.BaseDao;
 import cn.smallyoung.oa.entity.SysUser;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 /**
@@ -28,17 +27,5 @@ public interface SysUserDao extends BaseDao<SysUser, Long> {
      * @return 查询到的用户实体
      */
     SysUser findByUsername(String username);
-
-
-    /**
-     * 修改用户密码
-     *
-     * @param username 用户名
-     * @param password 密码
-     * @return 修改成功条数
-     */
-    @Modifying
-    @Query("update SysUser u set u.password=?2 where u.id=?1")
-    Integer updatePassword(String username, String password);
 
 }

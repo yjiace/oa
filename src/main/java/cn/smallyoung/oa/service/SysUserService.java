@@ -33,11 +33,11 @@ public class SysUserService extends BaseService<SysUser, Long> implements UserDe
     private BCryptPasswordEncoder passwordEncoder;
 
     @Override
-    public SysUser findOne(Long id){
+    public SysUser findOne(Long id) {
         return super.findOne(id);
     }
 
-    public SysUser findByUsername(String username){
+    public SysUser findByUsername(String username) {
         return sysUserDao.findByUsername(username);
     }
 
@@ -68,14 +68,4 @@ public class SysUserService extends BaseService<SysUser, Long> implements UserDe
         return jwtTokenUtil.generateToken(sysUser);
     }
 
-    /**
-     * 修改密码
-     *
-     * @param user        登录用户
-     * @param newPassword 新密码
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public Integer updatePassword(SysUser user, String newPassword) {
-        return sysUserDao.updatePassword(user.getUsername(), passwordEncoder.encode(newPassword));
-    }
 }

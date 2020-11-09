@@ -70,17 +70,17 @@ public class SysUserController {
     /**
      * 根据用户名查询详细信息
      *
-     * @param id 主键
+     * @param username 用户名
      */
     @GetMapping(value = "findByUsername")
     @ApiOperation(value = "根据id查询")
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_FIND')")
-    @ApiImplicitParam(name = "id", value = "主键", required = true, dataType = "Long")
-    public SysUser findById(Long id) {
-        if(id == null){
+    @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String")
+    public SysUser findById(String username) {
+        if (StrUtil.hasBlank(username)) {
             throw new NullPointerException("参数错误");
         }
-        return sysUserService.findById(id).orElse(null);
+        return sysUserService.findByUsername(username);
     }
 
     /**
@@ -113,14 +113,14 @@ public class SysUserController {
             @ApiImplicitParam(name = "mobile", value = "电话", dataType = "String"),
     })
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_SAVE')")
-    @SystemOperationLog(module="管理用户",methods="新增用户",serviceClass=SysUserService.class,
-            queryMethod="findByUsername",parameterType="String",parameterKey="username")
+    @SystemOperationLog(module = "管理用户", methods = "新增用户", serviceClass = SysUserService.class,
+            queryMethod = "findByUsername", parameterType = "String", parameterKey = "username")
     public SysUser save(String username, String name, String phone, String mobile) throws Exception {
         if (StrUtil.hasBlank(username)) {
             throw new NullPointerException("参数错误");
         }
         SysUser user = sysUserService.findByUsername(username);
-        if(user != null){
+        if (user != null) {
             throw new Exception("用户已存在");
         }
         user = new SysUser();
@@ -137,29 +137,29 @@ public class SysUserController {
     /**
      * 更新用户
      *
-     * @param id 主键
-     * @param name     姓名
-     * @param phone    手机号
-     * @param mobile   电话
+     * @param username 用户名
+     * @param name   姓名
+     * @param phone  手机号
+     * @param mobile 电话
      */
     @PostMapping(value = "update")
     @ApiOperation(value = "编辑用户")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "主键", required = true, dataType = "Long"),
+            @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String"),
             @ApiImplicitParam(name = "name", value = "姓名", dataType = "String"),
             @ApiImplicitParam(name = "phone", value = "手机号", dataType = "String"),
             @ApiImplicitParam(name = "mobile", value = "电话", dataType = "String"),
     })
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_UPDATE')")
-    @SystemOperationLog(module="管理用户",methods="编辑用户",serviceClass=SysUserService.class,
-            queryMethod="findOne",parameterType="Long",parameterKey="id")
-    public SysUser update(Long id, String name, String phone, String mobile) {
-        if (id == null) {
+    @SystemOperationLog(module = "管理用户", methods = "编辑用户", serviceClass = SysUserService.class,
+            queryMethod = "findByUsername", parameterType = "String", parameterKey = "username")
+    public SysUser update(String username, String name, String phone, String mobile) {
+        if (StrUtil.hasBlank(username)) {
             throw new NullPointerException("参数错误");
         }
-        SysUser user = sysUserService.findOne(id);
-        if(user == null){
-            throw new UsernameNotFoundException(String.format("No user found with id '%s'.", id));
+        SysUser user = sysUserService.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
         }
         user.setName(name);
         user.setPhone(phone);
@@ -170,25 +170,25 @@ public class SysUserController {
     /**
      * 更改用户状态
      *
-     * @param id 主键
-     * @param status   需要更改用户的状态：Y，启用；N，禁用
+     * @param username 用户名
+     * @param status 需要更改用户的状态：Y，启用；N，禁用
      */
     @PostMapping(value = "updateStatus")
     @ApiOperation(value = "修改用户状态")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "主键", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String"),
             @ApiImplicitParam(name = "status", value = "状态：Y，启用；N，禁用", required = true, dataType = "String")
     })
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_UPDATE_STATUS')")
-    @SystemOperationLog(module="管理用户",methods="更改用户状态",serviceClass=SysUserService.class,
-            queryMethod="findOne",parameterType="Long",parameterKey="id")
-    public SysUser updateStatus(Long id, String status) {
-        if (id == null || StrUtil.hasBlank(status)) {
+    @SystemOperationLog(module = "管理用户", methods = "更改用户状态", serviceClass = SysUserService.class,
+            queryMethod = "findByUsername", parameterType = "String", parameterKey = "username")
+    public SysUser updateStatus(String username, String status) {
+        if (StrUtil.hasBlank(status, username)) {
             throw new NullPointerException("参数错误");
         }
-        SysUser user = sysUserService.findOne(id);
-        if(user == null){
-            throw new UsernameNotFoundException(String.format("No user found with id '%s'.", id));
+        SysUser user = sysUserService.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
         }
         user.setStatus(status);
         return sysUserService.save(user);
@@ -197,21 +197,21 @@ public class SysUserController {
     /**
      * 重置密码
      *
-     * @param id 主键
+     * @param username 用户名
      */
     @PostMapping(value = "resetPassword")
     @ApiOperation(value = "重置密码")
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_RESET_PASSWORD')")
-    @ApiImplicitParam(name = "id", value = "主键", required = true, dataType = "String")
-    @SystemOperationLog(module="管理用户",methods="重置密码",serviceClass=SysUserService.class,
-            queryMethod="findOne",parameterType="Long",parameterKey="id")
-    public SysUser resetPassword(Long id) {
-        if (id == null) {
+    @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String")
+    @SystemOperationLog(module = "管理用户", methods = "重置密码", serviceClass = SysUserService.class,
+            queryMethod = "findByUsername", parameterType = "String", parameterKey = "username")
+    public SysUser resetPassword(String username) {
+        if (StrUtil.hasBlank(username)) {
             throw new NullPointerException("参数错误");
         }
-        SysUser user = sysUserService.findOne(id);
-        if(user == null){
-            throw new UsernameNotFoundException(String.format("No user found with id '%s'.", id));
+        SysUser user = sysUserService.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
         }
         user.setPassword(passwordEncoder.encode(defaultPassword));
         return sysUserService.save(user);
@@ -220,50 +220,51 @@ public class SysUserController {
     /**
      * 修改密码
      *
-     * @param id 主键
+     * @param username    用户名
      * @param oldPassword 旧密码
      * @param newPassword 新密码
      */
     @PostMapping(value = "updatePassword")
     @ApiOperation(value = "修改密码")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "主键", required = true, dataType = "Long"),
+            @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String"),
             @ApiImplicitParam(name = "oldPassword", value = "旧密码", required = true, dataType = "String"),
             @ApiImplicitParam(name = "newPassword", value = "新密码", required = true, dataType = "String")
     })
-    @PreAuthorize("principal.username.equals(#username)")
-    public Integer updatePassword(Long id, String oldPassword, String newPassword) {
-        if (StrUtil.hasBlank(oldPassword, newPassword) || id == null) {
+    @PreAuthorize("authentication.principal.username.equals(#username)")
+    public SysUser updatePassword(String username, String oldPassword, String newPassword) {
+        if (StrUtil.hasBlank(oldPassword, newPassword, username)) {
             throw new NullPointerException("参数错误");
         }
-        SysUser user = sysUserService.findOne(id);
-        if(user == null){
-            throw new UsernameNotFoundException(String.format("No user found with id '%s'.", id));
+        SysUser user = sysUserService.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
         }
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
             throw new UsernameNotFoundException(String.format("Wrong password with password '%s'.", newPassword));
         }
-        return sysUserService.updatePassword(user, newPassword);
+        user.setPassword(passwordEncoder.encode(newPassword));
+        return sysUserService.save(user);
     }
 
     /**
      * 删除
      *
-     * @param id 主键
+     * @param username 用户名
      */
     @DeleteMapping(value = "delete")
     @ApiOperation(value = "删除用户")
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_DELETE')")
-    @ApiImplicitParam(name = "id", value = "主键", required = true, dataType = "String")
-    @SystemOperationLog(module="管理用户",methods="删除用户",serviceClass=SysUserService.class,
-            queryMethod="findOne",parameterType="Long",parameterKey="id")
-    public SysUser deleteUser(Long id) {
-        if (id == null) {
+    @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String")
+    @SystemOperationLog(module = "管理用户", methods = "删除用户", serviceClass = SysUserService.class,
+            queryMethod = "findByUsername", parameterType = "String", parameterKey = "username")
+    public SysUser deleteUser(String username) {
+        if (StrUtil.hasBlank(username)) {
             throw new NullPointerException("参数错误");
         }
-        SysUser user = sysUserService.findOne(id);
-        if(user == null){
-            throw new UsernameNotFoundException(String.format("No user found with id '%s'.", id));
+        SysUser user = sysUserService.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
         }
         user.setIsDelete("Y");
         return sysUserService.save(user);
@@ -272,25 +273,25 @@ public class SysUserController {
     /**
      * 设置用户角色
      *
-     * @param id 主键
-     * @param roles    角色id集合，逗号分割
+     * @param username 用户名
+     * @param roles 角色id集合，逗号分割
      */
     @PostMapping("updateRole")
     @ApiOperation(value = "设置用户角色")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "主键", required = true, dataType = "Long"),
+            @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String"),
             @ApiImplicitParam(name = "roles", value = "角色ID集合,逗号分割", required = true, dataType = "String"),
     })
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_UPDATE_ROLE')")
-    @SystemOperationLog(module="管理用户",methods="设置用户角色",serviceClass=SysUserService.class,
-            queryMethod="findOne",parameterType="Long",parameterKey="id")
-    public SysUser updateRole(Long id, String roles) {
-        if (id == null) {
+    @SystemOperationLog(module = "管理用户", methods = "设置用户角色", serviceClass = SysUserService.class,
+            queryMethod = "findByUsername", parameterType = "String", parameterKey = "username")
+    public SysUser updateRole(String username, String roles) {
+        if (StrUtil.hasBlank(username)) {
             throw new NullPointerException("参数错误");
         }
-        SysUser user = sysUserService.findOne(id);
+        SysUser user = sysUserService.findByUsername(username);
         if (user == null) {
-            throw new UsernameNotFoundException(String.format("No user found with id '%s'.", id));
+            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
         }
         if (StrUtil.isNotBlank(roles)) {
             List<SysRole> roleList = sysRoleService.findByIdInAndIsDelete(Stream.of(roles.split(","))
