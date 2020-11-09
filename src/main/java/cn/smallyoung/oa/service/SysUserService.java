@@ -5,7 +5,6 @@ import cn.smallyoung.oa.dao.SysUserDao;
 import cn.smallyoung.oa.entity.SysUser;
 import cn.smallyoung.oa.util.JwtTokenUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,20 +15,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Optional;
 
 /**
  * @author smallyoung
  * @date 2020/10/26
  */
 @Slf4j
-
 @Service
 @Transactional(readOnly = true)
-public class SysUserService extends BaseService<SysUser, String> implements UserDetailsService {
+public class SysUserService extends BaseService<SysUser, Long> implements UserDetailsService {
 
-    @Value("${default.password}")
-    private String defaultPassword;
     @Resource
     private SysUserDao sysUserDao;
     @Resource
@@ -38,8 +33,12 @@ public class SysUserService extends BaseService<SysUser, String> implements User
     private BCryptPasswordEncoder passwordEncoder;
 
     @Override
-    public SysUser findOne(String username){
-        return super.findOne(username);
+    public SysUser findOne(Long id){
+        return super.findOne(id);
+    }
+
+    public SysUser findByUsername(String username){
+        return sysUserDao.findByUsername(username);
     }
 
     @Override
@@ -50,25 +49,6 @@ public class SysUserService extends BaseService<SysUser, String> implements User
         }
         user.getAuthorities();
         return user;
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    public SysUser save(String username,String name, String phone, String mobile){
-        Optional<SysUser> optional = sysUserDao.findById(username);
-        SysUser user;
-        if(optional.isPresent()){
-            user = optional.get();
-        }else{
-            user = new SysUser();
-            user.setUsername(username);
-            user.setStatus("Y");
-            user.setIsDelete("N");
-            user.setPassword(passwordEncoder.encode(defaultPassword));
-        }
-        user.setName(name);
-        user.setPhone(phone);
-        user.setMobile(mobile);
-        return sysUserDao.save(user);
     }
 
     /**
@@ -86,42 +66,6 @@ public class SysUserService extends BaseService<SysUser, String> implements User
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(sysUser, null, sysUser.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return jwtTokenUtil.generateToken(sysUser);
-    }
-
-
-    /**
-     * 根据ID修改用户状态
-     *
-     * @param username 用户名
-     * @param status   用户状态标识
-     * @return 修改成功条数
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public Integer updateStatus(String username, String status) {
-        return sysUserDao.updateStatus(username, status);
-    }
-
-    /**
-     * 根据ID删除用户--修改删除标识
-     *
-     * @param username 用户名
-     * @param isDelete 修改删除字段标识
-     * @return 修改成功条数
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public Integer updateIsDelete(String username, String isDelete) {
-        return sysUserDao.updateIsDelete(username, isDelete);
-    }
-
-    /**
-     * 重置密码
-     *
-     * @param username 用户名
-     * @return 修改成功条数
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public Integer resetPassword(String username) {
-        return sysUserDao.updatePassword(username, passwordEncoder.encode(defaultPassword));
     }
 
     /**

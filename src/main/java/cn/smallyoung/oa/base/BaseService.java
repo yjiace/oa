@@ -71,4 +71,8 @@ public abstract class BaseService<T, ID extends Serializable> {
     public void deleteAll() {
         baseDao.deleteAll();
     }
+
+    public boolean existsById(ID id){
+        return  baseDao.existsById(id);
+    }
 }

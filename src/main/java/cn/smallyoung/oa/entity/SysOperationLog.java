@@ -29,7 +29,7 @@ public class SysOperationLog {
     @Column(name = "id" )
     @ApiModelProperty(notes = "主键ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     /**
      * 操作人

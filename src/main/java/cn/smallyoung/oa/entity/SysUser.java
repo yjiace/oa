@@ -33,10 +33,15 @@ public class SysUser extends BaseEntity implements Serializable, UserDetails {
 
     private static final long serialVersionUID = -1419339429097967881L;
 
+    @Id
+    @Column(name = "id" )
+    @ApiModelProperty(notes = "主键ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     /**
      * 用户名
      */
-    @Id
     @DataName(name = "用户名")
     @Column(name = "user_name" )
     @ApiModelProperty(notes = "用户名")
@@ -84,7 +89,7 @@ public class SysUser extends BaseEntity implements Serializable, UserDetails {
     @ApiModelProperty(hidden = true)
     @Where(clause = " is_delete = 'N' ")
     @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-    @JoinTable(name = "t_sys_user_role", joinColumns = {@JoinColumn(name = "user_name")}, inverseJoinColumns = {@JoinColumn(name = "role_id")})
+    @JoinTable(name = "t_sys_user_role", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "role_id")})
     private List<SysRole> roles = new ArrayList<>();
 
     @Override
