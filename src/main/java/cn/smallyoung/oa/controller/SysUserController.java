@@ -111,7 +111,8 @@ public class SysUserController {
         if (StrUtil.hasBlank(username)) {
             throw new NullPointerException("参数错误");
         }
-        return sysUserService.save(username, name, phone, mobile);
+        SysUser user = sysUserService.save(username, name, phone, mobile);
+        return user;
     }
 
     /**

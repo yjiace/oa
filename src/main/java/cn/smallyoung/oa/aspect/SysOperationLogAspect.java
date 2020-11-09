@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
 import javax.annotation.Resource;
+import javax.persistence.Id;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
@@ -159,20 +160,32 @@ public class SysOperationLogAspect {
      * 内容变更说明，默认只记录被@DataName标记的字段
      */
     private String updateContent(Object oldObject, Object newObject) {
+        StringBuilder stringBuilder = new StringBuilder();
         Map<String, Object> oldMap = BeanUtil.beanToMap(oldObject);
         Map<String, Object> newMap = BeanUtil.beanToMap(newObject);
-        StringBuilder stringBuilder = new StringBuilder();
         Object val;
+        Field field;
         DataName dataName;
-        for (Map.Entry<String, Object> entry : oldMap.entrySet()) {
-            val = newMap.get(entry.getKey());
-            if (!Objects.equals(val, entry.getValue())) {
-                Field field = ReflectUtil.getField(newObject.getClass(), entry.getKey());
-                dataName = AnnotationUtil.getAnnotation(field, DataName.class);
-                //默认只有注释字段方可增加变更，避免敏感信息泄露
-                if (dataName != null) {
+        Id id;
+        for (Map.Entry<String, Object> entry : newMap.entrySet()) {
+            val = oldMap != null ? oldMap.get(entry.getKey()) : null;
+            if (Objects.equals(val, entry.getValue())) {
+                continue;
+            }
+            field = ReflectUtil.getField(newObject.getClass(), entry.getKey());
+            dataName = AnnotationUtil.getAnnotation(field, DataName.class);
+            //默认只有注释字段方可增加变更，避免敏感信息泄露。
+            if (dataName != null ) {
+                if(val != null){
                     stringBuilder.append("【").append(dataName.name()).append("】从【")
-                            .append(entry.getValue()).append("】改为了【").append(val).append("】;\n");
+                            .append(val).append("】改为了【").append(entry.getValue()).append("】;\n");
+                }else{
+                    stringBuilder.append("新增【").append(dataName.name()).append("】【").append(entry.getValue()).append("】;\n");
+                }
+            }else{
+                id = AnnotationUtil.getAnnotation(field, Id.class);
+                if(id != null){
+                    stringBuilder.append("新增【主键ID】【").append(entry.getValue()).append("】;\n");
                 }
             }
         }

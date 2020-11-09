@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Optional;
 
 /**
  * @author smallyoung
@@ -53,8 +54,11 @@ public class SysUserService extends BaseService<SysUser, String> implements User
 
     @Transactional(rollbackFor = Exception.class)
     public SysUser save(String username,String name, String phone, String mobile){
-        SysUser user = sysUserDao.findById(username).orElse(null);
-        if(user == null){
+        Optional<SysUser> optional = sysUserDao.findById(username);
+        SysUser user;
+        if(optional.isPresent()){
+            user = optional.get();
+        }else{
             user = new SysUser();
             user.setUsername(username);
             user.setStatus("Y");
