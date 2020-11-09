@@ -1,6 +1,7 @@
 package cn.smallyoung.oa.controller;
 
 import cn.hutool.core.util.StrUtil;
+import cn.smallyoung.oa.entity.SysRole;
 import cn.smallyoung.oa.entity.SysUser;
 import cn.smallyoung.oa.interfaces.ResponseResultBody;
 import cn.smallyoung.oa.interfaces.SystemOperationLog;
@@ -23,6 +24,7 @@ import org.springframework.web.util.WebUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -291,7 +293,9 @@ public class SysUserController {
             throw new UsernameNotFoundException(String.format("No user found with id '%s'.", id));
         }
         if (StrUtil.isNotBlank(roles)) {
-            user.setRoles(sysRoleService.findByIdInAndIsDelete(Stream.of(roles.split(",")).map(String::trim).map(Long::parseLong).collect(Collectors.toList())));
+            List<SysRole> roleList = sysRoleService.findByIdInAndIsDelete(Stream.of(roles.split(","))
+                    .map(String::trim).map(Long::parseLong).collect(Collectors.toList()));
+            user.setRoles(roleList);
         } else {
             user.setRoles(null);
         }

@@ -46,12 +46,6 @@ public class SysRole extends BaseEntity implements Serializable {
     @JsonIgnore
     @ApiModelProperty(hidden = true)
     @Where(clause = " is_delete = 'N' ")
-    @ManyToMany(mappedBy="roles", fetch = FetchType.LAZY)
-    private List<SysUser> users;
-
-    @JsonIgnore
-    @ApiModelProperty(hidden = true)
-    @Where(clause = " is_delete = 'N' ")
     @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
     @JoinTable(name = "t_sys_role_permission", joinColumns = {@JoinColumn(name = "role_id")}, inverseJoinColumns = {@JoinColumn(name = "permission_id")})
     private List<SysPermission> permissions = new ArrayList<>();
