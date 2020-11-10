@@ -3,6 +3,7 @@ package cn.smallyoung.oa.aspect;
 import cn.hutool.core.annotation.AnnotationUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ReflectUtil;
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.smallyoung.oa.entity.SysOperationLog;
 import cn.smallyoung.oa.interfaces.DataName;
@@ -29,7 +30,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
- * @author yangn
+ * @author smallyoung
  */
 @Slf4j
 @Aspect
@@ -61,6 +62,7 @@ public class SysOperationLogAspect {
         String value = params.getStr(systemOperationLog.parameterKey());
         Object oldObject = getOperateBeforeDataByParamType(systemOperationLog.serviceClass(),
                 systemOperationLog.queryMethod(), value, MAP_TO_FUNCTION.get(systemOperationLog.parameterType()));
+        Map<String, Object> oldMap = BeanUtil.beanToMap(oldObject);
         if (oldObject != null) {
             sysOperationLog.setBeforeData(new JSONObject(oldObject).toString());
         }
@@ -80,7 +82,7 @@ public class SysOperationLogAspect {
         if (newObject != null) {
             sysOperationLog.setAfterData(new JSONObject(newObject).toString());
         }
-        sysOperationLog.setContent(updateContent(oldObject, newObject));
+        sysOperationLog.setContent(updateContent(oldMap, newObject));
         sysOperationLogService.save(sysOperationLog);
         return object;
     }
@@ -126,36 +128,47 @@ public class SysOperationLogAspect {
     /**
      * 内容变更说明，默认只记录被@DataName标记的字段
      */
-    private String updateContent(Object oldObject, Object newObject) {
-        StringBuilder stringBuilder = new StringBuilder();
-        Map<String, Object> oldMap = BeanUtil.beanToMap(oldObject);
+    private String updateContent(Map<String, Object> oldMap, Object newObject) {
+        JSONObject result = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonObject;
+
         Map<String, Object> newMap = BeanUtil.beanToMap(newObject);
         Object val;
         Field field;
         DataName dataName;
+        StringBuilder stringBuilder = new StringBuilder();
         Id id;
         for (Map.Entry<String, Object> entry : newMap.entrySet()) {
+            //查询操作ID
+            field = ReflectUtil.getField(newObject.getClass(), entry.getKey());
+            dataName = AnnotationUtil.getAnnotation(field, DataName.class);
+            id = AnnotationUtil.getAnnotation(field, Id.class);
+            if(id != null){
+                stringBuilder.append(entry.getValue()).append(";");
+            }
+
             val = oldMap != null ? oldMap.get(entry.getKey()) : null;
             if (Objects.equals(val, entry.getValue())) {
                 continue;
             }
-            field = ReflectUtil.getField(newObject.getClass(), entry.getKey());
-            dataName = AnnotationUtil.getAnnotation(field, DataName.class);
+            jsonObject = new JSONObject();
             //默认只有注释字段方可增加变更，避免敏感信息泄露。
             if (dataName != null ) {
-                if(val != null){
-                    stringBuilder.append("【").append(dataName.name()).append("】从【")
-                            .append(val).append("】改为了【").append(entry.getValue()).append("】;\n");
-                }else{
-                    stringBuilder.append("新增【").append(dataName.name()).append("】【").append(entry.getValue()).append("】;\n");
-                }
-            }else{
-                id = AnnotationUtil.getAnnotation(field, Id.class);
-                if(id != null){
-                    stringBuilder.append("新增【主键ID】【").append(entry.getValue()).append("】;\n");
-                }
+                jsonObject.set("name", dataName.name());
+                jsonObject.set("oldVal", val);
+                jsonObject.set("newVal", entry.getValue());
+                jsonArray.set(jsonObject);
             }
         }
-        return stringBuilder.toString();
+        result.set("data", jsonArray);
+        result.set("id", stringBuilder.toString());
+        //新增
+        if(oldMap == null || oldMap.size() == 0){
+            result.set("operation", "新增");
+        }else{
+            result.set("operation", "编辑");
+        }
+        return result.toString();
     }
 }

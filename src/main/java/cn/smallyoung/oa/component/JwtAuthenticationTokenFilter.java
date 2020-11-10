@@ -50,6 +50,9 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                     log.info("authenticated user:{}", username);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     response.setHeader("userId", user.getUsername());
+                    if(jwtTokenUtil.canRefresh(authToken)){
+                        response.setHeader(tokenHeader, jwtTokenUtil.refreshToken(authToken));
+                    }
                 }
             }
         }

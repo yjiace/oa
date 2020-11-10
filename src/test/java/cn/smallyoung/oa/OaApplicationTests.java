@@ -1,6 +1,8 @@
 package cn.smallyoung.oa;
 
+import cn.smallyoung.oa.entity.SysUser;
 import cn.smallyoung.oa.service.SysUserService;
+import cn.smallyoung.oa.util.JwtTokenUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,6 +14,8 @@ import javax.annotation.Resource;
 @SpringBootTest(classes = OaApplication.class)
 class OaApplicationTests {
 
+    @Resource
+    private JwtTokenUtil JwtTokenUtil;
     @Resource
     private SysUserService sysUserService;
     @Resource
@@ -27,5 +31,13 @@ class OaApplicationTests {
         System.out.println(sysUserService.login("smallyoung", "smallyoung"));
     }
 
+    @Test
+    public void testJwt(){
+        SysUser sysuser = sysUserService.findByUsername("yjc");
+        String token = JwtTokenUtil.generateToken(sysuser);
+        System.out.println(token);
+        System.out.println(JwtTokenUtil.canRefresh(token));
+        System.out.println(JwtTokenUtil.refreshToken(token));
+    }
 
 }

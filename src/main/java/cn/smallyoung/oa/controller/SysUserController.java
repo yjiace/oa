@@ -73,7 +73,7 @@ public class SysUserController {
      * @param username 用户名
      */
     @GetMapping(value = "findByUsername")
-    @ApiOperation(value = "根据id查询")
+    @ApiOperation(value = "根据用户名查询")
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_FIND')")
     @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String")
     public SysUser findById(String username) {

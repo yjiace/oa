@@ -3,7 +3,7 @@ package cn.smallyoung.oa.interfaces;
 import java.lang.annotation.*;
 
 /**
- * @author yangn
+ * @author smallyoung
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})
