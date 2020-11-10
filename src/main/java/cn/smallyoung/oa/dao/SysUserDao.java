@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
  * @date 2020/10/26
  */
 
-public interface SysUserDao extends BaseDao<SysUser, Long> {
+public interface SysUserDao extends BaseDao<SysUser, String> {
 
     /**
      * 根据用户昵称查询用户

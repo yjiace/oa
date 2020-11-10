@@ -49,7 +49,7 @@ CREATE TABLE `oa`.`t_sys_role_permission` (
 
 CREATE TABLE `oa`.`t_sys_user_role` (
   `role_id` int NOT NULL,
-  `user_id` int NOT NULL
+  `user_name` int NOT NULL
 );
 
 ALTER TABLE `oa`.`t_sys_role_permission`
@@ -58,7 +58,7 @@ ALTER TABLE `oa`.`t_sys_role_permission`
 
 ALTER TABLE `oa`.`t_sys_user_role`
   ADD FOREIGN KEY (`role_id`) REFERENCES `oa`.`t_sys_role` (`id`),
-  ADD FOREIGN KEY (`user_id`) REFERENCES `oa`.`t_sys_user` (`id`);
+  ADD FOREIGN KEY (`user_name`) REFERENCES `oa`.`t_sys_user` (`user_name`);
 
 CREATE TABLE `oa`.`t_sys_operation_log` (
   `id` int NOT NULL AUTO_INCREMENT,

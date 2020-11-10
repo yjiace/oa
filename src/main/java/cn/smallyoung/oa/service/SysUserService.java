@@ -23,7 +23,7 @@ import javax.annotation.Resource;
 @Slf4j
 @Service
 @Transactional(readOnly = true)
-public class SysUserService extends BaseService<SysUser, Long> implements UserDetailsService {
+public class SysUserService extends BaseService<SysUser, String> implements UserDetailsService {
 
     @Resource
     private SysUserDao sysUserDao;
@@ -31,11 +31,6 @@ public class SysUserService extends BaseService<SysUser, Long> implements UserDe
     private JwtTokenUtil jwtTokenUtil;
     @Resource
     private BCryptPasswordEncoder passwordEncoder;
-
-    @Override
-    public SysUser findOne(Long id) {
-        return super.findOne(id);
-    }
 
     public SysUser findByUsername(String username) {
         return sysUserDao.findByUsername(username);
