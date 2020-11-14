@@ -9,6 +9,7 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -23,7 +24,9 @@ import java.time.LocalDateTime;
 @ApiModel("系统操作日志")
 @Table(name = "t_sys_operation_log")
 @EntityListeners({AuditingEntityListener.class})
-public class SysOperationLog {
+public class SysOperationLog implements Serializable {
+
+    private static final long serialVersionUID = 2415594410963135575L;
 
     @Id
     @Column(name = "id" )

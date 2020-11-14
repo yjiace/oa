@@ -63,4 +63,10 @@ public class SysUserService extends BaseService<SysUser, String> implements User
         return jwtTokenUtil.generateToken(sysUser);
     }
 
+    public String currentlyLoggedInUser(){
+        UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
+    }
+
+
 }

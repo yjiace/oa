@@ -65,13 +65,42 @@ CREATE TABLE `oa`.`t_sys_operation_log` (
   `username` varchar(50) NOT NULL,
   `module` varchar(255),
   `method` varchar(255),
-  `params` varchar(4096),
-  `before_data` varchar(4096),
-  `after_data` varchar(4096),
-  `content` varchar(4096),
+  `params` json NULL,
+  `before_data` json NULL,
+  `after_data` json NULL,
+  `content` json NULL,
   `start_time` datetime,
   `end_time` datetime,
   `result_status` varchar(255),
   `result_msg` varchar(255),
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `oa`.`t_attachment_file`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NULL,
+  `file_name` varchar(255) NULL,
+  `md5` varchar(255) NULL,
+  `size` int NULL,
+  `url` varchar(255) NULL,
+  `security_classification` varchar(255) NULL,
+  `creator` varchar(50) NOT NULL,
+  `create_time` datetime NOT NULL,
+  `updater` varchar(50) NOT NULL,
+  `update_time` datetime NOT NULL,
+  `is_delete` varchar(1) NOT NULL DEFAULT 'N',
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `oa`.`t_message_notification`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `initiator_username` varchar(50) NOT NULL,
+  `recipient_username` varchar(50) NOT NULL,
+  `status` varchar(10) NOT NULL DEFAULT 'unread',
+  `content` text NOT NULL,
+  `source` varchar(50) NULL,
+  `create_time` datetime NOT NULL,
+  `reading_time` datetime NULL,
+  `is_delete` varchar(1) NOT NULL DEFAULT 'N',
   PRIMARY KEY (`id`)
 );
