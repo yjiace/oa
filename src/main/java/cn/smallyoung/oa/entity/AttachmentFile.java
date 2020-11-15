@@ -68,9 +68,16 @@ public class AttachmentFile extends BaseEntity implements Serializable {
     private String url;
 
     /**
-     * security_classification
+     * 文件编号
+     */
+    @Column(name = "document_number" )
+    @ApiModelProperty(notes = "文件编号")
+    private String documentNumber;
+
+    /**
+     * 密级指定
      */
     @Column(name = "security_classification" )
-    @ApiModelProperty(notes = "密级")
+    @ApiModelProperty(notes = "密级指定")
     private String securityClassification;
 }

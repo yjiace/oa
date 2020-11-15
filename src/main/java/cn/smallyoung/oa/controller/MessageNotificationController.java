@@ -118,7 +118,7 @@ public class MessageNotificationController {
             throw new NullPointerException("参数错误");
         }
         MessageNotification messageNotification = messageNotificationService.findOne(id);
-        if (messageNotification != null) {
+        if (messageNotification == null || "Y".equals(messageNotification.getIsDelete())) {
             throw new NoSuchFieldError("消息不存在");
         }
         if (!sysUserService.currentlyLoggedInUser().equals(messageNotification.getRecipientUsername())) {

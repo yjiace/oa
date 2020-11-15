@@ -1,6 +1,7 @@
 package cn.smallyoung.oa.controller;
 
 import cn.hutool.core.util.StrUtil;
+import cn.smallyoung.oa.entity.SysOperationLogWayEnum;
 import cn.smallyoung.oa.entity.SysRole;
 import cn.smallyoung.oa.entity.SysUser;
 import cn.smallyoung.oa.interfaces.ResponseResultBody;
@@ -113,8 +114,8 @@ public class SysUserController {
             @ApiImplicitParam(name = "mobile", value = "电话", dataType = "String"),
     })
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_SAVE')")
-    @SystemOperationLog(module = "管理用户", methods = "新增用户", serviceClass = SysUserService.class,
-            queryMethod = "findByUsername", parameterType = "String", parameterKey = "username")
+    @SystemOperationLog(module = "管理用户", methods = "新增用户", serviceClass = SysUserService.class, queryMethod = "findByUsername",
+            parameterType = "String", parameterKey = "username", way = SysOperationLogWayEnum.RecordTheChange)
     public SysUser save(String username, String name, String phone, String mobile) throws Exception {
         if (StrUtil.hasBlank(username)) {
             throw new NullPointerException("参数错误");
@@ -190,6 +191,9 @@ public class SysUserController {
         if (user == null) {
             throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
         }
+        if("Y".equals(user.getIsDelete())){
+            throw new RuntimeException("该用户已删除");
+        }
         user.setStatus(status);
         return sysUserService.save(user);
     }
@@ -206,13 +210,7 @@ public class SysUserController {
     @SystemOperationLog(module = "管理用户", methods = "重置密码", serviceClass = SysUserService.class,
             queryMethod = "findByUsername", parameterType = "String", parameterKey = "username")
     public SysUser resetPassword(String username) {
-        if (StrUtil.hasBlank(username)) {
-            throw new NullPointerException("参数错误");
-        }
-        SysUser user = sysUserService.findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
-        }
+        SysUser user = checkUser(username);
         user.setPassword(passwordEncoder.encode(defaultPassword));
         return sysUserService.save(user);
     }
@@ -286,13 +284,7 @@ public class SysUserController {
     @SystemOperationLog(module = "管理用户", methods = "设置用户角色", serviceClass = SysUserService.class,
             queryMethod = "findByUsername", parameterType = "String", parameterKey = "username")
     public SysUser updateRole(String username, String roles) {
-        if (StrUtil.hasBlank(username)) {
-            throw new NullPointerException("参数错误");
-        }
-        SysUser user = sysUserService.findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
-        }
+        SysUser user = checkUser(username);
         if (StrUtil.isNotBlank(roles)) {
             List<SysRole> roleList = sysRoleService.findByIdInAndIsDelete(Stream.of(roles.split(","))
                     .map(String::trim).map(Long::parseLong).collect(Collectors.toList()));
@@ -301,5 +293,21 @@ public class SysUserController {
             user.setRoles(null);
         }
         return sysUserService.save(user);
+    }
+
+    //todo 是否用户编辑个人信息
+
+    private SysUser checkUser(String username) {
+        if (StrUtil.hasBlank(username)) {
+            throw new NullPointerException("参数错误");
+        }
+        SysUser user = sysUserService.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
+        }
+        if("Y".equals(user.getIsDelete())){
+            throw new RuntimeException("该用户已删除");
+        }
+        return user;
     }
 }

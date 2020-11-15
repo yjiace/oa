@@ -6,6 +6,7 @@ import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.smallyoung.oa.entity.SysOperationLog;
+import cn.smallyoung.oa.entity.SysOperationLogWayEnum;
 import cn.smallyoung.oa.interfaces.DataName;
 import cn.smallyoung.oa.interfaces.SystemOperationLog;
 import cn.smallyoung.oa.service.SysOperationLogService;
@@ -60,11 +61,14 @@ public class SysOperationLogAspect {
         JSONObject params = getParam(pjp);
         sysOperationLog.setParams(params.toString());
         String value = params.getStr(systemOperationLog.parameterKey());
-        Object oldObject = getOperateBeforeDataByParamType(systemOperationLog.serviceClass(),
-                systemOperationLog.queryMethod(), value, MAP_TO_FUNCTION.get(systemOperationLog.parameterType()));
-        Map<String, Object> oldMap = BeanUtil.beanToMap(oldObject);
-        if (oldObject != null) {
-            sysOperationLog.setBeforeData(new JSONObject(oldObject).toString());
+        Map<String, Object> oldMap = null;
+        if(SysOperationLogWayEnum.RecordChanges == systemOperationLog.way() || SysOperationLogWayEnum.RecordTheBefore == systemOperationLog.way()){
+            Object oldObject = getOperateBeforeDataByParamType(systemOperationLog.serviceClass(),
+                    systemOperationLog.queryMethod(), value, MAP_TO_FUNCTION.get(systemOperationLog.parameterType()));
+            oldMap = BeanUtil.beanToMap(oldObject);
+            if (oldObject != null) {
+                sysOperationLog.setBeforeData(new JSONObject(oldObject).toString());
+            }
         }
         Object object;
         //执行service
@@ -77,12 +81,16 @@ public class SysOperationLogAspect {
             sysOperationLogService.save(sysOperationLog);
             return e;
         }
-        Object newObject = getOperateBeforeDataByParamType(systemOperationLog.serviceClass(),
-                systemOperationLog.queryMethod(), value, MAP_TO_FUNCTION.get(systemOperationLog.parameterType()));
-        if (newObject != null) {
-            sysOperationLog.setAfterData(new JSONObject(newObject).toString());
+        if(SysOperationLogWayEnum.RecordChanges == systemOperationLog.way() || SysOperationLogWayEnum.RecordTheChange == systemOperationLog.way()){
+            Object newObject = getOperateBeforeDataByParamType(systemOperationLog.serviceClass(),
+                    systemOperationLog.queryMethod(), value, MAP_TO_FUNCTION.get(systemOperationLog.parameterType()));
+            if (newObject != null) {
+                sysOperationLog.setAfterData(new JSONObject(newObject).toString());
+            }
+            sysOperationLog.setContent(updateContent(oldMap, newObject));
         }
-        sysOperationLog.setContent(updateContent(oldMap, newObject));
+        sysOperationLog.setEndTime(LocalDateTime.now());
+        sysOperationLog.setResultStatus("SUCCESS");
         sysOperationLogService.save(sysOperationLog);
         return object;
     }

@@ -1,7 +1,9 @@
 package cn.smallyoung.oa.controller;
 
 import cn.smallyoung.oa.entity.AttachmentFile;
+import cn.smallyoung.oa.entity.SysOperationLogWayEnum;
 import cn.smallyoung.oa.interfaces.ResponseResultBody;
+import cn.smallyoung.oa.interfaces.SystemOperationLog;
 import cn.smallyoung.oa.service.AttachmentFileService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -20,7 +22,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.List;
 
 /**
  * @author smallyoung
@@ -50,7 +51,7 @@ public class AttachmentFileController {
     })
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_FIND')")
     public Page<AttachmentFile> findAll(@RequestParam(defaultValue = "1") Integer page,
-                                 HttpServletRequest request, @RequestParam(defaultValue = "10") Integer limit) {
+                                        HttpServletRequest request, @RequestParam(defaultValue = "10") Integer limit) {
         return attachmentFileService.findAll(WebUtils.getParametersStartingWith(request, "search_"),
                 PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, "updateTime")));
     }
@@ -58,17 +59,20 @@ public class AttachmentFileController {
     /**
      * 上传附件
      *
-     * @param multipartFiles         附件的文件集合
+     * @param file                   附件的文件集合
      * @param securityClassification 文件密级
      */
     @PostMapping(value = "uploadFile")
     @ApiOperation(value = "上传附件")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "multipartFiles", value = "附加"),
+            @ApiImplicitParam(name = "file", value = "附件"),
+            @ApiImplicitParam(name = "documentNumber", value = "文件编号", dataType = "String"),
             @ApiImplicitParam(name = "securityClassification", value = "文件密级", dataType = "String")
     })
-    public List<AttachmentFile> uploadFile(MultipartFile[] multipartFiles, String securityClassification) throws IOException {
-        return attachmentFileService.uploadFile(multipartFiles, securityClassification);
+    @SystemOperationLog(module = "文件操作", methods = "上传文件",
+            serviceClass = AttachmentFileService.class, way = SysOperationLogWayEnum.RecordOnly)
+    public AttachmentFile uploadFile(MultipartFile file, String documentNumber, String securityClassification) throws IOException {
+        return attachmentFileService.uploadFile(file, documentNumber, securityClassification);
     }
 
     /**
@@ -81,20 +85,26 @@ public class AttachmentFileController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "附件主键id")
     })
+    @SystemOperationLog(module = "文件管理", methods = "文件下载",
+            serviceClass = AttachmentFileService.class, way = SysOperationLogWayEnum.RecordOnly)
     public void downloadFile(Long id, HttpServletResponse response) throws IOException {
         if (id == null) {
             throw new NullPointerException("参数错误");
         }
         AttachmentFile attachmentFile = attachmentFileService.findOne(id);
-        if (attachmentFile == null) {
+        if (attachmentFile == null || "Y".equals(attachmentFile.getIsDelete())) {
             throw new FileNotFoundException(String.format("No found file with id '%s'.", id));
         }
+        //todo 权限校验
         InputStream inputStream;
         OutputStream outputStream;
         response.setCharacterEncoding("utf-8");
         response.setContentType("multipart/form-data");
         response.setHeader("Content-Disposition", "attachment;fileName=" + attachmentFile.getName() + ".xlsx");
-        File file = new File("");
+        File file = new File(attachmentFile.getUrl());
+        if (!file.exists()) {
+            throw new FileNotFoundException("文件不存在");
+        }
         inputStream = new FileInputStream(file);
         outputStream = response.getOutputStream();
         byte[] b = new byte[1024];
@@ -116,6 +126,8 @@ public class AttachmentFileController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "附件主键id")
     })
+    @SystemOperationLog(module = "文件操作", methods = "删除文件",
+            serviceClass = AttachmentFileService.class, way = SysOperationLogWayEnum.RecordOnly)
     public void deleteFile(Long id) throws FileNotFoundException {
         if (id == null) {
             throw new NullPointerException("参数错误");
@@ -127,4 +139,8 @@ public class AttachmentFileController {
         attachmentFile.setIsDelete("Y");
         attachmentFileService.save(attachmentFile);
     }
+
+    //todo 文件审批
+
+    //todo 操作日志
 }

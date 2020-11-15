@@ -1,6 +1,7 @@
 package cn.smallyoung.oa;
 
 import cn.smallyoung.oa.entity.SysUser;
+import cn.smallyoung.oa.service.MessageNotificationService;
 import cn.smallyoung.oa.service.SysUserService;
 import cn.smallyoung.oa.util.JwtTokenUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,8 @@ class OaApplicationTests {
     private SysUserService sysUserService;
     @Resource
     private BCryptPasswordEncoder passwordEncoder;
+    @Resource
+    private MessageNotificationService messageNotificationService;
 
     @Test
     public void testPassword() {
@@ -40,4 +43,8 @@ class OaApplicationTests {
         System.out.println(JwtTokenUtil.refreshToken(token));
     }
 
+    @Test
+    public void testReleaseMessage(){
+        messageNotificationService.releaseMessage("smallyoung", "test","test");
+    }
 }

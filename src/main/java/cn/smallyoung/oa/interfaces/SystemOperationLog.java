@@ -1,6 +1,7 @@
 package cn.smallyoung.oa.interfaces;
 
 import cn.smallyoung.oa.base.BaseService;
+import cn.smallyoung.oa.entity.SysOperationLogWayEnum;
 
 import java.lang.annotation.*;
 
@@ -44,4 +45,13 @@ public @interface SystemOperationLog {
      * 如域名修改中要从参数中获取customerDomainId的值进行查询
      */
     String parameterKey() default "";
+
+    /**
+     * 操作方式，
+     * RecordChanges：记录变化；
+     * RecordOnly：仅记录；
+     * RecordTheChange：记录变化后的值；
+     * RecordTheBefore：记录变换之前的值；
+     */
+    SysOperationLogWayEnum way() default SysOperationLogWayEnum.RecordChanges;
 }
