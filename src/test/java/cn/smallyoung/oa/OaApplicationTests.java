@@ -47,4 +47,16 @@ class OaApplicationTests {
     public void testReleaseMessage(){
         messageNotificationService.releaseMessage("smallyoung", "test","test");
     }
+
+    @Test
+    public void test(){
+        String str = "user.username";
+        String str1 = "userusername";
+        String [] keys = str.split("\\.", 0);
+        System.out.println(str.contains("u"));
+        System.out.println(str.contains("."));
+        System.out.println(str.contains("\\."));
+        System.out.println(str1.contains("."));
+        System.out.println(str1.contains("\\."));
+    }
 }

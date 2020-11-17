@@ -3,6 +3,7 @@ package cn.smallyoung.oa.aspect;
 import cn.hutool.core.annotation.AnnotationUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ReflectUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.smallyoung.oa.entity.SysOperationLog;
@@ -60,7 +61,7 @@ public class SysOperationLogAspect {
         sysOperationLog.setModule(systemOperationLog.module());
         JSONObject params = getParam(pjp);
         sysOperationLog.setParams(params.toString());
-        String value = params.getStr(systemOperationLog.parameterKey());
+        String value = getValue(systemOperationLog.parameterKey(), params);
         Map<String, Object> oldMap = null;
         if(SysOperationLogWayEnum.RecordChanges == systemOperationLog.way() || SysOperationLogWayEnum.RecordTheBefore == systemOperationLog.way()){
             Object oldObject = getOperateBeforeDataByParamType(systemOperationLog.serviceClass(),
@@ -105,8 +106,14 @@ public class SysOperationLogAspect {
         // 拦截的方法参数
         Object[] args = pjp.getArgs();
         JSONObject result = new JSONObject();
+        Object obj;
         for (int i = 0; i < args.length; i++) {
-            result.set(fieldsName[i], args[i]);
+            obj = args[i];
+            if(obj instanceof String){
+                result.set(fieldsName[i], args[i]);
+            }else{
+                result.set(fieldsName[i], new JSONObject(obj));
+            }
         }
         return result;
     }
@@ -122,7 +129,7 @@ public class SysOperationLogAspect {
      * @since [产品/模块版本](可选)
      */
     private Object getOperateBeforeDataByParamType(Class<?> serviceClass, String queryMethod, String value, Function<String, ?> function) {
-        if (function == null) {
+        if (function == null || StrUtil.hasBlank(value, queryMethod) || serviceClass == null) {
             return null;
         }
         Object obj = function.apply(value);
@@ -178,5 +185,18 @@ public class SysOperationLogAspect {
             result.set("operation", "编辑");
         }
         return result.toString();
+    }
+
+    private String getValue(String key, JSONObject params){
+        if(StrUtil.isBlank(key) || params == null){
+            return null;
+        }
+        CharSequence s = ".";
+        String regex = "\\.";
+        if(!key.contains(s)){
+            return params.getStr(key);
+        }
+        String [] keys = key.split(regex, 0);
+        return getValue(keys[1], params.getJSONObject(keys[0]));
     }
 }

@@ -1,5 +1,6 @@
 package cn.smallyoung.oa.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.smallyoung.oa.entity.SysOperationLogWayEnum;
 import cn.smallyoung.oa.entity.SysRole;
@@ -8,6 +9,7 @@ import cn.smallyoung.oa.interfaces.ResponseResultBody;
 import cn.smallyoung.oa.interfaces.SystemOperationLog;
 import cn.smallyoung.oa.service.SysRoleService;
 import cn.smallyoung.oa.service.SysUserService;
+import cn.smallyoung.oa.vo.SysUserVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -99,72 +101,45 @@ public class SysUserController {
 
     /**
      * 保存用户
-     *
-     * @param username 用户名
-     * @param name     姓名
-     * @param phone    手机号
-     * @param mobile   电话
      */
     @PostMapping(value = "save")
     @ApiOperation(value = "新增用户")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "name", value = "姓名", dataType = "String"),
-            @ApiImplicitParam(name = "phone", value = "手机号", dataType = "String"),
-            @ApiImplicitParam(name = "mobile", value = "电话", dataType = "String"),
-    })
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_SAVE')")
     @SystemOperationLog(module = "管理用户", methods = "新增用户", serviceClass = SysUserService.class, queryMethod = "findByUsername",
-            parameterType = "String", parameterKey = "username", way = SysOperationLogWayEnum.RecordTheChange)
-    public SysUser save(String username, String name, String phone, String mobile) throws Exception {
-        if (StrUtil.hasBlank(username)) {
+            parameterType = "String", parameterKey = "sysUserVO.username", way = SysOperationLogWayEnum.RecordTheChange)
+    public SysUser save(SysUserVO sysUserVO) throws Exception {
+        if (sysUserVO == null || StrUtil.hasBlank(sysUserVO.getUsername())) {
             throw new NullPointerException("参数错误");
         }
-        SysUser user = sysUserService.findByUsername(username);
-        if (user != null) {
+        if(sysUserService.existsById(sysUserVO.getUsername())){
             throw new Exception("用户已存在");
         }
-        user = new SysUser();
-        user.setUsername(username);
+        SysUser user = new SysUser();
+        user.setUsername(sysUserVO.getUsername());
         user.setStatus("Y");
         user.setIsDelete("N");
         user.setPassword(passwordEncoder.encode(defaultPassword));
-        user.setName(name);
-        user.setPhone(phone);
-        user.setMobile(mobile);
         return sysUserService.save(user);
     }
 
     /**
      * 更新用户
      *
-     * @param username 用户名
-     * @param name   姓名
-     * @param phone  手机号
-     * @param mobile 电话
      */
     @PostMapping(value = "update")
     @ApiOperation(value = "编辑用户")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "name", value = "姓名", dataType = "String"),
-            @ApiImplicitParam(name = "phone", value = "手机号", dataType = "String"),
-            @ApiImplicitParam(name = "mobile", value = "电话", dataType = "String"),
-    })
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_UPDATE')")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_UPDATE') or authentication.principal.username.equals(#sysUserVO.username)")
     @SystemOperationLog(module = "管理用户", methods = "编辑用户", serviceClass = SysUserService.class,
-            queryMethod = "findByUsername", parameterType = "String", parameterKey = "username")
-    public SysUser update(String username, String name, String phone, String mobile) {
-        if (StrUtil.hasBlank(username)) {
+            queryMethod = "findByUsername", parameterType = "String", parameterKey = "sysUserVO.username")
+    public SysUser update(SysUserVO sysUserVO) {
+        if (sysUserVO == null || StrUtil.hasBlank(sysUserVO.getUsername())) {
             throw new NullPointerException("参数错误");
         }
-        SysUser user = sysUserService.findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
+        SysUser user = sysUserService.findByUsername(sysUserVO.getUsername());
+        if(user == null){
+            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", sysUserVO.getUsername()));
         }
-        user.setName(name);
-        user.setPhone(phone);
-        user.setMobile(mobile);
+        BeanUtil.copyProperties(sysUserVO, user);
         return sysUserService.save(user);
     }
 

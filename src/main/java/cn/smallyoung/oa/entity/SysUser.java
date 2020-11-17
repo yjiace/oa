@@ -69,6 +69,38 @@ public class SysUser extends BaseEntity implements Serializable, UserDetails {
     private String mobile;
 
     /**
+     * 单位
+     */
+    @Column(name = "company" )
+    @DataName(name = "单位")
+    @ApiModelProperty(notes = "单位")
+    private String company;
+
+    /**
+     * 科室
+     */
+    @Column(name = "section" )
+    @DataName(name = "科室")
+    @ApiModelProperty(notes = "科室")
+    private String section;
+
+    /**
+     * 职位
+     */
+    @Column(name = "position" )
+    @DataName(name = "职位")
+    @ApiModelProperty(notes = "职位")
+    private String position;
+
+    /**
+     * 部门
+     */
+    @Column(name = "department" )
+    @DataName(name = "部门")
+    @ApiModelProperty(notes = "部门")
+    private String department;
+
+    /**
      * 状态，Y正常，N冻结
      */
     @Column(name = "status" )
