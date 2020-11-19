@@ -69,6 +69,7 @@ CREATE TABLE `oa`.`t_sys_operation_log` (
   `username` varchar(50) NOT NULL,
   `module` varchar(255),
   `method` varchar(255),
+  `package_and_method` varchar(255),
   `params` json NULL,
   `before_data` json NULL,
   `after_data` json NULL,
@@ -109,3 +110,33 @@ CREATE TABLE `oa`.`t_message_notification`  (
   `is_delete` varchar(1) NOT NULL DEFAULT 'N',
   PRIMARY KEY (`id`)
 );
+
+CREATE TABLE `t_car_record`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `vehicle_id` int NOT NULL,
+  `create_time` datetime NULL,
+  `username` varchar(255) NULL,
+  `type` varchar(255) NULL,
+  `remarks` varchar(255) NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `t_vehicle_information`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NULL COMMENT '车辆名称',
+  `number` varchar(255) NULL COMMENT '车辆编号',
+  `plate_number` varchar(10) NULL COMMENT '车牌号',
+  `company` varchar(10) NULL COMMENT '所属单位',
+  `model` varchar(10) NULL COMMENT '车辆型号',
+  `status` varchar(20) NULL COMMENT '状态，NotInUse：未使用，NotLeaving：未离场，NotReturned：未归还',
+  `creator` varchar(50) NOT NULL,
+  `create_time` datetime NOT NULL,
+  `updater` varchar(50) NOT NULL,
+  `update_time` datetime NOT NULL,
+  `is_delete` varchar(1) NOT NULL DEFAULT 'N',
+  PRIMARY KEY (`id`)
+);
+
+ALTER TABLE `oa`.`t_car_record`
+  ADD FOREIGN KEY (`vehicle_id`) REFERENCES `oa`.`t_vehicle_information` (`id`),
+  ADD FOREIGN KEY (`username`) REFERENCES `oa`.`t_sys_user` (`user_name`);

@@ -92,8 +92,11 @@ public class AttachmentFileController {
             throw new NullPointerException("参数错误");
         }
         AttachmentFile attachmentFile = attachmentFileService.findOne(id);
-        if (attachmentFile == null || "Y".equals(attachmentFile.getIsDelete())) {
-            throw new FileNotFoundException(String.format("No found file with id '%s'.", id));
+        String isDelete = "Y";
+        if (attachmentFile == null || isDelete.equals(attachmentFile.getIsDelete())) {
+            String error = String.format("根据ID【%s】,没有找到文件", id);
+            log.error(error);
+            throw new FileNotFoundException(error);
         }
         //todo 权限校验
         InputStream inputStream;
@@ -103,7 +106,9 @@ public class AttachmentFileController {
         response.setHeader("Content-Disposition", "attachment;fileName=" + attachmentFile.getName() + ".xlsx");
         File file = new File(attachmentFile.getUrl());
         if (!file.exists()) {
-            throw new FileNotFoundException("文件不存在");
+            String error = String.format("根据路径【%s】,没有找到文件", attachmentFile.getUrl());
+            log.error(error);
+            throw new FileNotFoundException(error);
         }
         inputStream = new FileInputStream(file);
         outputStream = response.getOutputStream();
@@ -134,7 +139,9 @@ public class AttachmentFileController {
         }
         AttachmentFile attachmentFile = attachmentFileService.findOne(id);
         if (attachmentFile == null) {
-            throw new FileNotFoundException(String.format("No found file with id '%s'.", id));
+            String error = String.format("根据ID【%s】,没有找到文件", id);
+            log.error(error);
+            throw new FileNotFoundException(error);
         }
         attachmentFile.setIsDelete("Y");
         attachmentFileService.save(attachmentFile);

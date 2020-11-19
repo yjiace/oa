@@ -2,6 +2,7 @@ package cn.smallyoung.oa.aspect;
 
 import cn.hutool.core.annotation.AnnotationUtil;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
@@ -39,7 +40,11 @@ import java.util.function.Function;
 @Component
 public class SysOperationLogAspect {
 
-    private static final Map<String, Function<String, ?>> MAP_TO_FUNCTION = new HashMap<String, Function<String, ?>>() {{
+    private static final Map<String, Function<String, ?>> MAP_TO_FUNCTION = new HashMap<String, Function<String, ?>>() {
+
+        private static final long serialVersionUID = 4864337579178718079L;
+
+        {
         put("int", Integer::parseInt);
         put("Integer", Integer::parseInt);
         put("long", Long::parseLong);
@@ -56,6 +61,10 @@ public class SysOperationLogAspect {
     @Around("@annotation(systemOperationLog)")
     public Object around(ProceedingJoinPoint pjp, SystemOperationLog systemOperationLog) throws Throwable {
         SysOperationLog sysOperationLog = new SysOperationLog();
+        Signature signature = pjp.getSignature();
+        if(signature != null){
+            sysOperationLog.setPackageAndMethod(signature.getDeclaringTypeName() + "." + signature.getName());
+        }
         sysOperationLog.setStartTime(LocalDateTime.now());
         sysOperationLog.setMethod(systemOperationLog.methods());
         sysOperationLog.setModule(systemOperationLog.module());
@@ -63,7 +72,7 @@ public class SysOperationLogAspect {
         sysOperationLog.setParams(params.toString());
         String value = getValue(systemOperationLog.parameterKey(), params);
         Map<String, Object> oldMap = null;
-        if(SysOperationLogWayEnum.RecordChanges == systemOperationLog.way() || SysOperationLogWayEnum.RecordTheBefore == systemOperationLog.way()){
+        if(SysOperationLogWayEnum.RecordBeforeAndAfterChanges == systemOperationLog.way() || SysOperationLogWayEnum.RecordTheBefore == systemOperationLog.way()){
             Object oldObject = getOperateBeforeDataByParamType(systemOperationLog.serviceClass(),
                     systemOperationLog.queryMethod(), value, MAP_TO_FUNCTION.get(systemOperationLog.parameterType()));
             oldMap = BeanUtil.beanToMap(oldObject);
@@ -80,9 +89,9 @@ public class SysOperationLogAspect {
             sysOperationLog.setResultStatus("ERROR");
             sysOperationLog.setEndTime(LocalDateTime.now());
             sysOperationLogService.save(sysOperationLog);
-            return e;
+            throw e;
         }
-        if(SysOperationLogWayEnum.RecordChanges == systemOperationLog.way() || SysOperationLogWayEnum.RecordTheChange == systemOperationLog.way()){
+        if(SysOperationLogWayEnum.RecordBeforeAndAfterChanges == systemOperationLog.way() || SysOperationLogWayEnum.RecordTheAfter == systemOperationLog.way()){
             Object newObject = getOperateBeforeDataByParamType(systemOperationLog.serviceClass(),
                     systemOperationLog.queryMethod(), value, MAP_TO_FUNCTION.get(systemOperationLog.parameterType()));
             if (newObject != null) {
@@ -109,7 +118,7 @@ public class SysOperationLogAspect {
         Object obj;
         for (int i = 0; i < args.length; i++) {
             obj = args[i];
-            if(obj instanceof String){
+            if(ClassUtil.isSimpleValueType(obj.getClass())){
                 result.set(fieldsName[i], args[i]);
             }else{
                 result.set(fieldsName[i], new JSONObject(obj));

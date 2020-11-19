@@ -63,6 +63,10 @@ public class SysOperationLog implements Serializable {
     @ApiModelProperty(notes = "请求参数")
     private String params;
 
+    @Column(name = "package_and_method" )
+    @ApiModelProperty(notes = "包路径和方法名")
+    private String packageAndMethod;
+
     /**
      * 操作前的数据
      */

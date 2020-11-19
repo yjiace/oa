@@ -113,16 +113,22 @@ public class MessageNotificationController {
         return messageNotificationService.save(messageNotification);
     }
 
-    private MessageNotification checkAuth(Long id) throws AuthException {
+    private MessageNotification checkAuth(Long id) {
         if (id == null) {
             throw new NullPointerException("参数错误");
         }
         MessageNotification messageNotification = messageNotificationService.findOne(id);
-        if (messageNotification == null || "Y".equals(messageNotification.getIsDelete())) {
-            throw new NoSuchFieldError("消息不存在");
+        String isDelete = "Y";
+        if (messageNotification == null || isDelete.equals(messageNotification.getIsDelete())) {
+            String error = String.format("根据ID【%s】,没有找到消息", id);
+            log.error(error);
+            throw new RuntimeException(error);
         }
-        if (!sysUserService.currentlyLoggedInUser().equals(messageNotification.getRecipientUsername())) {
-            throw new AuthException("Current user inoperable");
+        String username = sysUserService.currentlyLoggedInUser();
+        if (!messageNotification.getRecipientUsername().equals(username)) {
+            String error = String.format("当前用户【%s】无法操作该消息【%s】", username, id);
+            log.error(error);
+            throw new RuntimeException(error);
         }
         return messageNotification;
     }

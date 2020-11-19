@@ -10,7 +10,7 @@ public enum SysOperationLogWayEnum {
     /**
      * 记录变化
      */
-    RecordChanges("记录变化"),
+    RecordBeforeAndAfterChanges("记录变化"),
 
     /**
      * 仅记录
@@ -20,7 +20,7 @@ public enum SysOperationLogWayEnum {
     /**
      * 记录变化后的值
      */
-    RecordTheChange("记录变化后的值"),
+    RecordTheAfter("记录变化后的值"),
 
     /**
      * 记录变换之前的值

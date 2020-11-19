@@ -1,8 +1,12 @@
 package cn.smallyoung.oa;
 
+import cn.hutool.core.util.ClassUtil;
+import cn.hutool.json.JSONObject;
 import cn.smallyoung.oa.entity.SysUser;
+import cn.smallyoung.oa.entity.VehicleInformation;
 import cn.smallyoung.oa.service.MessageNotificationService;
 import cn.smallyoung.oa.service.SysUserService;
+import cn.smallyoung.oa.service.VehicleInformationService;
 import cn.smallyoung.oa.util.JwtTokenUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -10,6 +14,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @SpringBootTest(classes = OaApplication.class)
@@ -58,5 +66,31 @@ class OaApplicationTests {
         System.out.println(str.contains("\\."));
         System.out.println(str1.contains("."));
         System.out.println(str1.contains("\\."));
+    }
+
+    @Test
+    public void test11(){
+        String[] arrays = {"NotInUse", "NotLeaving", "NotReturned", "NotInUse"};
+        System.out.println(Arrays.binarySearch(arrays, 0, 2, "NotInUse"));
+    }
+
+    @Resource
+    private VehicleInformationService vehicleInformationService;
+
+    @Test
+    public void testUpdateVehicleInformation(){
+        VehicleInformation vehicleInformation = vehicleInformationService.findOne(1L);
+        System.out.println(vehicleInformation.getId());
+    }
+
+    @Test
+    public void test222(){
+        System.out.println(ClassUtil.isSimpleValueType(String.class));
+        System.out.println(ClassUtil.isSimpleValueType(SysUser.class));
+        System.out.println(ClassUtil.isSimpleValueType(Long.class));
+        System.out.println(ClassUtil.isSimpleValueType(LocalDateTime.class));
+        System.out.println(ClassUtil.isSimpleValueType(LocalDate.class));
+        System.out.println(ClassUtil.isSimpleValueType(List.class));
+        System.out.println(ClassUtil.isSimpleValueType(JSONObject.class));
     }
 }

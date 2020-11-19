@@ -62,13 +62,16 @@ public class LoginController {
         }
         Object obj = session.getAttribute(CHAPTER_KEY);
         if(!(obj instanceof String)){
+            log.error("用户【{}】登录系统，验证码【{}】错误", username, captcha);
             throw new NullPointerException("验证码错误");
         }
         session.removeAttribute(CHAPTER_KEY);
         if(!captcha.equalsIgnoreCase(obj.toString())){
+            log.error("用户【{}】登录系统，验证码【{}】错误", username, captcha);
             throw new SessionAuthenticationException("验证码错误");
         }
         String token = sysUserService.login(username, password);
+        log.info("用户【{}】登录系统", username);
         return Dict.create().set("tokenHead", tokenHead).set("token", token).set("username", username);
     }
 
