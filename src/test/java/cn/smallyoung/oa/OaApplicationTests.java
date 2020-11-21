@@ -16,7 +16,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -56,24 +55,6 @@ class OaApplicationTests {
         messageNotificationService.releaseMessage("smallyoung", "test","test");
     }
 
-    @Test
-    public void test(){
-        String str = "user.username";
-        String str1 = "userusername";
-        String [] keys = str.split("\\.", 0);
-        System.out.println(str.contains("u"));
-        System.out.println(str.contains("."));
-        System.out.println(str.contains("\\."));
-        System.out.println(str1.contains("."));
-        System.out.println(str1.contains("\\."));
-    }
-
-    @Test
-    public void test11(){
-        String[] arrays = {"NotInUse", "NotLeaving", "NotReturned", "NotInUse"};
-        System.out.println(Arrays.binarySearch(arrays, 0, 2, "NotInUse"));
-    }
-
     @Resource
     private VehicleInformationService vehicleInformationService;
 
@@ -84,7 +65,7 @@ class OaApplicationTests {
     }
 
     @Test
-    public void test222(){
+    public void testIsSimpleValueType(){
         System.out.println(ClassUtil.isSimpleValueType(String.class));
         System.out.println(ClassUtil.isSimpleValueType(SysUser.class));
         System.out.println(ClassUtil.isSimpleValueType(Long.class));
@@ -93,4 +74,6 @@ class OaApplicationTests {
         System.out.println(ClassUtil.isSimpleValueType(List.class));
         System.out.println(ClassUtil.isSimpleValueType(JSONObject.class));
     }
+
+
 }

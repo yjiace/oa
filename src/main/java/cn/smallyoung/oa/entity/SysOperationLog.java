@@ -93,7 +93,6 @@ public class SysOperationLog implements Serializable {
      */
     @Column(name = "start_time" )
     @ApiModelProperty(notes = "开始时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+08:00")
     private LocalDateTime startTime;
 
     /**
@@ -101,7 +100,6 @@ public class SysOperationLog implements Serializable {
      */
     @Column(name = "end_time" )
     @ApiModelProperty(notes = "结束时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+08:00")
     private LocalDateTime endTime;
 
     /**

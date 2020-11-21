@@ -74,7 +74,6 @@ public class MessageNotification {
     @CreatedDate
     @Column(name = "create_time")
     @ApiModelProperty(notes = "创建时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+08:00")
     private LocalDateTime createTime;
 
     /**
@@ -82,7 +81,6 @@ public class MessageNotification {
      */
     @Column(name = "reading_time")
     @ApiModelProperty(notes = "阅读时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+08:00")
     private LocalDateTime readingTme;
 
     /**

@@ -1,28 +1,50 @@
-package cn.smallyoung.oa.base;
+package cn.smallyoung.oa.entity;
 
+/**
+ * @author smallyoung
+ * @data 2020/11/20
+ */
+
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.Column;
-import javax.persistence.EntityListeners;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
-/**
- * @author smallyoung
- * @date 2020/10/25
- */
 @Getter
 @Setter
-@MappedSuperclass
+@Entity
+@ApiModel("用户对象")
+@Table(name = "t_document_approval_comment")
 @EntityListeners({AuditingEntityListener.class})
-public class BaseEntity {
+public class DocumentApprovalComment {
+
+    /**
+     * 主键ID
+     */
+    @Id
+    @Column(name = "id")
+    @ApiModelProperty(notes = "主键ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    /**
+     * 审批留言
+     */
+    @Column(name = "message")
+    private String message;
+
+    /**
+     * 关联的审批
+     */
+    @ManyToOne
+    @JoinColumn(name = "document_approval_id")
+    private DocumentApproval documentApproval;
 
     @CreatedBy
     @Column(name = "creator")
@@ -33,16 +55,6 @@ public class BaseEntity {
     @Column(name = "create_time")
     @ApiModelProperty(notes = "创建时间")
     private LocalDateTime createTime;
-
-    @LastModifiedBy
-    @Column(name = "updater")
-    @ApiModelProperty(notes = "修改用户")
-    private String updater;
-
-    @LastModifiedDate
-    @Column(name = "update_time")
-    @ApiModelProperty(notes = "修改时间")
-    private LocalDateTime updateTime;
 
     /**
      * N正常，Y删除

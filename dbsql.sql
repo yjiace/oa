@@ -140,3 +140,64 @@ CREATE TABLE `t_vehicle_information`  (
 ALTER TABLE `oa`.`t_car_record`
   ADD FOREIGN KEY (`vehicle_id`) REFERENCES `oa`.`t_vehicle_information` (`id`),
   ADD FOREIGN KEY (`username`) REFERENCES `oa`.`t_sys_user` (`user_name`);
+
+CREATE TABLE `oa`.`t_document_approval`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `initiator_username` varchar(50) NOT NULL,
+  `status` varchar(20) NOT NULL,
+  `sort` int NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `create_time` datetime NOT NULL,
+  `update_time` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `oa`.`t_document_approval_node`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `document_approval_id` int NOT NULL,
+  `status` varchar(20) NOT NULL,
+  `sort` int NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `completed_time` datetime,
+  `update_time` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `oa`.`t_document_approval_comment`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `message` varchar(1024) NOT NULL,
+  `creator` varchar(50) NOT NULL,
+  `create_time` datetime NOT NULL,
+  `document_approval_id` int NOT NULL,
+  `is_delete` varchar(1) NOT NULL DEFAULT 'N',
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `oa`.`t_document_approval_file`  (
+  `document_approval` int NOT NULL,
+  `file_id` int NOT NULL
+);
+
+CREATE TABLE `oa`.`t_document_approval_log`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `document_approval_id` int NOT NULL,
+  `operation_id` int NOT NULL,
+  `operation` varchar(255) NOT NULL,
+  `operation_type` varchar(255) NOT NULL,
+  `create_time` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+ALTER TABLE `oa`.`t_document_approval_file`
+  ADD FOREIGN KEY (`document_approval`) REFERENCES `oa`.`t_document_approval` (`id`),
+  ADD FOREIGN KEY (`file_id`) REFERENCES `oa`.`t_attachment_file` (`id`);
+
+ALTER TABLE `oa`.`t_document_approval_node`
+  ADD FOREIGN KEY (`document_approval_id`) REFERENCES `oa`.`t_document_approval` (`id`);
+
+ALTER TABLE `oa`.`t_document_approval_comment`
+  ADD FOREIGN KEY (`document_approval_id`) REFERENCES `oa`.`t_document_approval` (`id`);
+
+ALTER TABLE `oa`.`t_document_approval_log`
+  ADD FOREIGN KEY (`document_approval_id`) REFERENCES `oa`.`t_document_approval` (`id`);

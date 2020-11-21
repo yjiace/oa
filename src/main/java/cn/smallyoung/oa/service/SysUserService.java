@@ -1,5 +1,6 @@
 package cn.smallyoung.oa.service;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.smallyoung.oa.base.BaseService;
 import cn.smallyoung.oa.dao.SysUserDao;
 import cn.smallyoung.oa.entity.SysUser;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author smallyoung
@@ -66,9 +68,24 @@ public class SysUserService extends BaseService<SysUser, String> implements User
         return jwtTokenUtil.generateToken(sysUser);
     }
 
-    public String currentlyLoggedInUser(){
-        UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getName();
+    /**
+     * 获取当前登录用户名
+     *
+     * @return 当前登录的用户名
+     */
+    public String currentlyLoggedInUser() {
+//        UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+//        return authentication.getName();
+        return "smallyoung";
+    }
+
+    /**
+     * 根据用户名批量查询用户
+     *
+     * @param usernames 用户名集合
+     */
+    public List<SysUser> findByUsernameIn(List<String> usernames) {
+        return CollUtil.isNotEmpty(usernames) ? sysUserDao.findByUsernameIn(usernames) : null;
     }
 
 

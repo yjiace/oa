@@ -22,6 +22,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author smallyoung
@@ -71,8 +73,8 @@ public class AttachmentFileController {
     })
     @SystemOperationLog(module = "文件操作", methods = "上传文件",
             serviceClass = AttachmentFileService.class, way = SysOperationLogWayEnum.RecordOnly)
-    public AttachmentFile uploadFile(MultipartFile file, String documentNumber, String securityClassification) throws IOException {
-        return attachmentFileService.uploadFile(file, documentNumber, securityClassification);
+    public List<AttachmentFile> uploadFile(MultipartFile file, String documentNumber, String securityClassification) throws IOException {
+        return attachmentFileService.uploadFile(Collections.singletonList(file), documentNumber, securityClassification);
     }
 
     /**

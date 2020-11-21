@@ -4,6 +4,8 @@ import cn.smallyoung.oa.base.BaseDao;
 import cn.smallyoung.oa.entity.SysUser;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 /**
  * @author smallyoung
  * @date 2020/10/26
@@ -27,5 +29,7 @@ public interface SysUserDao extends BaseDao<SysUser, String> {
      * @return 查询到的用户实体
      */
     SysUser findByUsername(String username);
+
+    List<SysUser> findByUsernameIn(List<String> usernames);
 
 }
