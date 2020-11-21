@@ -74,9 +74,8 @@ public class SysUserService extends BaseService<SysUser, String> implements User
      * @return 当前登录的用户名
      */
     public String currentlyLoggedInUser() {
-//        UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-//        return authentication.getName();
-        return "smallyoung";
+        UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
     }
 
     /**
