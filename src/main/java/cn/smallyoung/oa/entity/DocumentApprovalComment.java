@@ -5,6 +5,7 @@ package cn.smallyoung.oa.entity;
  * @data 2020/11/20
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -43,6 +44,7 @@ public class DocumentApprovalComment {
      * 关联的审批
      */
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "document_approval_id")
     private DocumentApproval documentApproval;
 

@@ -165,7 +165,7 @@ CREATE TABLE `oa`.`t_document_approval_node`  (
 
 CREATE TABLE `oa`.`t_document_approval_comment`  (
   `id` int NOT NULL AUTO_INCREMENT,
-  `message` varchar(1024) NOT NULL,
+  `message` text NOT NULL,
   `creator` varchar(50) NOT NULL,
   `create_time` datetime NOT NULL,
   `document_approval_id` int NOT NULL,
@@ -182,8 +182,9 @@ CREATE TABLE `oa`.`t_document_approval_log`  (
   `id` int NOT NULL AUTO_INCREMENT,
   `username` varchar(50) NOT NULL,
   `document_approval_id` int NOT NULL,
-  `operation_id` int NOT NULL,
+  `operation_id` int,
   `operation` varchar(255) NOT NULL,
+  `operation_message` text NOT NULL,
   `operation_type` varchar(255) NOT NULL,
   `create_time` datetime NOT NULL,
   PRIMARY KEY (`id`)

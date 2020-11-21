@@ -1,5 +1,6 @@
 package cn.smallyoung.oa.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,6 +45,7 @@ public class DocumentApprovalNode {
      * 关联的审批
      */
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "document_approval_id")
     private DocumentApproval documentApproval;
 

@@ -1,6 +1,6 @@
 package cn.smallyoung.oa.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -43,6 +43,7 @@ public class DocumentApprovalLog {
      * 关联的审批
      */
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "document_approval_id")
     private DocumentApproval documentApproval;
 
@@ -66,6 +67,13 @@ public class DocumentApprovalLog {
     @Column(name = "operation_type")
     @ApiModelProperty(notes = "操作类型，attachmentFile：附件，documentApprovalNode：节点，documentApprovalComments：评论")
     private String operationType;
+
+    /**
+     * 操作信息
+     */
+    @Column(name = "operation_message")
+    @ApiModelProperty(notes = "操作信息")
+    private String operationMessage;
 
     @CreatedDate
     @Column(name = "create_time")

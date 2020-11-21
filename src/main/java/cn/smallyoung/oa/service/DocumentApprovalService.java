@@ -60,7 +60,7 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
         }
         documentApproval.setStatus("Withdrawn");
         documentApproval.getDocumentApprovalLogs().add(documentApprovalLog(documentApproval, documentApproval.getId(),
-                DocumentApprovalLogOperation.withdrawal, DocumentApprovalLogOperationType.documentApproval));
+                DocumentApprovalLogOperation.withdrawal, DocumentApprovalLogOperationType.documentApproval, null));
         return documentApprovalDao.save(documentApproval);
     }
 
@@ -73,11 +73,19 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
         documentApproval.setSort(0);
         documentApproval.setInitiatorUsername(sysUserService.currentlyLoggedInUser());
         documentApproval.setStatus("Approval");
+
+        List<AttachmentFile> attachmentFiles = attachmentFileService.uploadFile(documentApprovalVO.getFile(),
+                documentApprovalVO.getDocumentNumber(), documentApprovalVO.getSecurityClassification());
+        if (CollUtil.isNotEmpty(attachmentFiles)) {
+            attachmentFiles.forEach(file -> documentApproval.getDocumentApprovalLogs().add(documentApprovalLog(documentApproval, file.getId(),
+                    DocumentApprovalLogOperation.add, DocumentApprovalLogOperationType.attachmentFile, null)));
+        }
         //上传的文件列表
-        documentApproval.setAttachmentFiles(attachmentFileService.uploadFile(documentApprovalVO.getFile(),
-                documentApprovalVO.getDocumentNumber(), documentApprovalVO.getSecurityClassification()));
+        documentApproval.setAttachmentFiles(attachmentFiles);
         //查询用户集合
         List<SysUser> userList = sysUserService.findByUsernameIn(documentApprovalVO.getUsername());
+        documentApproval.setUser(userList.get(0).getUsername());
+        documentApprovalDao.save(documentApproval);
         List<DocumentApprovalNode> nodes = new ArrayList<>();
         DocumentApprovalNode documentApprovalNode;
         for (int i = 0; i < userList.size(); i++) {
@@ -88,11 +96,9 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
             documentApprovalNode.setDocumentApproval(documentApproval);
             nodes.add(documentApprovalNode);
         }
-
         documentApproval.setDocumentApprovalNodes(nodes);
-        documentApproval.setUser(userList.get(0).getUsername());
         documentApproval.getDocumentApprovalLogs().add(documentApprovalLog(documentApproval, documentApproval.getId(),
-                DocumentApprovalLogOperation.add, DocumentApprovalLogOperationType.documentApproval));
+                DocumentApprovalLogOperation.add, DocumentApprovalLogOperationType.documentApproval, null));
         return documentApprovalDao.save(documentApproval);
     }
 
@@ -118,24 +124,25 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
             }
         }
         documentApproval.getDocumentApprovalLogs().add(documentApprovalLog(documentApproval, documentApproval.getId(),
-                DocumentApprovalLogOperation.agree, DocumentApprovalLogOperationType.documentApproval));
+                DocumentApprovalLogOperation.agree, DocumentApprovalLogOperationType.documentApproval, null));
         return documentApprovalDao.save(documentApproval);
     }
 
     /**
      * 重新审批（被拒绝）
      */
-    public DocumentApproval reApprove(DocumentApproval documentApproval){
+    public DocumentApproval reApprove(DocumentApproval documentApproval) {
         documentApproval.setStatus("Approval");
         documentApproval.getDocumentApprovalNodes().forEach(node -> {
-            if(documentApproval.getUser().equals(node.getUser())){
+            if (documentApproval.getUser().equals(node.getUser())) {
                 node.setStatus("Approval");
             }
         });
         documentApproval.getDocumentApprovalLogs().add(documentApprovalLog(documentApproval, documentApproval.getId(),
-                DocumentApprovalLogOperation.reApprove, DocumentApprovalLogOperationType.documentApproval));
+                DocumentApprovalLogOperation.reApprove, DocumentApprovalLogOperationType.documentApproval, null));
         return documentApprovalDao.save(documentApproval);
     }
+
     /**
      * 拒绝审批
      */
@@ -155,29 +162,33 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
             }
         }
         documentApproval.getDocumentApprovalLogs().add(documentApprovalLog(documentApproval, documentApproval.getId(),
-                DocumentApprovalLogOperation.rejected, DocumentApprovalLogOperationType.documentApproval));
+                DocumentApprovalLogOperation.rejected, DocumentApprovalLogOperationType.documentApproval, null));
         return documentApprovalDao.save(documentApproval);
     }
 
-    public DocumentApprovalLog documentApprovalLog(DocumentApproval documentApproval, Long operationId,
-                                                    DocumentApprovalLogOperation operation, DocumentApprovalLogOperationType operationType) {
+    public DocumentApprovalLog documentApprovalLog(DocumentApproval documentApproval, Long operationId, DocumentApprovalLogOperation operation,
+                                                   DocumentApprovalLogOperationType operationType, String message) {
         DocumentApprovalLog log = new DocumentApprovalLog();
         log.setUsername(sysUserService.currentlyLoggedInUser());
         log.setOperation(operation.name());
         log.setOperationId(operationId);
         log.setDocumentApproval(documentApproval);
         log.setOperationType(operationType.name());
+        log.setOperationMessage(message);
         return log;
     }
 
-    public DocumentApproval addComment(DocumentApproval documentApproval, String message){
+    /**
+     * 添加评论
+     */
+    public DocumentApproval addComment(DocumentApproval documentApproval, String message) {
         DocumentApprovalComment comment = new DocumentApprovalComment();
         comment.setDocumentApproval(documentApproval);
         comment.setIsDelete("N");
         comment.setMessage(message);
         documentApproval.getDocumentApprovalComments().add(comment);
         documentApproval.getDocumentApprovalLogs().add(documentApprovalLog(documentApproval, documentApproval.getId(),
-                DocumentApprovalLogOperation.add, DocumentApprovalLogOperationType.documentApprovalComments));
+                DocumentApprovalLogOperation.add, DocumentApprovalLogOperationType.documentApprovalComments, message));
         return documentApprovalDao.save(documentApproval);
     }
 
@@ -185,17 +196,9 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
 
 enum DocumentApprovalLogOperation {
     /**
-     * 删除
-     */
-    del,
-    /**
      * 增加
      */
     add,
-    /**
-     * 撤销
-     */
-    revoke,
     /**
      * 重新审批
      */
@@ -211,7 +214,7 @@ enum DocumentApprovalLogOperation {
     /**
      * 同意审批
      */
-    agree;
+    agree
 }
 
 enum DocumentApprovalLogOperationType {
@@ -226,7 +229,7 @@ enum DocumentApprovalLogOperationType {
     /**
      * 评论
      */
-    documentApprovalComments;
+    documentApprovalComments
 }
 
 

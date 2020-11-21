@@ -5,6 +5,8 @@ server:
       force: true
   port: 8081
 spring:
+  resources:
+    static-locations: file:upload/
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     password: 123456
