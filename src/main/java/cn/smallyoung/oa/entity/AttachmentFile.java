@@ -33,13 +33,6 @@ public class AttachmentFile extends BaseEntity implements Serializable {
     private Long id;
 
     /**
-     * 原文件名
-     */
-    @Column(name = "name" )
-    @ApiModelProperty(notes = "原文件名")
-    private String name;
-
-    /**
      * 系统文件名
      */
     @Column(name = "file_name" )

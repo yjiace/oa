@@ -57,7 +57,6 @@ public class AttachmentFileService extends BaseService<AttachmentFile, Long> {
                 //保存文件基础信息到数据库
                 attachmentFile = new AttachmentFile();
                 attachmentFile.setUrl(url);
-                attachmentFile.setName(multipartFile.getName());
                 attachmentFile.setFileName(fileName);
                 attachmentFile.setSize(multipartFile.getSize());
                 attachmentFile.setMd5(DigestUtil.md5Hex(file));

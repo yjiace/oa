@@ -105,7 +105,7 @@ public class AttachmentFileController {
         OutputStream outputStream;
         response.setCharacterEncoding("utf-8");
         response.setContentType("multipart/form-data");
-        response.setHeader("Content-Disposition", "attachment;fileName=" + attachmentFile.getName() + ".xlsx");
+        response.setHeader("Content-Disposition", "attachment;filename=" + attachmentFile.getFileName());
         File file = new File(attachmentFile.getUrl());
         if (!file.exists()) {
             String error = String.format("根据路径【%s】,没有找到文件", attachmentFile.getUrl());

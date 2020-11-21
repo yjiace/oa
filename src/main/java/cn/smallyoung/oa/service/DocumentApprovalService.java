@@ -110,17 +110,22 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
         String username = sysUserService.currentlyLoggedInUser();
         List<DocumentApprovalNode> nodes = documentApproval.getDocumentApprovalNodes();
         DocumentApprovalNode node;
+        boolean needNextUserApproval = false;
         for (int i = 0, size = nodes.size(); i < size; i++) {
             node = nodes.get(i);
-            if (node.getUser().equals(username)) {
-                node.setStatus("Completed");
+            if(needNextUserApproval){
+                node.setStatus("Approval");
                 documentApproval.setUser(node.getUser());
+                break;
+            }else if (node.getUser().equals(username)) {
+                node.setStatus("Completed");
                 node.setCompletedTime(LocalDateTime.now());
                 //最后的审批者
                 if (i == (size - 1)) {
                     documentApproval.setStatus("Completed");
+                }else{
+                    needNextUserApproval = true;
                 }
-                break;
             }
         }
         documentApproval.getDocumentApprovalLogs().add(documentApprovalLog(documentApproval, documentApproval.getId(),
@@ -131,6 +136,7 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
     /**
      * 重新审批（被拒绝）
      */
+    @Transactional(rollbackFor = Exception.class)
     public DocumentApproval reApprove(DocumentApproval documentApproval) {
         documentApproval.setStatus("Approval");
         documentApproval.getDocumentApprovalNodes().forEach(node -> {
@@ -181,6 +187,7 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
     /**
      * 添加评论
      */
+    @Transactional(rollbackFor = Exception.class)
     public DocumentApproval addComment(DocumentApproval documentApproval, String message) {
         DocumentApprovalComment comment = new DocumentApprovalComment();
         comment.setDocumentApproval(documentApproval);

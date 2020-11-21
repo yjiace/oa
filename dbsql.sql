@@ -83,7 +83,6 @@ CREATE TABLE `oa`.`t_sys_operation_log` (
 
 CREATE TABLE `oa`.`t_attachment_file`  (
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NULL,
   `file_name` varchar(255) NULL,
   `md5` varchar(255) NULL,
   `size` int NULL,

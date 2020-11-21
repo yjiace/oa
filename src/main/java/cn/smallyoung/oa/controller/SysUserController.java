@@ -16,9 +16,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,6 +26,7 @@ import org.springframework.web.util.WebUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -51,6 +50,23 @@ public class SysUserController {
     @Resource
     private BCryptPasswordEncoder passwordEncoder;
 
+    @GetMapping(value = "findAllUserNames")
+    @ApiOperation(value = "查询所有用户名（无权限，审批选择）")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", value = "页码", dataType = "Integer"),
+            @ApiImplicitParam(name = "limit", value = "页数", dataType = "Integer")
+    })
+    public Page<String> findAllUserNames(@RequestParam(defaultValue = "1") Integer page, HttpServletRequest request,
+                                          @RequestParam(defaultValue = "10") Integer limit){
+        Map<String, Object> map = WebUtils.getParametersStartingWith(request, "search_");
+        map.put("AND_EQ_isDelete", "N");
+        map.put("AND_EQ_status", "Y");
+        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, "updateTime"));
+        Page<SysUser> sysUserPage = sysUserService.findAll(map, pageable);
+        List<String> userNames = sysUserPage.getContent().stream().map(SysUser::getUsername).collect(Collectors.toList());
+        return new PageImpl<>(userNames, pageable, sysUserPage.getTotalElements());
+    }
+
     /**
      * 分页查询所有
      *
@@ -66,7 +82,10 @@ public class SysUserController {
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_FIND')")
     public Page<SysUser> findAll(@RequestParam(defaultValue = "1") Integer page,
                                  HttpServletRequest request, @RequestParam(defaultValue = "10") Integer limit) {
-        return sysUserService.findAll(WebUtils.getParametersStartingWith(request, "search_"),
+        Map<String, Object> map = WebUtils.getParametersStartingWith(request, "search_");
+        map.put("AND_EQ_isDelete", "N");
+        map.put("AND_EQ_status", "Y");
+        return sysUserService.findAll(map,
                 PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, "updateTime")));
     }
 
