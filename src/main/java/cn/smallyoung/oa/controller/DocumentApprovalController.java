@@ -115,6 +115,12 @@ public class DocumentApprovalController {
             log.error(error);
             throw new RuntimeException(error);
         }
+        String username = sysUserService.currentlyLoggedInUser();
+        if(!documentApproval.getUser().equals(username)){
+            String error = String.format("您【%s】当前不可对本次文件审批【%s】进行操作", username, id);
+            log.error(error);
+            throw new RuntimeException(error);
+        }
         return completed.equals(operation) ? documentApprovalService.completedApproval(checkDocumentApproval(id))
                 : documentApprovalService.rejectedApproval(documentApproval);
     }

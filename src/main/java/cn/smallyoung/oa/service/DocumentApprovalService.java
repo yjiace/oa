@@ -155,7 +155,7 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
                 } else {
                     needNextUserApproval = true;
                     messageNotificationService.releaseMessage(documentApproval.getInitiatorUsername(), "completedApproval",
-                            username + "已经同意您提交的文件审批");
+                             String.format("【%s】已经同意您提交的文件审批", username));
                 }
                 messageNotificationService.releaseMessage(node.getUser(), "rejectedApproval",
                         String.format("您同意了用户【%s】提交的文件审批", documentApproval.getInitiatorUsername()));
