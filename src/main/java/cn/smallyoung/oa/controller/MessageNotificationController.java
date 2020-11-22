@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.WebUtils;
 
 import javax.annotation.Resource;
-import javax.security.auth.message.AuthException;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -39,6 +38,14 @@ public class MessageNotificationController {
     @Resource
     private MessageNotificationService messageNotificationService;
 
+    /**
+     * 查询未读信息总数
+     */
+    @GetMapping(value = "findMessageCount")
+    @ApiOperation(value = "查询未读信息总数")
+    public Long findMessageCount(){
+        return messageNotificationService.unreadCount(sysUserService.currentlyLoggedInUser());
+    }
     /**
      * 分页查询所有
      *
@@ -89,7 +96,7 @@ public class MessageNotificationController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "主键ID", dataType = "Long")
     })
-    public void deleteMessageNotification(Long id) throws AuthException {
+    public void deleteMessageNotification(Long id) {
         MessageNotification messageNotification = checkAuth(id);
         messageNotification.setIsDelete("Y");
         messageNotificationService.save(messageNotification);
@@ -106,11 +113,20 @@ public class MessageNotificationController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "主键ID", dataType = "Long")
     })
-    public MessageNotification readingMessageNotification(Long id) throws AuthException {
+    public MessageNotification readingMessageNotification(Long id) {
         MessageNotification messageNotification = checkAuth(id);
         messageNotification.setStatus("Read");
         messageNotification.setReadingTme(LocalDateTime.now());
         return messageNotificationService.save(messageNotification);
+    }
+
+    /**
+     * 一键标记已读
+     */
+    @PostMapping(value = "markReadWithOneClick")
+    @ApiOperation(value = "一键标记已读")
+    public void markReadWithOneClick(){
+        messageNotificationService.markReadWithOneClick();
     }
 
     private MessageNotification checkAuth(Long id) {

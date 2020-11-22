@@ -1,9 +1,9 @@
 package cn.smallyoung.oa.service;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.smallyoung.oa.base.BaseService;
 import cn.smallyoung.oa.dao.MessageNotificationDao;
 import cn.smallyoung.oa.entity.MessageNotification;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,12 +32,11 @@ public class MessageNotificationService extends BaseService<MessageNotification,
      * @param username 接受者的用户名
      * @param source   消息的来源
      * @param content  消息内容
-     * @return 保存后的消息实体对象
      */
+    @Async
     @Transactional(rollbackFor = Exception.class)
-    public MessageNotification releaseMessage(String username, String source, String content) {
-        List<MessageNotification> messageNotifications = this.releaseMessage(Collections.singletonList(username), source, content);
-        return CollUtil.isNotEmpty(messageNotifications) ? messageNotifications.get(0) : null;
+    public void releaseMessage(String username, String source, String content) {
+        this.releaseMessage(Collections.singletonList(username), source, content);
     }
 
     /**
@@ -46,10 +45,9 @@ public class MessageNotificationService extends BaseService<MessageNotification,
      * @param usernameList 接受者的用户名集合
      * @param source       消息的来源
      * @param content      消息内容
-     * @return 保存后的消息实体对象
      */
     @Transactional(rollbackFor = Exception.class)
-    public List<MessageNotification> releaseMessage(List<String> usernameList, String source, String content) {
+    public void releaseMessage(List<String> usernameList, String source, String content) {
         String currentlyLoggedInUser = sysUserService.currentlyLoggedInUser();
         List<MessageNotification> messageNotifications = new ArrayList<>();
         MessageNotification messageNotification;
@@ -63,11 +61,18 @@ public class MessageNotificationService extends BaseService<MessageNotification,
             messageNotification.setInitiatorUsername(currentlyLoggedInUser);
             messageNotifications.add(messageNotification);
         }
-        return messageNotificationDao.saveAll(messageNotifications);
+        messageNotificationDao.saveAll(messageNotifications);
     }
 
-
-    public Long unreadCount(String username){
+    /**
+     * 查询未读信息总数
+     */
+    public Long unreadCount(String username) {
         return messageNotificationDao.countByRecipientUsername(username);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void markReadWithOneClick(){
+        messageNotificationDao.markReadWithOneClick(sysUserService.currentlyLoggedInUser());
     }
 }

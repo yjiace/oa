@@ -64,6 +64,8 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
         documentApproval.setStatus("Withdrawn");
         documentApproval.getDocumentApprovalLogs().add(documentApprovalLog(documentApproval, documentApproval.getId(),
                 DocumentApprovalLogOperation.withdrawal, DocumentApprovalLogOperationType.documentApproval, null));
+        messageNotificationService.releaseMessage(documentApproval.getInitiatorUsername(), "withdrawalOfApproval",
+                "已经成功撤销您提交的文件审批");
         return documentApprovalDao.save(documentApproval);
     }
 
@@ -110,6 +112,8 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
         documentApproval.setDocumentApprovalNodes(nodes);
         documentApproval.getDocumentApprovalLogs().add(documentApprovalLog(documentApproval, documentApproval.getId(),
                 DocumentApprovalLogOperation.add, DocumentApprovalLogOperationType.documentApproval, null));
+        messageNotificationService.releaseMessage(documentApproval.getInitiatorUsername(), "submitForApproval",
+                "您提交的文件审批已进入审批流程");
         return documentApprovalDao.save(documentApproval);
     }
 
@@ -136,6 +140,8 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
                     break;
                 }else if(i == (size - 1)){
                     documentApproval.setStatus("Completed");
+                    messageNotificationService.releaseMessage(documentApproval.getInitiatorUsername(), "completedApproval",
+                            "您提交的文件审批已经审核通过");
                 }
                 node.setStatus("NotStarted");
             } else if (node.getUser().equals(username)) {
@@ -144,9 +150,15 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
                 //最后的审批者
                 if (i == (size - 1)) {
                     documentApproval.setStatus("Completed");
+                    messageNotificationService.releaseMessage(documentApproval.getInitiatorUsername(), "completedApproval",
+                            "您提交的文件审批已经审核通过");
                 } else {
                     needNextUserApproval = true;
+                    messageNotificationService.releaseMessage(documentApproval.getInitiatorUsername(), "completedApproval",
+                            username + "已经同意您提交的文件审批");
                 }
+                messageNotificationService.releaseMessage(node.getUser(), "rejectedApproval",
+                        String.format("您同意了用户【%s】提交的文件审批", documentApproval.getInitiatorUsername()));
             }
         }
         documentApproval.getDocumentApprovalLogs().add(documentApprovalLog(documentApproval, documentApproval.getId(),
@@ -167,6 +179,7 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
         });
         documentApproval.getDocumentApprovalLogs().add(documentApprovalLog(documentApproval, documentApproval.getId(),
                 DocumentApprovalLogOperation.reApprove, DocumentApprovalLogOperationType.documentApproval, null));
+        messageNotificationService.releaseMessage(documentApproval.getInitiatorUsername(), "reApprove", "您提交的文件审批已重新进入审批流程");
         return documentApprovalDao.save(documentApproval);
     }
 
@@ -185,11 +198,14 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
                 documentApproval.setUser(node.getUser());
                 node.setCompletedTime(LocalDateTime.now());
                 documentApproval.setStatus("Rejected");
+                messageNotificationService.releaseMessage(node.getUser(), "rejectedApproval",
+                        String.format("您已经拒绝用户【%s】提交的文件审批", documentApproval.getInitiatorUsername()));
                 break;
             }
         }
         documentApproval.getDocumentApprovalLogs().add(documentApprovalLog(documentApproval, documentApproval.getId(),
                 DocumentApprovalLogOperation.rejected, DocumentApprovalLogOperationType.documentApproval, null));
+        messageNotificationService.releaseMessage(documentApproval.getInitiatorUsername(), "rejectedApproval", "您提交的文件审批未通过审核。");
         return documentApprovalDao.save(documentApproval);
     }
 
@@ -233,6 +249,7 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
         documentApproval.getDocumentApprovalComments().add(comment);
         documentApproval.getDocumentApprovalLogs().add(documentApprovalLog(documentApproval, documentApproval.getId(),
                 DocumentApprovalLogOperation.add, DocumentApprovalLogOperationType.documentApprovalComments, message));
+        messageNotificationService.releaseMessage(documentApproval.getInitiatorUsername(), "addComment", "您提交的文件审批有了新的评论。");
         return documentApprovalDao.save(documentApproval);
     }
 
