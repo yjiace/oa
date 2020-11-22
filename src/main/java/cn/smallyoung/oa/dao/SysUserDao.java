@@ -30,6 +30,6 @@ public interface SysUserDao extends BaseDao<SysUser, String> {
      */
     SysUser findByUsername(String username);
 
-    List<SysUser> findByUsernameIn(List<String> usernames);
+    List<SysUser> findByUsernameInAndStatusAndIsDelete(List<String> usernames, String status, String isDelete);
 
 }

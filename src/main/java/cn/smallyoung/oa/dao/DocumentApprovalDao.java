@@ -12,9 +12,15 @@ import java.util.List;
  */
 public interface DocumentApprovalDao extends BaseDao<DocumentApproval, Long> {
 
-    @Query(value = "SELECT count(a.id) FROM t_document_approval a INNER JOIN t_document_approval_node n on n.username = ?1 ", nativeQuery = true)
+    @Query(value = "SELECT count(a.id) FROM t_document_approval a where a.initiator_username = ?1 and a.status = 'Approval' ", nativeQuery = true)
+    long checkUserHaveApproval(String username);
+
+    @Query(value = "SELECT count(a.id) FROM t_document_approval a INNER JOIN t_document_approval_node n on n.document_approval_id = a.id where n.username = ?1 and n.status = 'Approval' ", nativeQuery = true)
+    long checkUserNeedApproval(String username);
+
+    @Query(value = "SELECT count(a.id) FROM t_document_approval a INNER JOIN t_document_approval_node n on n.document_approval_id = a.id where n.username = ?1 ", nativeQuery = true)
     long countApprovalRequired(String username);
 
-    @Query(value = "SELECT a.* FROM t_document_approval a INNER JOIN t_document_approval_node n on n.username = ?1 ORDER BY a.sort ", nativeQuery = true)
-    List<DocumentApproval> findAllApprovalRequired(String username);
+    @Query(value = "SELECT a.* FROM t_document_approval a INNER JOIN t_document_approval_node n on n.document_approval_id = a.id where n.username = ?1 ORDER BY a.sort limit ?2 offset ?3 ", nativeQuery = true)
+    List<DocumentApproval> findAllApprovalRequired(String username, Integer page, Integer limit);
 }

@@ -84,7 +84,7 @@ public class SysUserService extends BaseService<SysUser, String> implements User
      * @param usernames 用户名集合
      */
     public List<SysUser> findByUsernameIn(List<String> usernames) {
-        return CollUtil.isNotEmpty(usernames) ? sysUserDao.findByUsernameIn(usernames) : null;
+        return CollUtil.isNotEmpty(usernames) ? sysUserDao.findByUsernameInAndStatusAndIsDelete(usernames, "Y", "N") : null;
     }
 
 

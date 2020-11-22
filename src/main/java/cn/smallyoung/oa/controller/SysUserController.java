@@ -7,6 +7,7 @@ import cn.smallyoung.oa.entity.SysRole;
 import cn.smallyoung.oa.entity.SysUser;
 import cn.smallyoung.oa.interfaces.ResponseResultBody;
 import cn.smallyoung.oa.interfaces.SystemOperationLog;
+import cn.smallyoung.oa.service.DocumentApprovalService;
 import cn.smallyoung.oa.service.SysRoleService;
 import cn.smallyoung.oa.service.SysUserService;
 import cn.smallyoung.oa.vo.SysUserVO;
@@ -49,6 +50,8 @@ public class SysUserController {
     private SysUserService sysUserService;
     @Resource
     private BCryptPasswordEncoder passwordEncoder;
+    @Resource
+    private DocumentApprovalService documentApprovalService;
 
     @GetMapping(value = "findAllUserNames")
     @ApiOperation(value = "查询所有用户名（无权限，审批选择）")
@@ -197,6 +200,7 @@ public class SysUserController {
             log.error(error);
             throw new RuntimeException(error);
         }
+        documentApprovalService.checkUserHaveApproval(user);
         user.setStatus(status);
         return sysUserService.save(user);
     }
@@ -264,6 +268,7 @@ public class SysUserController {
             queryMethod = "findByUsername", parameterType = "String", parameterKey = "username")
     public SysUser deleteUser(String username) {
         SysUser user = checkUser(username);
+        documentApprovalService.checkUserHaveApproval(user);
         user.setIsDelete("Y");
         return sysUserService.save(user);
     }

@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author smallyoung
@@ -31,6 +32,8 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
     private DocumentApprovalDao documentApprovalDao;
     @Resource
     private AttachmentFileService attachmentFileService;
+    @Resource
+    private MessageNotificationService messageNotificationService;
 
     /**
      * 查询需要我审批的文件审批
@@ -45,7 +48,7 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
         if (count <= 0) {
             return new PageImpl<>(new ArrayList<>(), pageable, 0);
         }
-        List<DocumentApproval> documentApprovals = documentApprovalDao.findAllApprovalRequired(username);
+        List<DocumentApproval> documentApprovals = documentApprovalDao.findAllApprovalRequired(username, limit, (page - 1) * limit);
         return new PageImpl<>(documentApprovals, pageable, count);
     }
 
@@ -69,6 +72,16 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
      */
     @Transactional(rollbackFor = Exception.class)
     public DocumentApproval submitForApproval(DocumentApprovalVO documentApprovalVO) {
+        List<String> usernameList = documentApprovalVO.getUsername().stream().distinct().collect(Collectors.toList());
+        //查询用户集合
+        List<SysUser> userList = sysUserService.findByUsernameIn(usernameList);
+        if(usernameList.size() != userList.size()){
+            List<String> checkUser = userList.stream().map(SysUser::getUsername).collect(Collectors.toList());
+            String error = String.format("用户【%s】为无效用户", usernameList.stream()
+                    .filter(s -> !checkUser.contains(s)).collect(Collectors.joining(",")));
+            log.error(error);
+            throw new RuntimeException(error);
+        }
         DocumentApproval documentApproval = new DocumentApproval();
         documentApproval.setSort(0);
         documentApproval.setInitiatorUsername(sysUserService.currentlyLoggedInUser());
@@ -82,16 +95,14 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
         }
         //上传的文件列表
         documentApproval.setAttachmentFiles(attachmentFiles);
-        //查询用户集合
-        List<SysUser> userList = sysUserService.findByUsernameIn(documentApprovalVO.getUsername());
-        documentApproval.setUser(userList.get(0).getUsername());
+        documentApproval.setUser(usernameList.get(0));
         documentApprovalDao.save(documentApproval);
         List<DocumentApprovalNode> nodes = new ArrayList<>();
         DocumentApprovalNode documentApprovalNode;
-        for (int i = 0; i < userList.size(); i++) {
+        for (int i = 0; i < usernameList.size(); i++) {
             documentApprovalNode = new DocumentApprovalNode();
             documentApprovalNode.setStatus(i == 0 ? "Approval" : "NotStarted");
-            documentApprovalNode.setUser(userList.get(i).getUsername());
+            documentApprovalNode.setUser(usernameList.get(i));
             documentApprovalNode.setSort(i);
             documentApprovalNode.setDocumentApproval(documentApproval);
             nodes.add(documentApprovalNode);
@@ -110,20 +121,30 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
         String username = sysUserService.currentlyLoggedInUser();
         List<DocumentApprovalNode> nodes = documentApproval.getDocumentApprovalNodes();
         DocumentApprovalNode node;
+        String userName;
+        SysUser user;
         boolean needNextUserApproval = false;
         for (int i = 0, size = nodes.size(); i < size; i++) {
             node = nodes.get(i);
-            if(needNextUserApproval){
-                node.setStatus("Approval");
-                documentApproval.setUser(node.getUser());
-                break;
-            }else if (node.getUser().equals(username)) {
+            if (needNextUserApproval) {
+                //校验审批用户
+                userName = node.getUser();
+                user = sysUserService.findOne(userName);
+                if(user != null && "Y".equals(user.getStatus()) && "N".equals(user.getIsDelete())){
+                    documentApproval.setUser(userName);
+                    node.setStatus("Approval");
+                    break;
+                }else if(i == (size - 1)){
+                    documentApproval.setStatus("Completed");
+                }
+                node.setStatus("NotStarted");
+            } else if (node.getUser().equals(username)) {
                 node.setStatus("Completed");
                 node.setCompletedTime(LocalDateTime.now());
                 //最后的审批者
                 if (i == (size - 1)) {
                     documentApproval.setStatus("Completed");
-                }else{
+                } else {
                     needNextUserApproval = true;
                 }
             }
@@ -170,6 +191,22 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
         documentApproval.getDocumentApprovalLogs().add(documentApprovalLog(documentApproval, documentApproval.getId(),
                 DocumentApprovalLogOperation.rejected, DocumentApprovalLogOperationType.documentApproval, null));
         return documentApprovalDao.save(documentApproval);
+    }
+
+    /**
+     * 检查用户是否有正在进行中的审批
+     */
+    public void checkUserHaveApproval(SysUser user){
+        if(documentApprovalDao.checkUserHaveApproval(user.getUsername()) > 0){
+            String error = String.format("当前用户[%s]有正在进行中的审批，请先结束审批", user.getUsername());
+            log.error(error);
+            throw new RuntimeException(error);
+        }else if(documentApprovalDao.checkUserNeedApproval(user.getUsername()) > 0){
+            String error = String.format("当前用户[%s]有需要审批的文件，请先审批完成", user.getUsername());
+            log.error(error);
+            throw new RuntimeException(error);
+        }
+
     }
 
     public DocumentApprovalLog documentApprovalLog(DocumentApproval documentApproval, Long operationId, DocumentApprovalLogOperation operation,
