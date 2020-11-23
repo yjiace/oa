@@ -35,6 +35,11 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
     @Resource
     private MessageNotificationService messageNotificationService;
 
+    @Override
+    public DocumentApproval findOne(Long id){
+        return super.findOne(id);
+    }
+
     /**
      * 查询需要我审批的文件审批
      *

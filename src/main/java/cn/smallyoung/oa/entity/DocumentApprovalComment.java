@@ -5,6 +5,7 @@ package cn.smallyoung.oa.entity;
  * @data 2020/11/20
  */
 
+import cn.hutool.core.annotation.PropIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -45,6 +46,7 @@ public class DocumentApprovalComment {
      */
     @ManyToOne
     @JsonIgnore
+    @PropIgnore
     @JoinColumn(name = "document_approval_id")
     private DocumentApproval documentApproval;
 

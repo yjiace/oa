@@ -147,7 +147,7 @@ public class SysUserController {
     }
 
     /**
-     * 更新用户
+     * 编辑用户
      *
      */
     @PostMapping(value = "update")

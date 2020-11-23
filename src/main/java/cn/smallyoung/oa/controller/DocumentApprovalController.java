@@ -2,7 +2,9 @@ package cn.smallyoung.oa.controller;
 
 import cn.hutool.core.util.StrUtil;
 import cn.smallyoung.oa.entity.DocumentApproval;
+import cn.smallyoung.oa.entity.SysOperationLogWayEnum;
 import cn.smallyoung.oa.interfaces.ResponseResultBody;
+import cn.smallyoung.oa.interfaces.SystemOperationLog;
 import cn.smallyoung.oa.service.DocumentApprovalService;
 import cn.smallyoung.oa.service.SysUserService;
 import cn.smallyoung.oa.vo.DocumentApprovalVO;
@@ -98,6 +100,8 @@ public class DocumentApprovalController {
             @ApiImplicitParam(name = "id", value = "审批的主键ID", dataType = "Long"),
             @ApiImplicitParam(name = "operation", value = "操作，Completed：同意、Rejected：拒绝", dataType = "String")
     })
+    @SystemOperationLog(module = "文件审批", methods = "操作审批", serviceClass = DocumentApprovalService.class,
+            queryMethod = "findOne", parameterType = "Long", parameterKey = "id")
     public DocumentApproval operationApproval(Long id, String operation) {
         if (id == null || StrUtil.isBlank(operation)) {
             throw new NullPointerException("参数错误");
@@ -135,6 +139,8 @@ public class DocumentApprovalController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "审批的主键ID", dataType = "Long")
     })
+    @SystemOperationLog(module = "文件审批", methods = "重新审批", serviceClass = DocumentApprovalService.class,
+            queryMethod = "findOne", parameterType = "Long", parameterKey = "id")
     public DocumentApproval reApprove(Long id) {
         DocumentApproval documentApproval = checkDocumentApproval(id);
         String rejected = "Rejected";
@@ -157,6 +163,8 @@ public class DocumentApprovalController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "审批的主键ID", dataType = "Long")
     })
+    @SystemOperationLog(module = "文件审批", methods = "撤回审批", serviceClass = DocumentApprovalService.class,
+            queryMethod = "findOne", parameterType = "Long", parameterKey = "id")
     public DocumentApproval withdrawalOfApproval(Long id) {
         return documentApprovalService.withdrawalOfApproval(checkDocumentApproval(id));
     }
@@ -166,6 +174,8 @@ public class DocumentApprovalController {
      */
     @PostMapping("submitForApproval")
     @ApiOperation(value = "提交审批")
+    @SystemOperationLog(module = "文件审批", methods = "撤回审批",
+            serviceClass = DocumentApprovalService.class, way = SysOperationLogWayEnum.RecordTheAfter)
     public DocumentApproval submitForApproval(DocumentApprovalVO documentApprovalVO) {
         return documentApprovalService.submitForApproval(documentApprovalVO);
     }
@@ -178,12 +188,15 @@ public class DocumentApprovalController {
      */
     @PostMapping("addComment")
     @ApiOperation(value = "添加评论")
+    @SystemOperationLog(module = "文件审批", methods = "添加评论", serviceClass = DocumentApprovalService.class,
+            queryMethod = "findOne", parameterType = "Long", parameterKey = "id")
     public DocumentApproval addComment(Long id, String message) {
         if (StrUtil.isBlank(message)) {
             throw new NullPointerException("参数错误");
         }
         return documentApprovalService.addComment(checkDocumentApproval(id), message);
     }
+
 
     private DocumentApproval checkDocumentApproval(Long id) {
         if (id == null) {
