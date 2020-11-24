@@ -57,17 +57,17 @@ public class DocumentApprovalLog {
     private Long operationId;
 
     /**
-     * 执行的操作，del：删除，add：增加，revoke：撤销，reApprove：重新审批，withdrawal：撤回审批，agree：同意审批
+     * 执行的操作，add：增加，reApprove：重新审批，rejected：拒绝审批，withdrawal：撤回审批，agree：同意审批
      */
     @Column(name = "operation")
-    @ApiModelProperty(notes = "执行的操作，del：删除，add：增加，revoke：撤销，reApprove：重新审批，withdrawal：撤回审批，agree：同意审批")
+    @ApiModelProperty(notes = "执行的操作，add：增加，reApprove：重新审批，rejected：拒绝审批，withdrawal：撤回审批，agree：同意审批")
     private String operation;
 
     /**
-     * 操作类型，attachmentFile：附件，documentApprovalNode：节点，documentApprovalComments：评论
+     * 操作类型，attachmentFile：附件，documentApproval：审批，documentApprovalComments：评论
      */
     @Column(name = "operation_type")
-    @ApiModelProperty(notes = "操作类型，attachmentFile：附件，documentApprovalNode：节点，documentApprovalComments：评论")
+    @ApiModelProperty(notes = "操作类型，attachmentFile：附件，documentApproval：审批，documentApprovalComments：评论")
     private String operationType;
 
     /**
