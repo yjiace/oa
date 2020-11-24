@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@ApiModel("用户对象")
+@ApiModel("文件审批评论")
 @Table(name = "t_document_approval_comment")
 @EntityListeners({AuditingEntityListener.class})
 public class DocumentApprovalComment {

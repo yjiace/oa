@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@ApiModel("文件审批")
+@ApiModel("文件审批日志")
 @Table(name = "t_document_approval_log")
 @EntityListeners({AuditingEntityListener.class})
 public class DocumentApprovalLog {
