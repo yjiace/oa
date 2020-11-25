@@ -1,0 +1,115 @@
+<title>人员管理</title>
+
+<div class="layui-card layadmin-header">
+  <div class="layui-breadcrumb" lay-filter="breadcrumb">
+    <a lay-href="">主页</a>
+    <a><cite>车辆</cite></a>
+    <a><cite>车辆列表</cite></a>
+  </div>
+</div>
+
+<div class="layui-fluid">
+  <div class="layui-card">
+    <div
+      class="layui-form layui-card-header layuiadmin-card-header-auto"
+      lay-filter="layadmin-useradmin-formlist"
+    >
+      <div class="layui-form-item">
+        <div class="layui-inline">
+          <label class="layui-form-label">车牌号</label>
+          <div class="layui-input-block">
+            <input
+              type="text"
+              name="loginname"
+              placeholder="请输入"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+        </div>
+        <div class="layui-inline">
+          <label class="layui-form-label">手机</label>
+          <div class="layui-input-block">
+            <input
+              type="text"
+              name="telphone"
+              placeholder="请输入"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+        </div>
+        <!-- <div class="layui-inline">
+          <label class="layui-form-label">角色</label>
+          <div class="layui-input-block">
+            <select name="role">
+              <option value="0">管理员</option>
+              <option value="1">超级管理员</option>
+              <option value="2">纠错员</option>
+              <option value="3">采购员</option>
+              <option value="4">推销员</option>
+              <option value="5">运营人员</option>
+              <option value="6">编辑</option>
+            </select>
+          </div>
+        </div> -->
+        <div class="layui-inline">
+          <button
+            class="layui-btn layuiadmin-btn-admin"
+            lay-submit
+            lay-filter="LAY-user-back-search"
+          >
+            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- <div class="layui-card-body">
+      <div style="padding-bottom: 10px">
+        <button class="layui-btn layuiadmin-btn-admin" data-type="delCar">
+          删除
+        </button>
+        <button class="layui-btn layuiadmin-btn-admin" data-type="addCar">
+          添加
+        </button>
+      </div>
+    </div> -->
+    <div class="layui-card-body">
+      <table
+        id="car_list_apply_table"
+        lay-filter="car_list_apply_table"
+      ></table>
+    </div>
+  </div>
+</div>
+
+<script>
+  layui
+    .use('carApply', layui.factory('carApply'))
+    .use(['admin', 'table'], function () {
+      var table = layui.table
+    })
+</script>
+<script type="text/html" id="buttonTpl">
+  {{# if(d.top == true){ }}
+  <button class="layui-btn layui-btn-xs">已置顶</button>
+  {{# } else { }}
+  <button class="layui-btn layui-btn-primary layui-btn-xs">正常显示</button>
+  {{# } }}
+</script>
+<script type="text/html" id="car_list_apply_table_edit">
+  {{# if(d.status === 'NotInUse'){ }}
+  <button lay-event="apply" class="layui-btn layui-btn-normal layui-btn-xs">
+    申请用车
+  </button>
+   {{# } else { }}
+  <button
+    disabled
+    lay-event="apply"
+    class="layui-btn layui-btn-disabled layui-btn-xs"
+  >
+    已使用
+  </button>
+   {{# } }}
+</script>

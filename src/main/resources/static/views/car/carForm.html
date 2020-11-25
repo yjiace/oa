@@ -1,0 +1,112 @@
+<div
+  class="layui-form"
+  lay-filter="layuiadmin-form-admin"
+  style="padding: 20px 30px 0 0"
+>
+  <div class="layui-form-item">
+    <label class="layui-form-label">车牌号</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input
+          type="text"
+          name="plateNumber"
+          value="{{ d.params.plateNumber || '' }}"
+          lay-verify="required"
+          placeholder="请输入车牌号"
+          autocomplete="off"
+          class="layui-input"
+        />
+      </script>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">车辆名称</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input
+          type="text"
+          name="name"
+          value="{{ d.params.name || '' }}"
+          lay-verify="required"
+          placeholder="请输入单位"
+          autocomplete="off"
+          class="layui-input"
+        />
+      </script>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">车辆型号</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input
+          type="text"
+          name="model"
+          value="{{ d.params.model || '' }}"
+          placeholder="请输入车辆型号"
+          autocomplete="off"
+          class="layui-input"
+        />
+      </script>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">车辆编号</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input
+          type="text"
+          name="number"
+          value="{{ d.params.number || '' }}"
+          placeholder="请输入邮箱"
+          autocomplete="off"
+          class="layui-input"
+        />
+      </script>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">单位</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input
+          type="text"
+          name="company"
+          value="{{ d.params.company || '' }}"
+          placeholder="请输入邮箱"
+          autocomplete="off"
+          class="layui-input"
+        />
+      </script>
+    </div>
+  </div>
+  <!-- <div class="layui-form-item">
+    <label class="layui-form-label">车辆状态</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input type="checkbox" lay-filter="switch" name="switch" {{ d.params.check ? 'checked' : '' }} lay-skin="switch" lay-text="启用|禁用">
+      </script>
+    </div>
+  </div> -->
+  <div class="layui-form-item">
+    <label class="layui-form-label"></label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input
+          type="button"
+          lay-submit
+          lay-filter="LAY-user-back-submit"
+          value="{{d.params.noEdit ? '申请用车' : '确认'}}"
+          class="layui-btn"
+        />
+      </script>
+    </div>
+  </div>
+</div>
+
+<script>
+  layui.use(['admin', 'form'], function () {
+    var $ = layui.$,
+      form = layui.form
+  })
+</script>

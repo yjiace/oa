@@ -1,0 +1,157 @@
+<div
+  class="layui-form"
+  lay-filter="layuiadmin-form-admin"
+  style="padding: 20px 30px 0 0"
+>
+  <div class="layui-form-item">
+    <label class="layui-form-label">登录名</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input
+          type="text"
+          name="username"
+          value="{{ d.params.username || '' }}"
+          lay-verify="required"
+          placeholder="请输入用户名"
+          autocomplete="off"
+          class="layui-input"
+        />
+      </script>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">真实姓名</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input
+          type="text"
+          name="name"
+          value="{{ d.params.name || '' }}"
+          lay-verify="required"
+          placeholder="请输入用户名"
+          autocomplete="off"
+          class="layui-input"
+        />
+      </script>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">电话</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input
+          type="text"
+          name="mobile"
+          value="{{ d.params.mobile || '' }}"
+          lay-verify="phone"
+          placeholder="请输入号码"
+          autocomplete="off"
+          class="layui-input"
+        />
+      </script>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">手机号</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input
+          type="text"
+          name="phone"
+          value="{{ d.params.phone || '' }}"
+          placeholder="请输入邮箱"
+          autocomplete="off"
+          class="layui-input"
+        />
+      </script>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">单位</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input
+          type="text"
+          name="company"
+          value="{{ d.params.company || '' }}"
+          placeholder="请输入邮箱"
+          autocomplete="off"
+          class="layui-input"
+        />
+      </script>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">部门</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input
+          type="text"
+          name="department"
+          value="{{ d.params.department || '' }}"
+          placeholder="请输入邮箱"
+          autocomplete="off"
+          class="layui-input"
+        />
+      </script>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">科室</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input
+          type="text"
+          name="section"
+          value="{{ d.params.section || '' }}"
+          placeholder="请输入邮箱"
+          autocomplete="off"
+          class="layui-input"
+        />
+      </script>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">职位</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <select name="position">
+          <option value="0" {{ d.params.position === '管理员' ? 'selected' : '' }}>管理员</option>
+          <option value="1" {{ d.params.position === '超级管理员' ? 'selected' : '' }}>超级管理员</option>
+          <option value="2" {{ d.params.position === '纠错员' ? 'selected' : '' }}>纠错员</option>
+          <option value="3" {{ d.params.position === '采购员' ? 'selected' : '' }}>采购员</option>
+          <option value="4" {{ d.params.position === '推销员' ? 'selected' : '' }}>推销员</option>
+          <option value="5" {{ d.params.position === '运营人员' ? 'selected' : '' }}>运营人员</option>
+          <option value="6" {{ d.params.position === '编辑' ? 'selected' : '' }}>编辑</option>
+        </select>
+      </script>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">账号状态</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input type="checkbox" lay-filter="switch" name="switch" {{ d.params.check ? 'checked' : '' }} lay-skin="switch" lay-text="启用|禁用">
+      </script>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label"></label>
+    <div class="layui-input-inline">
+      <input
+        type="button"
+        lay-submit
+        lay-filter="LAY-user-back-submit"
+        value="确认"
+        class="layui-btn"
+      />
+    </div>
+  </div>
+</div>
+
+<script>
+  layui.use(['admin', 'form'], function () {
+    var $ = layui.$,
+      form = layui.form
+  })
+</script>

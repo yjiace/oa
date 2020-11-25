@@ -1,0 +1,55 @@
+<title>消息详情</title>
+
+<div class="layui-card layadmin-header">
+  <div class="layui-breadcrumb" lay-filter="breadcrumb">
+    <a lay-href="">主页</a>
+    <a lay-href="app/message/">消息中心</a>
+    <a><cite>详情</cite></a>
+  </div>
+</div>
+
+<div class="layui-fluid" id="LAY-app-message-detail">
+  <script type="text/html" id="detail_msg">
+    <div class="layui-card layuiAdmin-msg-detail">
+      <div class="layui-card-header">
+        <p>
+          <span>{{ layui.util.timeAgo(d.data.time) }}</span>
+          <span>来自于我</span>
+        </p>
+      </div>
+      <div class="layui-card-body layui-text">
+        <div class="layadmin-text">{{ d.data.content }}</div>
+
+        <div style="padding-top: 30px">
+          <a
+            lay-href="app/message/"
+            class="layui-btn layui-btn-primary layui-btn-sm"
+            >返回上级</a
+          >
+        </div>
+      </div>
+    </div>
+  </script>
+  <div class="detail_msg_view"></div>
+</div>
+
+<script>
+  layui.use(['admin', 'laytpl'], function () {
+    var $ = layui.$,
+      admin = layui.admin,
+      table = layui.table,
+      element = layui.element,
+      laytpl = layui.laytpl
+    var router = layui.router()
+    var search = router.search
+    admin.req({
+      url: '/message/notification/findYourOwnMessageNotification',
+      data: {
+        search_AND_EQ_id: search.id,
+      },
+      done: function (res) {
+        console.log(res)
+      },
+    })
+  })
+</script>
