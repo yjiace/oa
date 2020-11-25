@@ -10,6 +10,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -22,7 +23,9 @@ import java.time.LocalDateTime;
 @ApiModel("文件审批日志")
 @Table(name = "t_document_approval_log")
 @EntityListeners({AuditingEntityListener.class})
-public class DocumentApprovalLog {
+public class DocumentApprovalLog implements Serializable {
+
+    private static final long serialVersionUID = 1480392011564184578L;
 
     /**
      * 主键ID

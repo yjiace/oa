@@ -16,6 +16,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
@@ -24,7 +25,9 @@ import java.time.LocalDateTime;
 @ApiModel("文件审批评论")
 @Table(name = "t_document_approval_comment")
 @EntityListeners({AuditingEntityListener.class})
-public class DocumentApprovalComment {
+public class DocumentApprovalComment implements Serializable {
+
+    private static final long serialVersionUID = 4136706221635382248L;
 
     /**
      * 主键ID

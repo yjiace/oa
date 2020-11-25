@@ -1,6 +1,5 @@
 package cn.smallyoung.oa.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -9,6 +8,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -22,7 +22,9 @@ import java.time.LocalDateTime;
 @ApiModel("消息通知")
 @Table(name = "t_message_notification")
 @EntityListeners({AuditingEntityListener.class})
-public class MessageNotification {
+public class MessageNotification implements Serializable {
+
+    private static final long serialVersionUID = 3133450187488906036L;
 
     /**
      * 主键ID

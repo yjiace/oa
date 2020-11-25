@@ -21,7 +21,7 @@ public abstract class BaseService<T, ID extends Serializable> {
     public BaseDao<T, ID> baseDao;
 
     public T findOne(ID id) {
-        return baseDao.getOne(id);
+        return baseDao.findById(id).orElse(null);
     }
 
     public Optional<T> findById(ID id) {
