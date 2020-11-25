@@ -96,8 +96,8 @@ public class SysOperationLogAspect {
                     systemOperationLog.queryMethod(), value, MAP_TO_FUNCTION.get(systemOperationLog.parameterType()));
             if (newObject != null) {
                 sysOperationLog.setAfterData(new JSONObject(newObject).toString());
+                sysOperationLog.setContent(updateContent(oldMap, newObject));
             }
-            sysOperationLog.setContent(updateContent(oldMap, newObject));
         }
         sysOperationLog.setEndTime(LocalDateTime.now());
         sysOperationLog.setResultStatus("SUCCESS");

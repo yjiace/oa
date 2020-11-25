@@ -174,8 +174,8 @@ public class DocumentApprovalController {
      */
     @PostMapping("submitForApproval")
     @ApiOperation(value = "提交审批")
-    @SystemOperationLog(module = "文件审批", methods = "撤回审批",
-            serviceClass = DocumentApprovalService.class, way = SysOperationLogWayEnum.RecordTheAfter)
+    @SystemOperationLog(module = "文件审批", methods = "提交审批",
+            serviceClass = DocumentApprovalService.class, way = SysOperationLogWayEnum.RecordOnly)
     public DocumentApproval submitForApproval(DocumentApprovalVO documentApprovalVO) {
         return documentApprovalService.submitForApproval(documentApprovalVO);
     }
