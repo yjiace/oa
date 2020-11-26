@@ -68,10 +68,11 @@ public class VehicleInformation extends BaseEntity implements Serializable {
     private String model;
 
     /**
-     * 状态，NotInUse：未使用，NotLeaving：未离场，NotReturned：未归还
+     * 当前车辆审批审批
      */
-    @Column(name = "status" )
-    @ApiModelProperty(notes = "状态，NotInUse：未使用，NotLeaving：未离场，NotReturned：未归还")
-    private String status;
+    @OneToOne
+    @JoinColumn(name = "current_car_record_id" )
+    @ApiModelProperty(notes = "当前车辆审批审批")
+    private CarRecord currentCarRecord;
 
 }

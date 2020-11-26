@@ -71,6 +71,9 @@
                 <div class="layui-timeline-content layui-text">
                   {{# if(item.name){ }}
                   <p>{{item.name}}</p>
+                  {{# if(item.comment){ }}
+                  <p>{{item.comment}}</p>
+                  {{# } }}
                   <button data-type="{{index}}" class="layui-btn layui-btn-xs applyList_edit">修改</button>
                   <button data-type="{{index}}" class="layui-btn layui-btn-xs layui-btn-danger applyList_del">
                     删除

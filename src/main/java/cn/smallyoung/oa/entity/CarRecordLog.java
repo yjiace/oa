@@ -18,16 +18,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
 @Entity
-@ApiModel("用车申请记录")
-@Table(name = "t_car_record")
+@ApiModel("用车记录日志")
+@Table(name = "t_car_record_log")
 @EntityListeners({AuditingEntityListener.class})
-public class CarRecord implements Serializable {
+public class CarRecordLog implements Serializable {
 
     private static final long serialVersionUID = 8917972524655762908L;
 
@@ -41,24 +39,14 @@ public class CarRecord implements Serializable {
     private Long id;
 
     /**
-     * 车辆信息
+     * 申请记录
      */
-    @JsonIgnore
     @PropIgnore
-    @JoinColumn(name = "vehicle_id")
+    @JsonIgnore
+    @JoinColumn(name = "car_record_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    @ApiModelProperty(notes = "车辆信息")
-    private VehicleInformation vehicleInformation;
-
-    /**
-     * 状态，NotInUse：未使用，NotLeaving：未离场，NotReturned：未归还
-     */
-    @Column(name = "status" )
-    @ApiModelProperty(notes = "状态，NotInUse：未使用，NotLeaving：未离场，NotReturned：未归还")
-    private String status;
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "carRecord", fetch = FetchType.LAZY)
-    private List<CarRecordLog> carRecordLogs = new ArrayList<>();
+    @ApiModelProperty(notes = "申请记录")
+    private CarRecord carRecord;
 
     /**
      * 操作人
@@ -69,11 +57,12 @@ public class CarRecord implements Serializable {
     private String username;
 
     /**
-     * 目的地
+     * 类型
      */
-    @Column(name = "destination" )
-    @ApiModelProperty(notes = "目的地")
-    private String  destination;
+    @Column(name = "type" )
+    @ApiModelProperty(notes = "类型")
+    private String type;
+
 
     /**
      * 备注
@@ -82,6 +71,9 @@ public class CarRecord implements Serializable {
     @ApiModelProperty(notes = "备注")
     private String remarks;
 
+    /**
+     * 创建时间
+     */
     @CreatedDate
     @Column(name = "create_time")
     @ApiModelProperty(notes = "创建时间")

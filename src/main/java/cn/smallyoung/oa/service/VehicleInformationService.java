@@ -5,6 +5,7 @@ import cn.smallyoung.oa.base.specification.SimpleSpecificationBuilder;
 import cn.smallyoung.oa.dao.CarRecordDao;
 import cn.smallyoung.oa.dao.VehicleInformationDao;
 import cn.smallyoung.oa.entity.CarRecord;
+import cn.smallyoung.oa.entity.CarRecordLog;
 import cn.smallyoung.oa.entity.VehicleInformation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -76,17 +77,43 @@ public class VehicleInformationService extends BaseService<VehicleInformation, L
 
     @Transactional(rollbackFor = Exception.class)
     public CarRecord createVehicleRecord(VehicleInformation vehicleInformation, String remarks, String operation) {
+        int index = VEHICLE_INFORMATION_OPERATION.indexOf(operation);
+        CarRecord carRecord;
+        //申请用车
+        if(index == 0 && vehicleInformation.getCurrentCarRecord() == null){
+            carRecord = new CarRecord();
+            carRecord.setStatus(VEHICLE_INFORMATION_STATUS.get(index));
+            carRecord.setRemarks(remarks);
+            carRecord.setUsername(sysUserService.currentlyLoggedInUser());
+            carRecord.setVehicleInformation(vehicleInformation);
+            carRecordDao.save(carRecord);
+        }else if(vehicleInformation.getCurrentCarRecord() != null){
+            carRecord = vehicleInformation.getCurrentCarRecord();
+        }else{
+            carRecord = new CarRecord();
+            carRecord.setStatus(VEHICLE_INFORMATION_STATUS.get(0));
+        }
         //校验状态
-        checkStatus(vehicleInformation.getName(), vehicleInformation.getStatus(), operation);
-        vehicleInformation.setStatus(VEHICLE_INFORMATION_STATUS.get(VEHICLE_INFORMATION_OPERATION.indexOf(operation) + 1));
-        CarRecord carRecord = new CarRecord();
-        carRecord.setUsername(sysUserService.currentlyLoggedInUser());
-        carRecord.setType(operation);
-        carRecord.setVehicleInformation(vehicleInformation);
-        carRecord.setRemarks(remarks);
+        checkStatus(vehicleInformation.getName(), carRecord.getStatus(), operation);
+        //保存数据
+        CarRecordLog carRecordLog = new CarRecordLog();
+        carRecordLog.setCarRecord(carRecord);
+        carRecordLog.setRemarks(remarks);
+        carRecordLog.setType(operation);
+        carRecordLog.setUsername(sysUserService.currentlyLoggedInUser());
+        carRecord.getCarRecordLogs().add(carRecordLog);
+        carRecord.setStatus(VEHICLE_INFORMATION_STATUS.get(index + 1));
+        carRecordDao.save(carRecord);
+        if(index == 2){
+            //归还车辆
+            vehicleInformation.setCurrentCarRecord(null);
+        }else{
+            vehicleInformation.setCurrentCarRecord(carRecord);
+        }
         vehicleInformationDao.save(vehicleInformation);
-        return carRecordDao.save(carRecord);
+        return carRecord;
     }
+
 
     /**
      * 校验当前车辆状态是否允许相对于的操作

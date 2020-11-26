@@ -149,7 +149,5 @@ public class AttachmentFileController {
         attachmentFileService.save(attachmentFile);
     }
 
-    //todo 文件审批
-
     //todo 操作日志
 }

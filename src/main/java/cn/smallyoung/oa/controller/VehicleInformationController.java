@@ -84,7 +84,6 @@ public class VehicleInformationController {
     public VehicleInformation save(VehicleInformationVO vehicleInformationVO) {
         VehicleInformation vehicleInformation = new VehicleInformation();
         BeanUtil.copyProperties(vehicleInformationVO, vehicleInformation);
-        vehicleInformation.setStatus("NotInUse");
         vehicleInformation.setIsDelete("N");
         return vehicleInformationService.save(vehicleInformation);
     }
@@ -126,8 +125,6 @@ public class VehicleInformationController {
             @ApiImplicitParam(name = "operation", value = "操作 ReviewCar：申请用车；VehicleDeparture：车辆离场；ReturnVehicle：归还车辆", dataType = "String")
     })
     @PreAuthorize("hasRole('ROLE_VEHICLE') or hasRole('ROLE_VEHICLE_RECORD')")
-    @SystemOperationLog(module = "车辆管理", methods = "车辆记录", serviceClass = VehicleInformationService.class,
-            queryMethod = "findOne", parameterType = "Long", parameterKey = "id")
     public CarRecord createVehicleRecord(Long id, String remarks, String operation) {
         if (id == null || !VehicleInformationService.VEHICLE_INFORMATION_OPERATION.contains(operation)) {
             throw new NullPointerException("参数错误");

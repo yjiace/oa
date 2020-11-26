@@ -110,13 +110,24 @@ CREATE TABLE `oa`.`t_message_notification`  (
   PRIMARY KEY (`id`)
 );
 
+CREATE TABLE `t_car_record_log`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `car_record_id` int NOT NULL,
+  `username` varchar(255) NULL,
+  `type` varchar(20) NULL,
+  `create_time` datetime NULL,
+  `remarks` varchar(1024) NULL,
+  PRIMARY KEY (`id`)
+);
+
 CREATE TABLE `t_car_record`  (
   `id` int NOT NULL AUTO_INCREMENT,
   `vehicle_id` int NOT NULL,
+  `status` varchar(20) NULL COMMENT '状态，NotInUse：未使用，NotLeaving：未离场，NotReturned：未归还',
   `create_time` datetime NULL,
   `username` varchar(255) NULL,
-  `type` varchar(255) NULL,
-  `remarks` varchar(255) NULL,
+  `destination` varchar(255) NULL COMMENT '目的地',
+  `remarks` varchar(1024) NULL,
   PRIMARY KEY (`id`)
 );
 
@@ -127,8 +138,8 @@ CREATE TABLE `t_vehicle_information`  (
   `plate_number` varchar(10) NULL COMMENT '车牌号',
   `company` varchar(10) NULL COMMENT '所属单位',
   `model` varchar(10) NULL COMMENT '车辆型号',
-  `status` varchar(20) NULL COMMENT '状态，NotInUse：未使用，NotLeaving：未离场，NotReturned：未归还',
   `creator` varchar(50) NOT NULL,
+  `current_car_record_id` int NULL,
   `create_time` datetime NOT NULL,
   `updater` varchar(50) NOT NULL,
   `update_time` datetime NOT NULL,
@@ -137,8 +148,13 @@ CREATE TABLE `t_vehicle_information`  (
 );
 
 ALTER TABLE `oa`.`t_car_record`
-  ADD FOREIGN KEY (`vehicle_id`) REFERENCES `oa`.`t_vehicle_information` (`id`),
-  ADD FOREIGN KEY (`username`) REFERENCES `oa`.`t_sys_user` (`user_name`);
+  ADD FOREIGN KEY (`vehicle_id`) REFERENCES `oa`.`t_vehicle_information` (`id`);
+
+ALTER TABLE `oa`.`t_vehicle_information`
+  ADD FOREIGN KEY (`current_car_record_id`) REFERENCES `oa`.`t_car_record` (`id`);
+
+ALTER TABLE `oa`.`t_car_record_log`
+  ADD FOREIGN KEY (`car_record_id`) REFERENCES `oa`.`t_car_record` (`id`);
 
 CREATE TABLE `oa`.`t_document_approval`  (
   `id` int NOT NULL AUTO_INCREMENT,
