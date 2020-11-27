@@ -139,6 +139,7 @@ public class SysUserController {
             throw new RuntimeException(error);
         }
         SysUser user = new SysUser();
+        BeanUtil.copyProperties(sysUserVO, user);
         user.setUsername(sysUserVO.getUsername());
         user.setStatus("Y");
         user.setIsDelete("N");

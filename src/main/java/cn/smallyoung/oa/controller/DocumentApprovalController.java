@@ -55,7 +55,9 @@ public class DocumentApprovalController {
                                           HttpServletRequest request, @RequestParam(defaultValue = "10") Integer limit) {
         Map<String, Object> map = WebUtils.getParametersStartingWith(request, "search_");
         map.put("AND_EQ_initiatorUsername", sysUserService.currentlyLoggedInUser());
-        return documentApprovalService.findAll(map, PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.ASC, "sort")));
+        //todo 排序
+        return documentApprovalService.findAll(map, PageRequest.of(page - 1, limit,
+                Sort.by(Sort.Direction.DESC, "updateTime")));
     }
 
     /**
