@@ -11,8 +11,8 @@
 <div class="layui-fluid">
   <div class="layui-card">
     <div
-      class="layui-form layui-card-header layuiadmin-card-header-auto"
-      lay-filter="layadmin-useradmin-formlist"
+      class="layui-form layui-card-header layuiadmin-card-header-auto searh_bar"
+      lay-filter="carList_search_form"
     >
       <div class="layui-form-item">
         <div class="layui-inline">
@@ -20,61 +20,34 @@
           <div class="layui-input-block">
             <input
               type="text"
-              name="loginname"
+              name="plateNumber"
               placeholder="请输入"
               autocomplete="off"
               class="layui-input"
             />
           </div>
         </div>
-        <div class="layui-inline">
-          <label class="layui-form-label">手机</label>
-          <div class="layui-input-block">
-            <input
-              type="text"
-              name="telphone"
-              placeholder="请输入"
-              autocomplete="off"
-              class="layui-input"
-            />
-          </div>
-        </div>
-        <!-- <div class="layui-inline">
-          <label class="layui-form-label">角色</label>
-          <div class="layui-input-block">
-            <select name="role">
-              <option value="0">管理员</option>
-              <option value="1">超级管理员</option>
-              <option value="2">纠错员</option>
-              <option value="3">采购员</option>
-              <option value="4">推销员</option>
-              <option value="5">运营人员</option>
-              <option value="6">编辑</option>
-            </select>
-          </div>
-        </div> -->
         <div class="layui-inline">
           <button
             class="layui-btn layuiadmin-btn-admin"
             lay-submit
-            lay-filter="LAY-user-back-search"
+            lay-filter="carList_search_form"
           >
             <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+          </button>
+        </div>
+        <div class="layui-inline">
+          <button class="layui-btn layuiadmin-btn-admin" data-type="delCar">
+            删除
+          </button>
+          <button class="layui-btn layuiadmin-btn-admin" data-type="addCar">
+            添加
           </button>
         </div>
       </div>
     </div>
 
-    <div class="layui-card-body">
-      <div style="padding-bottom: 10px">
-        <button class="layui-btn layuiadmin-btn-admin" data-type="delCar">
-          删除
-        </button>
-        <button class="layui-btn layuiadmin-btn-admin" data-type="addCar">
-          添加
-        </button>
-      </div>
-    </div>
+    <div class="layui-card-body"></div>
     <div class="layui-card-body">
       <table id="car_list_table" lay-filter="car_list_table"></table>
     </div>
@@ -86,26 +59,35 @@
     var table = layui.table
   })
 </script>
+<!-- 表格状态列 -->
 <script type="text/html" id="buttonTpl">
-  {{# if(d.status === 'NotLeaving'){ }}
+  {{# if(d.currentCarRecord && d.currentCarRecord.status === 'NotLeaving'){ }}
   <button class="layui-btn layui-btn-xs">未离场</button>
-  {{# } else if (d.status === 'NotInUse'){ }}
-  <button class="layui-btn layui-btn-primary layui-btn-xs">未使用</button>
-  {{# } else if (d.status === 'NotReturned'){ }}
-  <button class="layui-btn layui-btn-primary layui-btn-xs">未归还</button>
+  {{# } else if ( !d.currentCarRecord ){ }}
+  <button class="layui-btn layui-btn-normal layui-btn-xs">未使用</button>
+  {{# } else if (d.currentCarRecord && d.currentCarRecord.status ===
+  'NotReturned'){ }}
+  <button class="layui-btn layui-btn-warm layui-btn-xs">未归还</button>
   {{#}}}
 </script>
+<!-- 表格工具栏 -->
 <script type="text/html" id="car_list_table_edit">
-  <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"
-    ><i class="layui-icon layui-icon-edit"></i>编辑</a
-  >
-  {{# if(d.role == '超级管理员'){ }}
-  <a class="layui-btn layui-btn-disabled layui-btn-xs"
-    ><i class="layui-icon layui-icon-delete"></i>删除</a
-  >
-  {{# } else { }}
+  {{# if (d.status !== 'NotInUse'){ }}
+  <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="log">记录</a>
+  {{# } }}
+  <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>
   <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"
     ><i class="layui-icon layui-icon-delete"></i>删除</a
   >
-  {{# } }}
+</script>
+<!-- 记录弹窗内容模版 -->
+<script type="text/html" id="car_list_log_open">
+  <div class="layui-input-block" style="margin-left:0">
+    <textarea
+      name="desc"
+      id="car_text_opener"
+      placeholder="请输入备注"
+      class="layui-textarea"
+    ></textarea>
+  </div>
 </script>

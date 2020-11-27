@@ -11,7 +11,7 @@
 <div class="layui-fluid">
   <div class="layui-card">
     <div
-      class="layui-form layui-card-header layuiadmin-card-header-auto"
+      class="layui-form layui-card-header layuiadmin-card-header-auto searh_bar"
       lay-filter="layadmin-useradmin-formlist"
     >
       <div class="layui-form-item">
@@ -20,44 +20,18 @@
           <div class="layui-input-block">
             <input
               type="text"
-              name="loginname"
+              name="plateNumber"
               placeholder="请输入"
               autocomplete="off"
               class="layui-input"
             />
           </div>
         </div>
-        <div class="layui-inline">
-          <label class="layui-form-label">手机</label>
-          <div class="layui-input-block">
-            <input
-              type="text"
-              name="telphone"
-              placeholder="请输入"
-              autocomplete="off"
-              class="layui-input"
-            />
-          </div>
-        </div>
-        <!-- <div class="layui-inline">
-          <label class="layui-form-label">角色</label>
-          <div class="layui-input-block">
-            <select name="role">
-              <option value="0">管理员</option>
-              <option value="1">超级管理员</option>
-              <option value="2">纠错员</option>
-              <option value="3">采购员</option>
-              <option value="4">推销员</option>
-              <option value="5">运营人员</option>
-              <option value="6">编辑</option>
-            </select>
-          </div>
-        </div> -->
         <div class="layui-inline">
           <button
             class="layui-btn layuiadmin-btn-admin"
             lay-submit
-            lay-filter="LAY-user-back-search"
+            lay-filter="carList_search_form"
           >
             <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
           </button>
@@ -99,9 +73,17 @@
   {{# } }}
 </script>
 <script type="text/html" id="car_list_apply_table_edit">
-  {{# if(d.status === 'NotInUse'){ }}
+  {{# if( !d.currentCarRecord ){ }}
   <button lay-event="apply" class="layui-btn layui-btn-normal layui-btn-xs">
     申请用车
+  </button>
+  {{# } else if(d.currentCarRecord && d.currentCarRecord.username === 'smallyoung') { }}
+  <button
+    disabled
+    lay-event="apply"
+    class="layui-btn layui-btn-disabled layui-btn-xs"
+  >
+    已申请
   </button>
    {{# } else { }}
   <button

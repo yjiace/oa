@@ -229,7 +229,7 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
             String error = String.format("当前用户[%s]有正在进行中的审批，请先结束审批", user.getUsername());
             log.error(error);
             throw new RuntimeException(error);
-        }else if(documentApprovalDao.checkUserNeedApproval(user.getUsername()) > 0){
+        }else if(documentApprovalDao.countApprovalRequired(user.getUsername()) > 0){
             String error = String.format("当前用户[%s]有需要审批的文件，请先审批完成", user.getUsername());
             log.error(error);
             throw new RuntimeException(error);
