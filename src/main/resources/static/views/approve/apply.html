@@ -11,7 +11,7 @@
 <div class="layui-fluid">
   <div class="layui-card">
     <div
-      class="layui-form layui-card-header layuiadmin-card-header-auto"
+      class="layui-form layui-card-header layuiadmin-card-header-auto searh_bar"
       lay-filter="layadmin-useradmin-formlist"
     >
       <div class="layui-form-item">
@@ -50,20 +50,18 @@
             <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
           </button>
         </div>
+        <div class="layui-inline">
+          <button
+            class="layui-btn layuiadmin-btn-admin"
+            id="apply_btn"
+            data-type="apply"
+          >
+            发起审批
+          </button>
+        </div>
       </div>
     </div>
 
-    <div class="layui-card-body">
-      <div style="padding-bottom: 10px">
-        <button
-          class="layui-btn layuiadmin-btn-admin"
-          id="apply_btn"
-          data-type="apply"
-        >
-          发起审批
-        </button>
-      </div>
-    </div>
     <div class="layui-card-body">
       <table id="apply_list_table" lay-filter="apply_list_table"></table>
     </div>

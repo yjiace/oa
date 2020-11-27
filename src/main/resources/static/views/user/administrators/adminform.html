@@ -28,7 +28,7 @@
           name="name"
           value="{{ d.params.name || '' }}"
           lay-verify="required"
-          placeholder="请输入用户名"
+          placeholder="请输入真实姓名"
           autocomplete="off"
           class="layui-input"
         />
@@ -44,7 +44,7 @@
           name="mobile"
           value="{{ d.params.mobile || '' }}"
           lay-verify="phone"
-          placeholder="请输入号码"
+          placeholder="请输入电话号码"
           autocomplete="off"
           class="layui-input"
         />
@@ -59,7 +59,7 @@
           type="text"
           name="phone"
           value="{{ d.params.phone || '' }}"
-          placeholder="请输入邮箱"
+          placeholder="请输入手机号"
           autocomplete="off"
           class="layui-input"
         />
@@ -74,7 +74,7 @@
           type="text"
           name="company"
           value="{{ d.params.company || '' }}"
-          placeholder="请输入邮箱"
+          placeholder="请输入单位"
           autocomplete="off"
           class="layui-input"
         />
@@ -89,7 +89,7 @@
           type="text"
           name="department"
           value="{{ d.params.department || '' }}"
-          placeholder="请输入邮箱"
+          placeholder="请输入部门"
           autocomplete="off"
           class="layui-input"
         />
@@ -104,7 +104,7 @@
           type="text"
           name="section"
           value="{{ d.params.section || '' }}"
-          placeholder="请输入邮箱"
+          placeholder="请输入科室"
           autocomplete="off"
           class="layui-input"
         />
@@ -127,14 +127,14 @@
       </script>
     </div>
   </div>
-  <div class="layui-form-item">
+  <!-- <div class="layui-form-item">
     <label class="layui-form-label">账号状态</label>
     <div class="layui-input-inline">
       <script type="text/html" template>
         <input type="checkbox" lay-filter="switch" name="switch" {{ d.params.check ? 'checked' : '' }} lay-skin="switch" lay-text="启用|禁用">
       </script>
     </div>
-  </div>
+  </div> -->
   <div class="layui-form-item">
     <label class="layui-form-label"></label>
     <div class="layui-input-inline">
