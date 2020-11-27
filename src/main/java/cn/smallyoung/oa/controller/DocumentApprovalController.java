@@ -89,6 +89,17 @@ public class DocumentApprovalController {
     }
 
     /**
+     * 检查审批编号是否存在
+     * @param number  审批编号
+     */
+    @GetMapping("checkNumber")
+    @ApiOperation(value = "检查审批编号是否存在")
+    @ApiImplicitParam(name = "number", value = "审批编号", required = true, dataType = "String")
+    public boolean checkNumber(String number){
+        return documentApprovalService.checkNumber(number);
+    }
+
+    /**
      * 操作审批
      *
      * @param id        审批的主键ID
@@ -177,6 +188,11 @@ public class DocumentApprovalController {
     @SystemOperationLog(module = "文件审批", methods = "提交审批",
             serviceClass = DocumentApprovalService.class, way = SysOperationLogWayEnum.RecordOnly)
     public DocumentApproval submitForApproval(DocumentApprovalVO documentApprovalVO) {
+        if(!documentApprovalService.checkNumber(documentApprovalVO.getNumber())){
+            String error = String.format("当前审批编号[%s]重复", documentApprovalVO.getNumber());
+            log.error(error);
+            throw new RuntimeException(error);
+        }
         return documentApprovalService.submitForApproval(documentApprovalVO);
     }
 

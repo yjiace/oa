@@ -45,6 +45,27 @@ public class DocumentApproval implements Serializable {
     private String initiatorUsername;
 
     /**
+     * 标题
+     */
+    @Column(name = "title" )
+    @ApiModelProperty(notes = "标题")
+    private String title;
+
+    /**
+     * 备注
+     */
+    @Column(name = "remarks" )
+    @ApiModelProperty(notes = "备注")
+    private String remarks;
+
+    /**
+     * 编号
+     */
+    @Column(name = "number" )
+    @ApiModelProperty(notes = "编号")
+    private String number;
+
+    /**
      * 状态，Approval：审批中，Completed：已完成，Withdrawn：已撤回，Rejected：已拒绝
      */
     @Column(name = "status")

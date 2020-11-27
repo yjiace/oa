@@ -12,6 +12,8 @@ import java.util.List;
  */
 public interface DocumentApprovalDao extends BaseDao<DocumentApproval, Long> {
 
+    DocumentApproval findByNumber(String number);
+
     @Query(value = "SELECT count(a.id) FROM t_document_approval a where a.initiator_username = ?1 and a.status = 'Approval' ", nativeQuery = true)
     long checkUserHaveApproval(String username);
 

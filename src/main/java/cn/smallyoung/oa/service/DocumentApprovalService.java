@@ -1,6 +1,8 @@
 package cn.smallyoung.oa.service;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.smallyoung.oa.base.BaseService;
 import cn.smallyoung.oa.dao.DocumentApprovalDao;
 import cn.smallyoung.oa.entity.*;
@@ -34,6 +36,10 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
     private AttachmentFileService attachmentFileService;
     @Resource
     private MessageNotificationService messageNotificationService;
+
+    public boolean checkNumber(String number){
+        return StrUtil.isNotBlank(number) && documentApprovalDao.findByNumber(number) != null;
+    }
 
     @Override
     public DocumentApproval findOne(Long id){
@@ -90,6 +96,7 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
             throw new RuntimeException(error);
         }
         DocumentApproval documentApproval = new DocumentApproval();
+        BeanUtil.copyProperties(documentApprovalVO, documentApproval);
         documentApproval.setSort(0);
         documentApproval.setInitiatorUsername(sysUserService.currentlyLoggedInUser());
         documentApproval.setStatus("Approval");

@@ -38,4 +38,19 @@ public class DocumentApprovalVO implements Serializable {
      * 密级指定
      */
     private String securityClassification;
+
+    /**
+     * 标题
+     */
+    private String title;
+
+    /**
+     * 备注
+     */
+    private String remarks;
+
+    /**
+     * 编号
+     */
+    private String number;
 }

@@ -21,18 +21,6 @@ public class SysRoleService extends BaseService<SysRole, Long> {
     private SysRoleDao sysRoleDao;
 
     /**
-     * 根据ID修改角色状态
-     *
-     * @param id       需要修改的角色id
-     * @param isDelete 修改的删除字段标识
-     * @return 修改成功条数
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public Integer updateStatus(Long id, String isDelete) {
-        return sysRoleDao.updateStatus(id, isDelete);
-    }
-
-    /**
      * 根据id集合查询所有角色
      *
      * @param idList 角色id列表
