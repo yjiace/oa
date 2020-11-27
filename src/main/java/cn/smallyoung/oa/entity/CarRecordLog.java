@@ -6,6 +6,7 @@ package cn.smallyoung.oa.entity;
  */
 
 import cn.hutool.core.annotation.PropIgnore;
+import cn.smallyoung.oa.interfaces.DataName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -59,6 +60,7 @@ public class CarRecordLog implements Serializable {
     /**
      * 类型
      */
+    @DataName(name = "类型")
     @Column(name = "type" )
     @ApiModelProperty(notes = "类型")
     private String type;
@@ -67,6 +69,7 @@ public class CarRecordLog implements Serializable {
     /**
      * 备注
      */
+    @DataName(name = "备注")
     @Column(name = "remarks" )
     @ApiModelProperty(notes = "备注")
     private String remarks;

@@ -6,6 +6,7 @@ package cn.smallyoung.oa.entity;
  */
 
 import cn.hutool.core.annotation.PropIgnore;
+import cn.smallyoung.oa.interfaces.DataName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -45,6 +46,7 @@ public class CarRecord implements Serializable {
      */
     @JsonIgnore
     @PropIgnore
+    @DataName(name = "车辆信息")
     @JoinColumn(name = "vehicle_id")
     @ManyToOne(fetch = FetchType.LAZY)
     @ApiModelProperty(notes = "车辆信息")
@@ -54,6 +56,7 @@ public class CarRecord implements Serializable {
      * 状态，NotInUse：未使用，NotLeaving：未离场，NotReturned：未归还
      */
     @Column(name = "status" )
+    @DataName(name = "状态")
     @ApiModelProperty(notes = "状态，NotInUse：未使用，NotLeaving：未离场，NotReturned：未归还")
     private String status;
 
@@ -71,6 +74,7 @@ public class CarRecord implements Serializable {
     /**
      * 目的地
      */
+    @DataName(name = "目的地")
     @Column(name = "destination" )
     @ApiModelProperty(notes = "目的地")
     private String  destination;
@@ -78,6 +82,7 @@ public class CarRecord implements Serializable {
     /**
      * 备注
      */
+    @DataName(name = "备注")
     @Column(name = "remarks" )
     @ApiModelProperty(notes = "备注")
     private String remarks;

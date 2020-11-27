@@ -1,5 +1,6 @@
 package cn.smallyoung.oa.entity;
 
+import cn.smallyoung.oa.interfaces.DataName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -40,6 +41,7 @@ public class DocumentApproval implements Serializable {
     /**
      * 发起人用户名
      */
+    @DataName(name = "发起人用户名")
     @Column(name = "initiator_username" )
     @ApiModelProperty(notes = "发起人用户名")
     private String initiatorUsername;
@@ -47,6 +49,7 @@ public class DocumentApproval implements Serializable {
     /**
      * 标题
      */
+    @DataName(name = "标题")
     @Column(name = "title" )
     @ApiModelProperty(notes = "标题")
     private String title;
@@ -54,6 +57,7 @@ public class DocumentApproval implements Serializable {
     /**
      * 备注
      */
+    @DataName(name = "备注")
     @Column(name = "remarks" )
     @ApiModelProperty(notes = "备注")
     private String remarks;
@@ -61,6 +65,7 @@ public class DocumentApproval implements Serializable {
     /**
      * 编号
      */
+    @DataName(name = "编号")
     @Column(name = "number" )
     @ApiModelProperty(notes = "编号")
     private String number;
@@ -68,6 +73,7 @@ public class DocumentApproval implements Serializable {
     /**
      * 状态，Approval：审批中，Completed：已完成，Withdrawn：已撤回，Rejected：已拒绝
      */
+    @DataName(name = "状态")
     @Column(name = "status")
     @ApiModelProperty(notes = "状态，Approval：审批中，Completed：已完成，Withdrawn：已撤回，Rejected：已拒绝")
     private String status;
@@ -82,6 +88,7 @@ public class DocumentApproval implements Serializable {
     /**
      * 当前审批节点（谁在审批）
      */
+    @DataName(name = "当前审批节点")
     @Column(name = "username")
     @ApiModelProperty(notes = "当前审批节点（谁在审批）")
     private String user;

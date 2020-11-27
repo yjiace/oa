@@ -127,6 +127,16 @@ public class SysUserController {
     @PostMapping(value = "save")
     @ApiOperation(value = "新增用户")
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_SAVEANDUPDATE')")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "username", value = "用户名", dataType = "String"),
+            @ApiImplicitParam(name = "name", value = "姓名", dataType = "String"),
+            @ApiImplicitParam(name = "phone", value = "手机号", dataType = "String"),
+            @ApiImplicitParam(name = "mobile", value = "电话", dataType = "String"),
+            @ApiImplicitParam(name = "company", value = "单位", dataType = "String"),
+            @ApiImplicitParam(name = "section", value = "科室", dataType = "String"),
+            @ApiImplicitParam(name = "position", value = "职位", dataType = "String"),
+            @ApiImplicitParam(name = "department", value = "部门", dataType = "String"),
+    })
     @SystemOperationLog(module = "用户管理", methods = "新增用户", serviceClass = SysUserService.class, queryMethod = "findByUsername",
             parameterType = "String", parameterKey = "sysUserVO.username", way = SysOperationLogWayEnum.RecordTheAfter)
     public SysUser save(SysUserVO sysUserVO){
@@ -153,6 +163,16 @@ public class SysUserController {
      */
     @PostMapping(value = "update")
     @ApiOperation(value = "编辑用户")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "username", value = "用户名", dataType = "String"),
+            @ApiImplicitParam(name = "name", value = "姓名", dataType = "String"),
+            @ApiImplicitParam(name = "phone", value = "手机号", dataType = "String"),
+            @ApiImplicitParam(name = "mobile", value = "电话", dataType = "String"),
+            @ApiImplicitParam(name = "company", value = "单位", dataType = "String"),
+            @ApiImplicitParam(name = "section", value = "科室", dataType = "String"),
+            @ApiImplicitParam(name = "position", value = "职位", dataType = "String"),
+            @ApiImplicitParam(name = "department", value = "部门", dataType = "String"),
+    })
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_SAVEANDUPDATE') or authentication.principal.username.equals(#sysUserVO.username)")
     @SystemOperationLog(module = "用户管理", methods = "编辑用户", serviceClass = SysUserService.class,
             queryMethod = "findByUsername", parameterType = "String", parameterKey = "sysUserVO.username")

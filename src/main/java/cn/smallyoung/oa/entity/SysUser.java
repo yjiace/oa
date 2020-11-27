@@ -128,7 +128,7 @@ public class SysUser extends BaseEntity implements Serializable, UserDetails {
     @ApiModelProperty(hidden = true)
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.getRoles().stream()
-                .map(SysRole::getPermissions)
+                .map(SysRole::getSysPermissions)
                 .flatMap(Collection::stream)
                 .filter(p -> "N".equals(p.getIsDelete()))
                 .map(SysPermission::getVal).map(SimpleGrantedAuthority::new).collect(Collectors.toList());

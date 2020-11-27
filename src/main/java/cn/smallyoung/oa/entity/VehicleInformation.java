@@ -1,6 +1,7 @@
 package cn.smallyoung.oa.entity;
 
 import cn.smallyoung.oa.base.BaseEntity;
+import cn.smallyoung.oa.interfaces.DataName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -36,12 +37,14 @@ public class VehicleInformation extends BaseEntity implements Serializable {
     /**
      * 车辆名称
      */
+    @DataName(name = "车辆名称")
     @Column(name = "name" )
     @ApiModelProperty(notes = "车辆名称")
     private String name;
     /**
      * 车辆编号
      */
+    @DataName(name = "车辆编号")
     @Column(name = "number" )
     @ApiModelProperty(notes = "车辆编号")
     private String number;
@@ -49,6 +52,7 @@ public class VehicleInformation extends BaseEntity implements Serializable {
     /**
      * 车牌号
      */
+    @DataName(name = "车牌号")
     @Column(name = "plate_number" )
     @ApiModelProperty(notes = "车牌号")
     private String plateNumber;
@@ -56,6 +60,7 @@ public class VehicleInformation extends BaseEntity implements Serializable {
     /**
      * 所属单位
      */
+    @DataName(name = "所属单位")
     @Column(name = "company" )
     @ApiModelProperty(notes = "所属单位")
     private String company;
@@ -63,6 +68,7 @@ public class VehicleInformation extends BaseEntity implements Serializable {
     /**
      * 车辆型号
      */
+    @DataName(name = "车辆型号")
     @Column(name = "model" )
     @ApiModelProperty(notes = "车辆型号")
     private String model;

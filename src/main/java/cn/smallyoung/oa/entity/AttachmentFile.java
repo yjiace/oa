@@ -1,6 +1,7 @@
 package cn.smallyoung.oa.entity;
 
 import cn.smallyoung.oa.base.BaseEntity;
+import cn.smallyoung.oa.interfaces.DataName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -36,6 +37,7 @@ public class AttachmentFile extends BaseEntity implements Serializable {
      * 系统文件名
      */
     @Column(name = "file_name" )
+    @DataName(name = "系统文件名")
     @ApiModelProperty(notes = "系统文件名")
     private String fileName;
 
@@ -43,6 +45,7 @@ public class AttachmentFile extends BaseEntity implements Serializable {
      * MD5
      */
     @Column(name = "md5" )
+    @DataName(name = "MD5")
     @ApiModelProperty(notes = "MD5")
     private String md5;
 
@@ -50,6 +53,7 @@ public class AttachmentFile extends BaseEntity implements Serializable {
      * 文件大小
      */
     @Column(name = "size" )
+    @DataName(name = "文件大小")
     @ApiModelProperty(notes = "文件大小")
     private Long size;
 
@@ -57,12 +61,14 @@ public class AttachmentFile extends BaseEntity implements Serializable {
      * 路径
      */
     @Column(name = "url" )
+    @DataName(name = "路径")
     @ApiModelProperty(notes = "路径")
     private String url;
 
     /**
      * 文件编号
      */
+    @DataName(name = "文件编号")
     @Column(name = "document_number" )
     @ApiModelProperty(notes = "文件编号")
     private String documentNumber;
@@ -70,6 +76,7 @@ public class AttachmentFile extends BaseEntity implements Serializable {
     /**
      * 密级指定
      */
+    @DataName(name = "密级指定")
     @Column(name = "security_classification" )
     @ApiModelProperty(notes = "密级指定")
     private String securityClassification;

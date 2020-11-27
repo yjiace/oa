@@ -6,6 +6,7 @@ package cn.smallyoung.oa.entity;
  */
 
 import cn.hutool.core.annotation.PropIgnore;
+import cn.smallyoung.oa.interfaces.DataName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -41,6 +42,7 @@ public class DocumentApprovalComment implements Serializable {
     /**
      * 审批留言
      */
+    @DataName(name = "审批留言")
     @Column(name = "message")
     private String message;
 
@@ -66,6 +68,7 @@ public class DocumentApprovalComment implements Serializable {
     /**
      * N正常，Y删除
      */
+    @DataName(name = "删除标识")
     @Column(name = "is_delete")
     @ApiModelProperty(notes = "删除标识：N正常，Y删除")
     private String isDelete;

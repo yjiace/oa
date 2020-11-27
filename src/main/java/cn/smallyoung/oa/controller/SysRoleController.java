@@ -1,9 +1,15 @@
 package cn.smallyoung.oa.controller;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.smallyoung.oa.entity.SysPermission;
 import cn.smallyoung.oa.entity.SysRole;
 import cn.smallyoung.oa.interfaces.ResponseResultBody;
 import cn.smallyoung.oa.interfaces.SystemOperationLog;
+import cn.smallyoung.oa.service.SysPermissionService;
 import cn.smallyoung.oa.service.SysRoleService;
+import cn.smallyoung.oa.vo.SysRoleVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -19,6 +25,7 @@ import org.springframework.web.util.WebUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author smallyoung
@@ -33,6 +40,19 @@ public class SysRoleController {
 
     @Resource
     private SysRoleService sysRoleService;
+    @Resource
+    private SysPermissionService sysPermissionService;
+
+    /**
+     * 查询所有权限
+     *
+     */
+    @GetMapping(value = "findAllPermission")
+    @ApiOperation(value = "查询所有权限")
+    @PreAuthorize("hasRole('ROLE_ROLE') or hasRole('ROLE_ROLE_SAVEANDUPDATE')")
+    public List<SysPermission> findAllPermission(HttpServletRequest request) {
+        return sysPermissionService.findAll(WebUtils.getParametersStartingWith(request, "search_"));
+    }
 
     /**
      * 分页查询所有
@@ -54,14 +74,60 @@ public class SysRoleController {
     }
 
     /**
-     * 编辑角色
+     * 新增角色
      */
     @PostMapping(value = "save")
-    @ApiOperation(value = "角色管理")
+    @ApiOperation(value = "新增角色")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "name", value = "角色名称", dataType = "String"),
+            @ApiImplicitParam(name = "comments", value = "角色备注", dataType = "String"),
+            @ApiImplicitParam(name = "permissions", value = "权限ID列表", dataType = "List")
+    })
     @PreAuthorize("hasRole('ROLE_ROLE') or hasRole('ROLE_ROLE_SAVEANDUPDATE')")
     @SystemOperationLog(module = "角色管理", methods = "编辑角色", serviceClass = SysRoleService.class, queryMethod = "findOne",
             parameterType = "Long", parameterKey = "role.id")
-    public SysRole save(SysRole role){
+    public SysRole save(SysRoleVO roleVO){
+        if (roleVO == null || StrUtil.hasBlank(roleVO.getName())) {
+            throw new NullPointerException("参数错误");
+        }
+        roleVO.setId(null);
+        SysRole role = new SysRole();
+        BeanUtil.copyProperties(roleVO, role);
+        if(CollUtil.isNotEmpty(roleVO.getPermissions())){
+            role.setSysPermissions(sysPermissionService.findByIdInAndIsDelete(roleVO.getPermissions()));
+        }
+        role.setIsDelete("N");
+        return sysRoleService.save(role);
+    }
+
+    /**
+     * 编辑角色
+     */
+    @PostMapping(value = "update")
+    @ApiOperation(value = "编辑角色")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "主键ID", dataType = "Long"),
+            @ApiImplicitParam(name = "name", value = "角色名称", dataType = "String"),
+            @ApiImplicitParam(name = "comments", value = "角色备注", dataType = "String"),
+            @ApiImplicitParam(name = "permissions", value = "权限ID列表", dataType = "List")
+    })
+    @PreAuthorize("hasRole('ROLE_ROLE') or hasRole('ROLE_ROLE_SAVEANDUPDATE')")
+    @SystemOperationLog(module = "角色管理", methods = "编辑角色", serviceClass = SysRoleService.class, queryMethod = "findOne",
+            parameterType = "Long", parameterKey = "role.id")
+    public SysRole update(SysRoleVO roleVO){
+        if (roleVO == null || roleVO.getId() == null || StrUtil.hasBlank(roleVO.getName())) {
+            throw new NullPointerException("参数错误");
+        }
+        SysRole role = sysRoleService.findOne(roleVO.getId());
+        if(role == null){
+            String error = String.format("根据ID【%s】没有找到角色", roleVO.getId());
+            log.error(error);
+            throw new RuntimeException(error);
+        }
+        BeanUtil.copyProperties(roleVO, role);
+        if(CollUtil.isNotEmpty(roleVO.getPermissions())){
+            role.setSysPermissions(sysPermissionService.findByIdInAndIsDelete(roleVO.getPermissions()));
+        }
         return sysRoleService.save(role);
     }
 
@@ -71,7 +137,8 @@ public class SysRoleController {
      * @param id       需要删除的角色ID
      * @return ResultMap封装好的返回数据
      */
-    @PostMapping(value = "delete")
+    @DeleteMapping(value = "delete")
+    @ApiOperation(value = "删除角色")
     @PreAuthorize("hasRole('ROLE_ROLE') or hasRole('ROLE_ROLE_DELETE')")
     @ApiImplicitParam(name = "id", value = "需要删除的角色ID", required = true, dataType = "Long")
     @SystemOperationLog(module = "角色管理", methods = "删除角色", serviceClass = SysRoleService.class,

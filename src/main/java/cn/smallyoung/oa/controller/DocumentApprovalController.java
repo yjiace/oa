@@ -187,6 +187,15 @@ public class DocumentApprovalController {
      */
     @PostMapping("submitForApproval")
     @ApiOperation(value = "提交审批")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "file", value = "上传的文件列表", dataType = "List"),
+            @ApiImplicitParam(name = "username", value = "用户名列表", dataType = "List"),
+            @ApiImplicitParam(name = "documentNumber", value = "文件编号", dataType = "String"),
+            @ApiImplicitParam(name = "securityClassification", value = "密级指定", dataType = "String"),
+            @ApiImplicitParam(name = "title", value = "标题", dataType = "String"),
+            @ApiImplicitParam(name = "remarks", value = "备注", dataType = "String"),
+            @ApiImplicitParam(name = "number", value = "审批编号", dataType = "String")
+    })
     @SystemOperationLog(module = "文件审批", methods = "提交审批",
             serviceClass = DocumentApprovalService.class, way = SysOperationLogWayEnum.RecordOnly)
     public DocumentApproval submitForApproval(DocumentApprovalVO documentApprovalVO) {
@@ -206,6 +215,10 @@ public class DocumentApprovalController {
      */
     @PostMapping("addComment")
     @ApiOperation(value = "添加评论")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "主键ID", dataType = "Long"),
+            @ApiImplicitParam(name = "message", value = "评论", dataType = "String")
+    })
     @SystemOperationLog(module = "文件审批", methods = "添加评论", serviceClass = DocumentApprovalService.class,
             queryMethod = "findOne", parameterType = "Long", parameterKey = "id")
     public DocumentApproval addComment(Long id, String message) {

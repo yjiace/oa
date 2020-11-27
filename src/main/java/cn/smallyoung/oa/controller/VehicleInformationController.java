@@ -79,6 +79,13 @@ public class VehicleInformationController {
      */
     @PostMapping(value = "save")
     @ApiOperation(value = "新增车辆")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "name", value = "车辆名称", dataType = "Long"),
+            @ApiImplicitParam(name = "number", value = "车辆编号", dataType = "String"),
+            @ApiImplicitParam(name = "plateNumber", value = "车牌号", dataType = "String"),
+            @ApiImplicitParam(name = "company", value = "所属单位", dataType = "String"),
+            @ApiImplicitParam(name = "model", value = "车辆型号", dataType = "String")
+    })
     @PreAuthorize("hasRole('ROLE_VEHICLE') or hasRole('ROLE_VEHICLE_SAVEANDUPDATE')")
     @SystemOperationLog(module = "车辆管理", methods = "新增车辆", way = SysOperationLogWayEnum.RecordOnly)
     public VehicleInformation save(VehicleInformationVO vehicleInformationVO) {
@@ -93,6 +100,14 @@ public class VehicleInformationController {
      */
     @PostMapping(value = "update")
     @ApiOperation(value = "编辑车辆")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "车辆主键ID", dataType = "Long"),
+            @ApiImplicitParam(name = "name", value = "车辆名称", dataType = "Long"),
+            @ApiImplicitParam(name = "number", value = "车辆编号", dataType = "String"),
+            @ApiImplicitParam(name = "plateNumber", value = "车牌号", dataType = "String"),
+            @ApiImplicitParam(name = "company", value = "所属单位", dataType = "String"),
+            @ApiImplicitParam(name = "model", value = "车辆型号", dataType = "String")
+    })
     @PreAuthorize("hasRole('ROLE_VEHICLE') or hasRole('ROLE_VEHICLE_SAVEANDUPDATE')")
     @SystemOperationLog(module = "车辆管理", methods = "编辑车辆", serviceClass = VehicleInformationService.class, queryMethod = "findOne",
             parameterType = "Long", parameterKey = "vehicleInformationVO.id", way = SysOperationLogWayEnum.RecordBeforeAndAfterChanges)

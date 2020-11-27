@@ -1,7 +1,7 @@
 package cn.smallyoung.oa.entity;
 
 import cn.smallyoung.oa.base.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import cn.smallyoung.oa.interfaces.DataName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -32,6 +32,7 @@ public class SysRole extends BaseEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @DataName(name = "角色名称")
     @Column(name = "name" )
     @ApiModelProperty(notes = "角色名称")
     private String name;
@@ -39,14 +40,14 @@ public class SysRole extends BaseEntity implements Serializable {
     /**
      * 备注
      */
+    @DataName(name = "角色备注")
     @Column(name = "comments" )
     @ApiModelProperty(notes = "角色备注")
     private String comments;
 
-    @JsonIgnore
     @ApiModelProperty(hidden = true)
     @Where(clause = " is_delete = 'N' ")
     @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
     @JoinTable(name = "t_sys_role_permission", joinColumns = {@JoinColumn(name = "role_id")}, inverseJoinColumns = {@JoinColumn(name = "permission_id")})
-    private List<SysPermission> permissions = new ArrayList<>();
+    private List<SysPermission> sysPermissions = new ArrayList<>();
 }

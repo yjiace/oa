@@ -1,6 +1,7 @@
 package cn.smallyoung.oa.entity;
 
 import cn.hutool.core.annotation.PropIgnore;
+import cn.smallyoung.oa.interfaces.DataName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -39,6 +40,7 @@ public class DocumentApprovalNode implements Serializable {
     /**
      * 状态，NotStarted：未开始，Approval：审批中，Completed：已完成，Withdrawn：已撤回，Rejected：已拒绝
      */
+    @DataName(name = "状态")
     @Column(name = "status")
     @ApiModelProperty(notes = "状态，NotStarted：未开始，Approval：审批中，Completed：已完成，Withdrawn：已撤回，Rejected：已拒绝")
     private String status;
@@ -46,6 +48,7 @@ public class DocumentApprovalNode implements Serializable {
     /**
      * 需要审批的用户
      */
+    @DataName(name = "需要审批的用户")
     @Column(name = "username")
     @ApiModelProperty(notes = "需要审批的用户")
     private String user;
@@ -62,6 +65,7 @@ public class DocumentApprovalNode implements Serializable {
     /**
      * 从小到大排序
      */
+    @DataName(name = "审批顺序")
     @Column(name = "sort")
     @ApiModelProperty(notes = "审批顺序")
     private Integer sort;
@@ -69,6 +73,7 @@ public class DocumentApprovalNode implements Serializable {
     /**
      * 完成时间
      */
+    @DataName(name = "完成时间")
     @Column(name = "completed_time")
     @ApiModelProperty(notes = "完成时间")
     private LocalDateTime completedTime;

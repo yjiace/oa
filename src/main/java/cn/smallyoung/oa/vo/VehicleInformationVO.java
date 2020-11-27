@@ -15,7 +15,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
-@ApiModel("车辆管理")
+@ApiModel("车辆管理VO")
 public class VehicleInformationVO implements Serializable {
 
     private static final long serialVersionUID = -4103150040066001046L;
