@@ -152,4 +152,11 @@ public class Approval implements Serializable {
     @Column(name = "update_time")
     @ApiModelProperty(notes = "修改时间")
     private LocalDateTime updateTime;
+
+    /**
+     * 关联的用车记录
+     */
+    @Transient
+    @ApiModelProperty(notes = "关联的用车记录")
+    private CarRecord carRecord;
 }

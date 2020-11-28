@@ -157,13 +157,13 @@ public class VehicleInformationController {
     }
 
     /**
-     * 分页查询车辆记录
+     * 分页查询车辆申请记录
      *
      * @param page  页码
      * @param limit 页数
      */
     @GetMapping(value = "findAllCarRecord")
-    @ApiOperation(value = "分页查询车辆记录")
+    @ApiOperation(value = "分页查询车辆申请记录")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "页码", dataType = "Integer"),
             @ApiImplicitParam(name = "limit", value = "页数", dataType = "Integer")

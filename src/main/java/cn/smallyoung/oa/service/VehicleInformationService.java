@@ -84,6 +84,10 @@ public class VehicleInformationService extends BaseService<VehicleInformation, L
         return super.findOne(id);
     }
 
+    public CarRecord findCarRecordByApprovalId(Long approvalId){
+        return approvalId != null ? carRecordDao.findByApproval(approvalId) : null;
+    }
+
     public Page<CarRecord> findAllCarRecord(Map<String, Object> map, Pageable pageable) {
         return carRecordDao.findAll(new SimpleSpecificationBuilder<CarRecord>(map).getSpecification(), pageable);
     }
@@ -156,7 +160,12 @@ public class VehicleInformationService extends BaseService<VehicleInformation, L
             throw new NullPointerException("参数错误");
         }
         VehicleInformation vehicleInformation = this.findOne(approval.getVehicleId());
-        CarRecord carRecord = vehicleInformation.getCurrentCarRecord();
+        if(vehicleInformation == null){
+            String error = String.format("根据ID【%s】没有查询到该车", approval.getVehicleId());
+            log.error(error);
+            throw new RuntimeException(error);
+        }
+        CarRecord carRecord = carRecordDao.findByApproval(approval.getId());
         CarRecordLog carRecordLog = new CarRecordLog();
         carRecordLog.setCarRecord(carRecord);
         carRecordLog.setRemarks(approval.getRemarks());
@@ -205,7 +214,28 @@ public class VehicleInformationService extends BaseService<VehicleInformation, L
         if(approval.getVehicleId() == null){
             throw new NullPointerException("参数错误");
         }
-        CarRecord carRecord = this.createVehicleRecord(this.findOne(approval.getVehicleId()), approval.getRemarks(), VEHICLE_INFORMATION_OPERATION.get(0));
+        VehicleInformation vehicleInformation = this.findOne(approval.getVehicleId());
+        if(vehicleInformation == null){
+            String error = String.format("根据ID【%s】没有查询到该车", approval.getVehicleId());
+            log.error(error);
+            throw new RuntimeException(error);
+        }
+        CarRecord carRecord = carRecordDao.findByApproval(approval.getId());
+        if(carRecord == null){
+            carRecord = this.createVehicleRecord(vehicleInformation, approval.getRemarks(), VEHICLE_INFORMATION_OPERATION.get(0));
+        }else{
+            //保存数据
+            CarRecordLog carRecordLog = new CarRecordLog();
+            carRecordLog.setCarRecord(carRecord);
+            carRecordLog.setRemarks(approval.getRemarks());
+            carRecordLog.setType(VEHICLE_INFORMATION_OPERATION.get(0));
+            carRecordLog.setUsername(sysUserService.currentlyLoggedInUser());
+            carRecord.getCarRecordLogs().add(carRecordLog);
+            carRecord.setStatus(VEHICLE_INFORMATION_STATUS.get(1));
+            carRecordDao.save(carRecord);
+            vehicleInformation.setCurrentCarRecord(carRecord);
+            vehicleInformationDao.save(vehicleInformation);
+        }
         carRecord.setApproval(approval);
         carRecordDao.save(carRecord);
     }
@@ -222,7 +252,28 @@ public class VehicleInformationService extends BaseService<VehicleInformation, L
         if(approval.getVehicleId() == null){
             throw new NullPointerException("参数错误");
         }
-        this.createVehicleRecord(this.findOne(approval.getVehicleId()), approval.getRemarks(), VEHICLE_INFORMATION_OPERATION.get(1));
+        VehicleInformation vehicleInformation = this.findOne(approval.getVehicleId());
+        if(vehicleInformation == null){
+            String error = String.format("根据ID【%s】没有查询到该车", approval.getVehicleId());
+            log.error(error);
+            throw new RuntimeException(error);
+        }
+        CarRecord carRecord = carRecordDao.findByApproval(approval.getId());
+        if(carRecord == null){
+            this.createVehicleRecord(vehicleInformation, approval.getRemarks(), VEHICLE_INFORMATION_OPERATION.get(1));
+        }else{
+            //保存数据
+            CarRecordLog carRecordLog = new CarRecordLog();
+            carRecordLog.setCarRecord(carRecord);
+            carRecordLog.setRemarks(approval.getRemarks());
+            carRecordLog.setType(VEHICLE_INFORMATION_OPERATION.get(1));
+            carRecordLog.setUsername(sysUserService.currentlyLoggedInUser());
+            carRecord.getCarRecordLogs().add(carRecordLog);
+            carRecord.setStatus(VEHICLE_INFORMATION_STATUS.get(2));
+            carRecordDao.save(carRecord);
+            vehicleInformation.setCurrentCarRecord(carRecord);
+            vehicleInformationDao.save(vehicleInformation);
+        }
     }
 
     /**
@@ -238,7 +289,12 @@ public class VehicleInformationService extends BaseService<VehicleInformation, L
             throw new NullPointerException("参数错误");
         }
         VehicleInformation vehicleInformation = this.findOne(approval.getVehicleId());
-        CarRecord carRecord = vehicleInformation.getCurrentCarRecord();
+        if(vehicleInformation == null){
+            String error = String.format("根据ID【%s】没有查询到该车", approval.getVehicleId());
+            log.error(error);
+            throw new RuntimeException(error);
+        }
+        CarRecord carRecord = carRecordDao.findByApproval(approval.getId());
         CarRecordLog carRecordLog = new CarRecordLog();
         carRecordLog.setCarRecord(carRecord);
         carRecordLog.setRemarks(approval.getRemarks());

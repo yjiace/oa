@@ -7,6 +7,7 @@ import cn.smallyoung.oa.interfaces.ResponseResultBody;
 import cn.smallyoung.oa.interfaces.SystemOperationLog;
 import cn.smallyoung.oa.service.ApprovalService;
 import cn.smallyoung.oa.service.SysUserService;
+import cn.smallyoung.oa.service.VehicleInformationService;
 import cn.smallyoung.oa.vo.ApprovalVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -38,6 +39,8 @@ public class ApprovalController {
     private SysUserService sysUserService;
     @Resource
     private ApprovalService approvalService;
+    @Resource
+    private VehicleInformationService vehicleInformationService;
 
     /**
      * 查询我提交的审批
@@ -88,7 +91,12 @@ public class ApprovalController {
             @ApiImplicitParam(name = "id", value = "审批的主键ID", dataType = "Long")
     })
     public Approval findOneById(Long id) {
-        return checkApproval(id);
+        Approval approval = checkApproval(id);
+        String vehicle = "vehicle";
+        if(vehicle.equals(approval.getType())){
+            approval.setCarRecord(vehicleInformationService.findCarRecordByApprovalId(approval.getId()));
+        }
+        return approval;
     }
 
     /**

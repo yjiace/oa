@@ -98,7 +98,7 @@ public class CarRecord implements Serializable {
      */
     @JsonIgnore
     @PropIgnore
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "approval_id")
     @ApiModelProperty(notes = "审批")
     private Approval approval;
