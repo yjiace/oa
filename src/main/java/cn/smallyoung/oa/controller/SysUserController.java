@@ -1,13 +1,14 @@
 package cn.smallyoung.oa.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.util.StrUtil;
 import cn.smallyoung.oa.entity.SysOperationLogWayEnum;
 import cn.smallyoung.oa.entity.SysRole;
 import cn.smallyoung.oa.entity.SysUser;
 import cn.smallyoung.oa.interfaces.ResponseResultBody;
 import cn.smallyoung.oa.interfaces.SystemOperationLog;
-import cn.smallyoung.oa.service.DocumentApprovalService;
+import cn.smallyoung.oa.service.ApprovalService;
 import cn.smallyoung.oa.service.SysRoleService;
 import cn.smallyoung.oa.service.SysUserService;
 import cn.smallyoung.oa.vo.SysUserVO;
@@ -51,7 +52,7 @@ public class SysUserController {
     @Resource
     private BCryptPasswordEncoder passwordEncoder;
     @Resource
-    private DocumentApprovalService documentApprovalService;
+    private ApprovalService approvalService;
 
     @GetMapping(value = "findAllUserNames")
     @ApiOperation(value = "查询所有用户名（无权限，审批选择）")
@@ -115,7 +116,7 @@ public class SysUserController {
      */
     @GetMapping("checkUsername")
     @ApiOperation(value = "检查用户名是否存在")
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_SAVEANDUPDATE')")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_SAVE')")
     @ApiImplicitParam(name = "username", value = "用户名", required = true, dataType = "String")
     public boolean checkUsername(String username) {
         return StrUtil.isNotBlank(username) || sysUserService.findByUsername(username) != null;
@@ -126,7 +127,7 @@ public class SysUserController {
      */
     @PostMapping(value = "save")
     @ApiOperation(value = "新增用户")
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_SAVEANDUPDATE')")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_SAVE')")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "username", value = "用户名", dataType = "String"),
             @ApiImplicitParam(name = "name", value = "姓名", dataType = "String"),
@@ -149,7 +150,7 @@ public class SysUserController {
             throw new RuntimeException(error);
         }
         SysUser user = new SysUser();
-        BeanUtil.copyProperties(sysUserVO, user);
+        BeanUtil.copyProperties(sysUserVO, user, CopyOptions.create().setIgnoreNullValue(true));
         user.setUsername(sysUserVO.getUsername());
         user.setStatus("Y");
         user.setIsDelete("N");
@@ -173,7 +174,7 @@ public class SysUserController {
             @ApiImplicitParam(name = "position", value = "职位", dataType = "String"),
             @ApiImplicitParam(name = "department", value = "部门", dataType = "String"),
     })
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_SAVEANDUPDATE') or authentication.principal.username.equals(#sysUserVO.username)")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_USER_SAVE') or authentication.principal.username.equals(#sysUserVO.username)")
     @SystemOperationLog(module = "用户管理", methods = "编辑用户", serviceClass = SysUserService.class,
             queryMethod = "findByUsername", parameterType = "String", parameterKey = "sysUserVO.username")
     public SysUser update(SysUserVO sysUserVO) {
@@ -186,7 +187,7 @@ public class SysUserController {
             log.error(error);
             throw new UsernameNotFoundException(error);
         }
-        BeanUtil.copyProperties(sysUserVO, user);
+        BeanUtil.copyProperties(sysUserVO, user, CopyOptions.create().setIgnoreNullValue(true));
         return sysUserService.save(user);
     }
 
@@ -221,7 +222,7 @@ public class SysUserController {
             log.error(error);
             throw new RuntimeException(error);
         }
-        documentApprovalService.checkUserHaveApproval(user);
+        approvalService.checkUserHaveApproval(user);
         user.setStatus(status);
         return sysUserService.save(user);
     }
@@ -289,7 +290,7 @@ public class SysUserController {
             queryMethod = "findByUsername", parameterType = "String", parameterKey = "username")
     public SysUser deleteUser(String username) {
         SysUser user = checkUser(username);
-        documentApprovalService.checkUserHaveApproval(user);
+        approvalService.checkUserHaveApproval(user);
         user.setIsDelete("Y");
         return sysUserService.save(user);
     }

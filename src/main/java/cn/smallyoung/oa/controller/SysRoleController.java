@@ -1,6 +1,7 @@
 package cn.smallyoung.oa.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.lang.tree.TreeNodeConfig;
@@ -51,7 +52,7 @@ public class SysRoleController {
      */
     @GetMapping(value = "findAllPermission")
     @ApiOperation(value = "查询所有权限")
-    @PreAuthorize("hasRole('ROLE_ROLE') or hasRole('ROLE_ROLE_SAVEANDUPDATE')")
+    @PreAuthorize("hasRole('ROLE_ROLE') or hasRole('ROLE_ROLE_SAVE')")
     public List<Tree<String>> findAllPermission(HttpServletRequest request) {
         List<SysPermission> sysPermissions = sysPermissionService.findAll(WebUtils.getParametersStartingWith(request, "search_"));
         return TreeUtil.build(sysPermissions, "0", new TreeNodeConfig(),
@@ -92,7 +93,7 @@ public class SysRoleController {
             @ApiImplicitParam(name = "comments", value = "角色备注", dataType = "String"),
             @ApiImplicitParam(name = "permissions", value = "权限ID列表", dataType = "List")
     })
-    @PreAuthorize("hasRole('ROLE_ROLE') or hasRole('ROLE_ROLE_SAVEANDUPDATE')")
+    @PreAuthorize("hasRole('ROLE_ROLE') or hasRole('ROLE_ROLE_SAVE')")
     @SystemOperationLog(module = "角色管理", methods = "编辑角色", serviceClass = SysRoleService.class, queryMethod = "findOne",
             parameterType = "Long", parameterKey = "role.id")
     public SysRole save(SysRoleVO roleVO) {
@@ -101,7 +102,7 @@ public class SysRoleController {
         }
         roleVO.setId(null);
         SysRole role = new SysRole();
-        BeanUtil.copyProperties(roleVO, role);
+        BeanUtil.copyProperties(roleVO, role, CopyOptions.create().setIgnoreNullValue(true));
         if (CollUtil.isNotEmpty(roleVO.getPermissions())) {
             role.setSysPermissions(sysPermissionService.findByIdInAndIsDelete(roleVO.getPermissions()));
         }
@@ -120,7 +121,7 @@ public class SysRoleController {
             @ApiImplicitParam(name = "comments", value = "角色备注", dataType = "String"),
             @ApiImplicitParam(name = "permissions", value = "权限ID列表", dataType = "List")
     })
-    @PreAuthorize("hasRole('ROLE_ROLE') or hasRole('ROLE_ROLE_SAVEANDUPDATE')")
+    @PreAuthorize("hasRole('ROLE_ROLE') or hasRole('ROLE_ROLE_SAVE')")
     @SystemOperationLog(module = "角色管理", methods = "编辑角色", serviceClass = SysRoleService.class, queryMethod = "findOne",
             parameterType = "Long", parameterKey = "role.id")
     public SysRole update(SysRoleVO roleVO) {
@@ -133,7 +134,7 @@ public class SysRoleController {
             log.error(error);
             throw new RuntimeException(error);
         }
-        BeanUtil.copyProperties(roleVO, role);
+        BeanUtil.copyProperties(roleVO, role, CopyOptions.create().setIgnoreNullValue(true));
         if (CollUtil.isNotEmpty(roleVO.getPermissions())) {
             role.setSysPermissions(sysPermissionService.findByIdInAndIsDelete(roleVO.getPermissions()));
         }

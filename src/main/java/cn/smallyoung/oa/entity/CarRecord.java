@@ -53,11 +53,11 @@ public class CarRecord implements Serializable {
     private VehicleInformation vehicleInformation;
 
     /**
-     * 状态，NotInUse：未使用，NotLeaving：未离场，NotReturned：未归还
+     * 状态，NotInUse：未使用，Approval：审批中，NotLeaving：未离场，NotReturned：未归还，withdrawalOfApproval：撤回审批，rejectedApproval：拒绝审批
      */
     @Column(name = "status" )
     @DataName(name = "状态")
-    @ApiModelProperty(notes = "状态，NotInUse：未使用，NotLeaving：未离场，NotReturned：未归还")
+    @ApiModelProperty(notes = "状态，NotInUse：未使用，Approval：审批中，NotLeaving：未离场，NotReturned：未归还，withdrawalOfApproval：撤回审批，rejectedApproval：拒绝审批")
     private String status;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "carRecord", fetch = FetchType.LAZY)
@@ -79,6 +79,7 @@ public class CarRecord implements Serializable {
     @ApiModelProperty(notes = "目的地")
     private String  destination;
 
+
     /**
      * 备注
      */
@@ -91,4 +92,14 @@ public class CarRecord implements Serializable {
     @Column(name = "create_time")
     @ApiModelProperty(notes = "创建时间")
     private LocalDateTime createTime;
+
+    /**
+     * 审批
+     */
+    @JsonIgnore
+    @PropIgnore
+    @OneToOne
+    @JoinColumn(name = "approval_id")
+    @ApiModelProperty(notes = "审批")
+    private Approval approval;
 }

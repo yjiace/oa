@@ -22,10 +22,10 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@ApiModel("文件审批")
-@Table(name = "t_document_approval")
+@ApiModel("审批")
+@Table(name = "t_approval")
 @EntityListeners({AuditingEntityListener.class})
-public class DocumentApproval implements Serializable {
+public class Approval implements Serializable {
 
     private static final long serialVersionUID = -3598774125630968568L;
 
@@ -55,6 +55,14 @@ public class DocumentApproval implements Serializable {
     private String title;
 
     /**
+     * 类型，document：文档；vehicle：车辆
+     */
+    @DataName(name = "类型")
+    @Column(name = "type" )
+    @ApiModelProperty(notes = "类型，document：文档；vehicle：车辆")
+    private String type;
+
+    /**
      * 备注
      */
     @DataName(name = "备注")
@@ -78,6 +86,21 @@ public class DocumentApproval implements Serializable {
     @ApiModelProperty(notes = "状态，Approval：审批中，Completed：已完成，Withdrawn：已撤回，Rejected：已拒绝")
     private String status;
 
+    @DataName(name = "额外信息")
+    @Column(name = "extra")
+    @ApiModelProperty(notes = "额外信息，JSON格式")
+    private String extra;
+
+    @DataName(name = "申请用车ID")
+    @Column(name = "vehicle_id")
+    @ApiModelProperty(notes = "申请用车ID")
+    private Long vehicleId;
+
+    @DataName(name = "目的地")
+    @Column(name = "destination")
+    @ApiModelProperty(notes = "目的地")
+    private String  destination;
+
     /**
      * 从小到大排序
      */
@@ -92,27 +115,27 @@ public class DocumentApproval implements Serializable {
     @DataName(name = "当前审批节点")
     @JoinColumn(name = "node_id")
     @ApiModelProperty(notes = "当前审批节点")
-    private DocumentApprovalNode node;
+    private ApprovalNode node;
 
     /**
      * 关联的文件列表
      */
     @ApiModelProperty(notes = "关联的文件列表")
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "t_document_approval_file",
-            joinColumns = {@JoinColumn(name = "document_approval")}, inverseJoinColumns = {@JoinColumn(name = "file_id")})
+    @JoinTable(name = "t_approval_file",
+            joinColumns = {@JoinColumn(name = "approval_id")}, inverseJoinColumns = {@JoinColumn(name = "file_id")})
     private List<AttachmentFile> attachmentFiles = new ArrayList<>();
 
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "documentApproval", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "approval", fetch = FetchType.LAZY)
     @OrderBy(value = " sort ASC ")
-    private List<DocumentApprovalNode> documentApprovalNodes = new ArrayList<>();
+    private List<ApprovalNode> approvalNodes = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "documentApproval", fetch = FetchType.LAZY)
-    private List<DocumentApprovalComment> documentApprovalComments = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "approval", fetch = FetchType.LAZY)
+    private List<ApprovalComment> approvalComments = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "documentApproval", fetch = FetchType.LAZY)
-    private List<DocumentApprovalLog> documentApprovalLogs = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "approval", fetch = FetchType.LAZY)
+    private List<ApprovalLog> approvalLogs = new ArrayList<>();
 
     /**
      * 创建时间

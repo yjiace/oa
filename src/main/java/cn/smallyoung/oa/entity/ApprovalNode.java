@@ -21,10 +21,10 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@ApiModel("文件审批节点")
-@Table(name = "t_document_approval_node")
+@ApiModel("审批节点")
+@Table(name = "t_approval_node")
 @EntityListeners({AuditingEntityListener.class})
-public class DocumentApprovalNode implements Serializable {
+public class ApprovalNode implements Serializable {
 
     private static final long serialVersionUID = 3061503751418304358L;
 
@@ -59,8 +59,8 @@ public class DocumentApprovalNode implements Serializable {
     @ManyToOne
     @PropIgnore
     @JsonIgnore
-    @JoinColumn(name = "document_approval_id")
-    private DocumentApproval documentApproval;
+    @JoinColumn(name = "approval_id")
+    private Approval approval;
 
     /**
      * 从小到大排序

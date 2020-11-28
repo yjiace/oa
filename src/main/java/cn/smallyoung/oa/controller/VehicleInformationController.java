@@ -1,6 +1,7 @@
 package cn.smallyoung.oa.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.smallyoung.oa.entity.CarRecord;
 import cn.smallyoung.oa.entity.SysOperationLogWayEnum;
 import cn.smallyoung.oa.entity.VehicleInformation;
@@ -59,7 +60,7 @@ public class VehicleInformationController {
     /**
      * 根据ID查询车辆详情
      *
-     * @param id  车辆主键ID
+     * @param id 车辆主键ID
      */
     @GetMapping(value = "findById")
     @ApiOperation(value = "根据ID查询车辆详情")
@@ -86,11 +87,11 @@ public class VehicleInformationController {
             @ApiImplicitParam(name = "company", value = "所属单位", dataType = "String"),
             @ApiImplicitParam(name = "model", value = "车辆型号", dataType = "String")
     })
-    @PreAuthorize("hasRole('ROLE_VEHICLE') or hasRole('ROLE_VEHICLE_SAVEANDUPDATE')")
+    @PreAuthorize("hasRole('ROLE_VEHICLE') or hasRole('ROLE_VEHICLE_SAVE')")
     @SystemOperationLog(module = "车辆管理", methods = "新增车辆", way = SysOperationLogWayEnum.RecordOnly)
     public VehicleInformation save(VehicleInformationVO vehicleInformationVO) {
         VehicleInformation vehicleInformation = new VehicleInformation();
-        BeanUtil.copyProperties(vehicleInformationVO, vehicleInformation);
+        BeanUtil.copyProperties(vehicleInformationVO, vehicleInformation, CopyOptions.create().setIgnoreNullValue(true));
         vehicleInformation.setIsDelete("N");
         return vehicleInformationService.save(vehicleInformation);
     }
@@ -108,7 +109,7 @@ public class VehicleInformationController {
             @ApiImplicitParam(name = "company", value = "所属单位", dataType = "String"),
             @ApiImplicitParam(name = "model", value = "车辆型号", dataType = "String")
     })
-    @PreAuthorize("hasRole('ROLE_VEHICLE') or hasRole('ROLE_VEHICLE_SAVEANDUPDATE')")
+    @PreAuthorize("hasRole('ROLE_VEHICLE') or hasRole('ROLE_VEHICLE_SAVE')")
     @SystemOperationLog(module = "车辆管理", methods = "编辑车辆", serviceClass = VehicleInformationService.class, queryMethod = "findOne",
             parameterType = "Long", parameterKey = "vehicleInformationVO.id", way = SysOperationLogWayEnum.RecordBeforeAndAfterChanges)
     public VehicleInformation update(VehicleInformationVO vehicleInformationVO) {
@@ -121,27 +122,28 @@ public class VehicleInformationController {
             log.error(error);
             throw new RuntimeException(error);
         }
-        BeanUtil.copyProperties(vehicleInformationVO, vehicleInformation);
+        BeanUtil.copyProperties(vehicleInformationVO, vehicleInformation, CopyOptions.create().setIgnoreNullValue(true));
         return vehicleInformationService.save(vehicleInformation);
     }
 
     /**
-     * 车辆记录
+     * 车辆记录操作
      *
      * @param id        车辆id
      * @param remarks   备注
-     * @param operation 操作 ReviewCar：申请用车；VehicleDeparture：车辆离场；ReturnVehicle：归还车辆
+     * @param operation 操作 VehicleDeparture：车辆离场；ReturnVehicle：归还车辆
      */
     @PostMapping("createVehicleRecord")
-    @ApiOperation(value = "车辆记录")
+    @ApiOperation(value = "车辆记录操作")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "车辆id", dataType = "Long"),
             @ApiImplicitParam(name = "remarks", value = "备注", dataType = "String"),
-            @ApiImplicitParam(name = "operation", value = "操作 ReviewCar：申请用车；VehicleDeparture：车辆离场；ReturnVehicle：归还车辆", dataType = "String")
+            @ApiImplicitParam(name = "operation", value = "操作，VehicleDeparture：车辆离场；ReturnVehicle：归还车辆", dataType = "String")
     })
     @PreAuthorize("hasRole('ROLE_VEHICLE') or hasRole('ROLE_VEHICLE_RECORD')")
     public CarRecord createVehicleRecord(Long id, String remarks, String operation) {
-        if (id == null || !VehicleInformationService.VEHICLE_INFORMATION_OPERATION.contains(operation)) {
+        if (id == null || !VehicleInformationService.VEHICLE_INFORMATION_OPERATION.contains(operation)
+                || VehicleInformationService.VEHICLE_INFORMATION_OPERATION.get(0).equals(operation)) {
             throw new NullPointerException("参数错误");
         }
         VehicleInformation vehicleInformation = vehicleInformationService.findOne(id);

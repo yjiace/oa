@@ -58,7 +58,7 @@ public class CarRecordLog implements Serializable {
     private String username;
 
     /**
-     * 类型
+     * 类型 ReviewCar：申请用车；CompletedApproval：同意审批；VehicleDeparture：车辆离场；ReturnVehicle：归还车辆；withdrawalOfApproval：撤回审批，rejectedApproval：拒绝审批
      */
     @DataName(name = "类型")
     @Column(name = "type" )

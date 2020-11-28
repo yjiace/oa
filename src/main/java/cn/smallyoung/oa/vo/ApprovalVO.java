@@ -17,8 +17,8 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@ApiModel("文件审批VO")
-public class DocumentApprovalVO implements Serializable {
+@ApiModel("审批VO")
+public class ApprovalVO implements Serializable {
 
     private static final long serialVersionUID = -5071610822869072373L;
 
@@ -63,4 +63,22 @@ public class DocumentApprovalVO implements Serializable {
      */
     @ApiModelProperty(notes = "编号")
     private String number;
+
+    /**
+     * 额外信息，JSON格式
+     */
+    @ApiModelProperty(notes = "额外信息，JSON格式")
+    private String extra;
+
+    /**
+     * 类型，document：文档；vehicle：车辆
+     */
+    @ApiModelProperty(notes = "类型，document：文档；vehicle：车辆")
+    private String type;
+
+    @ApiModelProperty(notes = "申请用车ID")
+    private Long vehicleId;
+
+    @ApiModelProperty(notes = "目的地")
+    private String  destination;
 }

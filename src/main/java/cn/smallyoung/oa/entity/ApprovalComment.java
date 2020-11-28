@@ -23,10 +23,10 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@ApiModel("文件审批评论")
-@Table(name = "t_document_approval_comment")
+@ApiModel("审批评论")
+@Table(name = "t_approval_comment")
 @EntityListeners({AuditingEntityListener.class})
-public class DocumentApprovalComment implements Serializable {
+public class ApprovalComment implements Serializable {
 
     private static final long serialVersionUID = 4136706221635382248L;
 
@@ -52,8 +52,8 @@ public class DocumentApprovalComment implements Serializable {
     @ManyToOne
     @JsonIgnore
     @PropIgnore
-    @JoinColumn(name = "document_approval_id")
-    private DocumentApproval documentApproval;
+    @JoinColumn(name = "approval_id")
+    private Approval approval;
 
     @CreatedBy
     @Column(name = "creator")

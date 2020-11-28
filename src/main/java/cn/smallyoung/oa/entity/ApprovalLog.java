@@ -21,10 +21,10 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@ApiModel("文件审批日志")
-@Table(name = "t_document_approval_log")
+@ApiModel("审批日志")
+@Table(name = "t_approval_log")
 @EntityListeners({AuditingEntityListener.class})
-public class DocumentApprovalLog implements Serializable {
+public class ApprovalLog implements Serializable {
 
     private static final long serialVersionUID = 1480392011564184578L;
 
@@ -51,8 +51,8 @@ public class DocumentApprovalLog implements Serializable {
     @ManyToOne
     @JsonIgnore
     @PropIgnore
-    @JoinColumn(name = "document_approval_id")
-    private DocumentApproval documentApproval;
+    @JoinColumn(name = "approval_id")
+    private Approval approval;
 
     /**
      * 操作记录的ID
@@ -71,11 +71,11 @@ public class DocumentApprovalLog implements Serializable {
     private String operation;
 
     /**
-     * 操作类型，attachmentFile：附件，documentApproval：审批，documentApprovalComments：评论
+     * 操作类型，attachmentFile：附件，approval：审批，approvalComments：评论
      */
     @DataName(name = "操作类型")
     @Column(name = "operation_type")
-    @ApiModelProperty(notes = "操作类型，attachmentFile：附件，documentApproval：审批，documentApprovalComments：评论")
+    @ApiModelProperty(notes = "操作类型，attachmentFile：附件，approval：审批，approvalComments：评论")
     private String operationType;
 
     /**
