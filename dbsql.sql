@@ -164,7 +164,7 @@ CREATE TABLE `oa`.`t_document_approval`  (
   `remarks` varchar(1024) NULL,
   `number` varchar(50) NOT NULL,
   `sort` int NOT NULL,
-  `username` varchar(50) NOT NULL,
+  `node_id` int NULL,
   `create_time` datetime NOT NULL,
   `update_time` datetime NOT NULL,
   PRIMARY KEY (`id`)

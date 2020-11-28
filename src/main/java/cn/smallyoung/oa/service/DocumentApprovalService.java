@@ -109,7 +109,6 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
         }
         //上传的文件列表
         documentApproval.setAttachmentFiles(attachmentFiles);
-        documentApproval.setUser(usernameList.get(0));
         documentApprovalDao.save(documentApproval);
         List<DocumentApprovalNode> nodes = new ArrayList<>();
         DocumentApprovalNode documentApprovalNode;
@@ -121,6 +120,7 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
             documentApprovalNode.setDocumentApproval(documentApproval);
             nodes.add(documentApprovalNode);
         }
+        documentApproval.setNode(nodes.get(0));
         documentApproval.setDocumentApprovalNodes(nodes);
         documentApproval.getDocumentApprovalLogs().add(documentApprovalLog(documentApproval, documentApproval.getId(),
                 DocumentApprovalLogOperation.add, DocumentApprovalLogOperationType.documentApproval, null));
@@ -147,7 +147,7 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
                 userName = node.getUser();
                 user = sysUserService.findOne(userName);
                 if(user != null && "Y".equals(user.getStatus()) && "N".equals(user.getIsDelete())){
-                    documentApproval.setUser(userName);
+                    documentApproval.setNode(node);
                     node.setStatus("Approval");
                     break;
                 }else if(i == (size - 1)){
@@ -185,7 +185,7 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
     public DocumentApproval reApprove(DocumentApproval documentApproval) {
         documentApproval.setStatus("Approval");
         documentApproval.getDocumentApprovalNodes().forEach(node -> {
-            if (documentApproval.getUser().equals(node.getUser())) {
+            if (documentApproval.getNode().getUser().equals(node.getUser())) {
                 node.setStatus("Approval");
             }
         });
@@ -207,7 +207,7 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
             node = documentApprovalNode;
             if (node.getUser().equals(username)) {
                 node.setStatus("Rejected");
-                documentApproval.setUser(node.getUser());
+                documentApproval.setNode(node);
                 node.setCompletedTime(LocalDateTime.now());
                 documentApproval.setStatus("Rejected");
                 messageNotificationService.releaseMessage(node.getUser(), "rejectedApproval",

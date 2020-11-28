@@ -88,10 +88,11 @@ public class DocumentApproval implements Serializable {
     /**
      * 当前审批节点（谁在审批）
      */
+    @OneToOne
     @DataName(name = "当前审批节点")
-    @Column(name = "username")
-    @ApiModelProperty(notes = "当前审批节点（谁在审批）")
-    private String user;
+    @JoinColumn(name = "node_id")
+    @ApiModelProperty(notes = "当前审批节点")
+    private DocumentApprovalNode node;
 
     /**
      * 关联的文件列表
