@@ -20,6 +20,11 @@ public class SysRoleService extends BaseService<SysRole, Long> {
     @Resource
     private SysRoleDao sysRoleDao;
 
+    @Override
+    public SysRole findOne(Long id){
+        return super.findOne(id);
+    }
+
     /**
      * 根据id集合查询所有角色
      *
