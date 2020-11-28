@@ -2,6 +2,9 @@ package cn.smallyoung.oa.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.core.lang.tree.TreeNodeConfig;
+import cn.hutool.core.lang.tree.TreeUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.smallyoung.oa.entity.SysPermission;
 import cn.smallyoung.oa.entity.SysRole;
@@ -45,13 +48,19 @@ public class SysRoleController {
 
     /**
      * 查询所有权限
-     *
      */
     @GetMapping(value = "findAllPermission")
     @ApiOperation(value = "查询所有权限")
     @PreAuthorize("hasRole('ROLE_ROLE') or hasRole('ROLE_ROLE_SAVEANDUPDATE')")
-    public List<SysPermission> findAllPermission(HttpServletRequest request) {
-        return sysPermissionService.findAll(WebUtils.getParametersStartingWith(request, "search_"));
+    public List<Tree<String>> findAllPermission(HttpServletRequest request) {
+        List<SysPermission> sysPermissions = sysPermissionService.findAll(WebUtils.getParametersStartingWith(request, "search_"));
+        return TreeUtil.build(sysPermissions, "0", new TreeNodeConfig(),
+                (treeNode, tree) -> {
+                    tree.setId(treeNode.getId().toString());
+                    tree.setParentId(treeNode.getParentId().toString());
+                    tree.setName(treeNode.getName());
+                    tree.putExtra("val", treeNode.getVal());
+                });
     }
 
     /**
@@ -86,14 +95,14 @@ public class SysRoleController {
     @PreAuthorize("hasRole('ROLE_ROLE') or hasRole('ROLE_ROLE_SAVEANDUPDATE')")
     @SystemOperationLog(module = "角色管理", methods = "编辑角色", serviceClass = SysRoleService.class, queryMethod = "findOne",
             parameterType = "Long", parameterKey = "role.id")
-    public SysRole save(SysRoleVO roleVO){
+    public SysRole save(SysRoleVO roleVO) {
         if (roleVO == null || StrUtil.hasBlank(roleVO.getName())) {
             throw new NullPointerException("参数错误");
         }
         roleVO.setId(null);
         SysRole role = new SysRole();
         BeanUtil.copyProperties(roleVO, role);
-        if(CollUtil.isNotEmpty(roleVO.getPermissions())){
+        if (CollUtil.isNotEmpty(roleVO.getPermissions())) {
             role.setSysPermissions(sysPermissionService.findByIdInAndIsDelete(roleVO.getPermissions()));
         }
         role.setIsDelete("N");
@@ -114,18 +123,18 @@ public class SysRoleController {
     @PreAuthorize("hasRole('ROLE_ROLE') or hasRole('ROLE_ROLE_SAVEANDUPDATE')")
     @SystemOperationLog(module = "角色管理", methods = "编辑角色", serviceClass = SysRoleService.class, queryMethod = "findOne",
             parameterType = "Long", parameterKey = "role.id")
-    public SysRole update(SysRoleVO roleVO){
+    public SysRole update(SysRoleVO roleVO) {
         if (roleVO == null || roleVO.getId() == null || StrUtil.hasBlank(roleVO.getName())) {
             throw new NullPointerException("参数错误");
         }
         SysRole role = sysRoleService.findOne(roleVO.getId());
-        if(role == null){
+        if (role == null) {
             String error = String.format("根据ID【%s】没有找到角色", roleVO.getId());
             log.error(error);
             throw new RuntimeException(error);
         }
         BeanUtil.copyProperties(roleVO, role);
-        if(CollUtil.isNotEmpty(roleVO.getPermissions())){
+        if (CollUtil.isNotEmpty(roleVO.getPermissions())) {
             role.setSysPermissions(sysPermissionService.findByIdInAndIsDelete(roleVO.getPermissions()));
         }
         return sysRoleService.save(role);
@@ -134,7 +143,7 @@ public class SysRoleController {
     /**
      * 删除角色
      *
-     * @param id       需要删除的角色ID
+     * @param id 需要删除的角色ID
      * @return ResultMap封装好的返回数据
      */
     @DeleteMapping(value = "delete")
@@ -149,7 +158,7 @@ public class SysRoleController {
         return sysRoleService.save(role);
     }
 
-    private SysRole checkRole(Long id){
+    private SysRole checkRole(Long id) {
         if (id == null) {
             throw new NullPointerException("参数错误");
         }
@@ -159,8 +168,8 @@ public class SysRoleController {
             log.error(error);
             throw new UsernameNotFoundException(error);
         }
-        String isDelete  = "Y";
-        if(isDelete.equals(role.getIsDelete())){
+        String isDelete = "Y";
+        if (isDelete.equals(role.getIsDelete())) {
             String error = String.format("该角色【%s】已删除", id);
             log.error(error);
             throw new UsernameNotFoundException(error);
