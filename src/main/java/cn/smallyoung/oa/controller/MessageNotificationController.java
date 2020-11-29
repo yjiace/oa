@@ -98,7 +98,7 @@ public class MessageNotificationController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "ids", value = "主键ID", dataType = "List")
     })
-    public List<MessageNotification> deleteMessageNotification(List<Long> ids) {
+    public List<MessageNotification> deleteMessageNotification(@RequestParam(value = "ids") List<Long> ids) {
         if(CollUtil.isEmpty(ids)){
             throw new NullPointerException("参数错误");
         }
@@ -121,7 +121,7 @@ public class MessageNotificationController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "ids", value = "主键ID列表", dataType = "List")
     })
-    public List<MessageNotification> readingMessageNotification(List<Long> ids) {
+    public List<MessageNotification> readingMessageNotification(@RequestParam(value = "ids") List<Long> ids) {
         if(CollUtil.isEmpty(ids)){
             throw new NullPointerException("参数错误");
         }
