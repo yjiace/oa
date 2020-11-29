@@ -76,7 +76,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/v2/api-docs/**",
                         "/v2/api-docs-ext/**",
                         "/webjars/**",
-                        "/start/**"
+                        "/start/**",
+                        "/file/downloadFileByToken"
                 )
                 .permitAll()
                 // 对登录注册要允许匿名访问
