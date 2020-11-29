@@ -10,63 +10,10 @@
 
 <div class="layui-fluid">
   <div class="layui-card">
-    <div
-      class="layui-form layui-card-header layuiadmin-card-header-auto searh_bar"
-      lay-filter="layadmin-useradmin-formlist"
-    >
-      <div class="layui-form-item">
-        <div class="layui-inline">
-          <label class="layui-form-label">文件编号</label>
-          <div class="layui-input-block">
-            <input
-              type="text"
-              name="documentNumber"
-              placeholder="请输入文件编号"
-              autocomplete="off"
-              class="layui-input"
-            />
-          </div>
-        </div>
-        <!-- <div class="layui-inline">
-          <label class="layui-form-label">手机</label>
-          <div class="layui-input-block">
-            <input
-              type="text"
-              name="telphone"
-              placeholder="请输入"
-              autocomplete="off"
-              class="layui-input"
-            />
-          </div>
-        </div> -->
-        <!-- <div class="layui-inline">
-          <label class="layui-form-label">角色</label>
-          <div class="layui-input-block">
-            <select name="role">
-              <option value="0">管理员</option>
-              <option value="1">超级管理员</option>
-              <option value="2">纠错员</option>
-              <option value="3">采购员</option>
-              <option value="4">推销员</option>
-              <option value="5">运营人员</option>
-              <option value="6">编辑</option>
-            </select>
-          </div>
-        </div> -->
-        <div class="layui-inline">
-          <button
-            class="layui-btn layuiadmin-btn-admin"
-            lay-submit
-            lay-filter="LAY-user-back-search"
-          >
-            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
-          </button>
-        </div>
-      </div>
-    </div>
     <div class="layui-card-body">
       <table id="file_list_table" lay-filter="file_list_table"></table>
     </div>
+    <div id="fileManager"> </div>
   </div>
 </div>
 

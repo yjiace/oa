@@ -120,6 +120,17 @@
 
                     //提交 Ajax 成功后，关闭当前弹层并重载表格
                     //$.ajax({});
+                    admin.req({
+                      url:'/sys/role/save',
+                      method:'POST',
+                      data:{
+                        name: field.name,
+                        comments: field.comments
+                      },
+                      done: function(res){
+                        console.log(res)
+                      }
+                    })
                     layui.table.reload('LAY-user-back-role') //重载表格
                     layer.close(index) //执行关闭
                   })

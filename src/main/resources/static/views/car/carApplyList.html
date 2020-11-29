@@ -1,0 +1,95 @@
+<title>审批管理</title>
+
+<div class="layui-card layadmin-header">
+  <div class="layui-breadcrumb" lay-filter="breadcrumb">
+    <a lay-href="">主页</a>
+    <a><cite>审批管理</cite></a>
+    <a><cite>我审批的</cite></a>
+  </div>
+</div>
+
+<div class="layui-fluid">
+  <div class="layui-card">
+    <div
+      class="layui-form layui-card-header layuiadmin-card-header-auto searh_bar"
+      lay-filter="layadmin-useradmin-formlist"
+    >
+      <div class="layui-form-item">
+        <div class="layui-inline">
+          <label class="layui-form-label">审批编号</label>
+          <div class="layui-input-block">
+            <input
+              type="text"
+              name="loginname"
+              placeholder="请输入"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+        </div>
+        <div class="layui-inline">
+          <button
+            class="layui-btn layuiadmin-btn-admin"
+            lay-submit
+            lay-filter="LAY-user-back-search"
+          >
+            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+          </button>
+        </div>
+        <!-- <div class="layui-inline">
+          <button
+            class="layui-btn layuiadmin-btn-admin"
+            id="apply_btn"
+            data-type="apply"
+          >
+            发起审批
+          </button>
+        </div> -->
+      </div>
+    </div>
+    <!-- 按钮 -->
+    <div class="layui-card-body">
+      <!-- <div style="padding-bottom: 10px;text-align: center;">
+        <button class="layui-btn layuiadmin-btn-admin" data-type="delCar">
+          待审批
+        </button>
+        <button style="margin-left: -3px;" class="layui-btn layuiadmin-btn-admin layui-btn-primary" data-type="addCar">
+          已审批
+        </button>
+      </div> -->
+    </div>
+    <!-- 表格 -->
+    <div class="layui-card-body">
+      <table id="apply_list_table" lay-filter="apply_list_table"></table>
+    </div>
+  </div>
+</div>
+
+<script>
+  layui
+    .use('carMyApply', layui.factory('carMyApply'))
+    .use(['admin', 'table'], function () {
+      var table = layui.table
+    })
+</script>
+<script type="text/html" id="apply_status">
+  {{# if(d.status === 'Approval'){ }}
+  <button class="layui-btn layui-btn-xs">审批中</button>
+  {{# } else if (d.status === 'Completed'){ }}
+  <button class="layui-btn layui-btn-primary layui-btn-xs">已完成</button>
+  {{# } else if (d.status === 'Withdrawn'){ }}
+  <button class="layui-btn layui-btn-primary layui-btn-xs">已撤回</button>
+  {{# } else if (d.status === 'Rejected'){ }}
+  <button class="layui-btn layui-btn-primary layui-btn-xs">已拒绝</button>
+  {{#}}}
+</script>
+<script type="text/html" id="aplpy_list_table_edit">
+  {{# if(d.status === 'Approval'){ }}
+  <!-- <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"
+    ><i class="layui-icon layui-icon-edit"></i>审批</a
+  > -->
+  {{#}}}
+  <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view"
+    ><i class="layui-icon layui-icon-edit"></i>查看</a
+  >
+</script>

@@ -322,8 +322,6 @@ public class SysUserController {
         return sysUserService.save(user);
     }
 
-    //todo 是否用户编辑个人信息
-
     private SysUser checkUser(String username) {
         if (StrUtil.hasBlank(username)) {
             throw new NullPointerException("参数错误");

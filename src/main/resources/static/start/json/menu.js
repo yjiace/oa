@@ -36,6 +36,14 @@
       "name": "car-apply"
       ,"title": "申请用车"
       ,"jump": "/car/apply"
+    },{
+      "name": "car-apply"
+      ,"title": "我发起的"
+      ,"jump": "/car/carApplyList"
+    }, {
+      "name": "approve-approve"
+      ,"title": "我审批的"
+      ,"jump": "/car/carNeedApprove"
     }]
   },
   {

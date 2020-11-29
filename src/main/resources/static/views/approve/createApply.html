@@ -24,10 +24,42 @@
           <script type="text/html" template>
             <input
               type="text"
+              name="number"
+              value="{{ d.params.number || '' }}"
+              lay-verify="required|onlyone"
+              placeholder="请输审批编号"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">标题</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
+              name="title"
+              value="{{ d.params.title || '' }}"
+              lay-verify="required"
+              placeholder="请输标题"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">文件编号</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
               name="documentNumber"
               value="{{ d.params.documentNumber || '' }}"
               lay-verify="required"
-              placeholder="请输审批编号"
+              placeholder="请输文件编号"
               autocomplete="off"
               class="layui-input"
             />
@@ -57,6 +89,17 @@
             <button type="button" class="layui-btn" id="upload_word">
               <i class="layui-icon">&#xe67c;</i>上传文件
             </button>
+            <div
+              class="fileList_div"
+              style="height:38px;line-height:38px;display:none"
+            >
+              <a
+                class="file_a"
+                style="display:block;height:100%;"
+                id="filedList"
+              >
+              </a>
+            </div>
           </script>
         </div>
       </div>
@@ -70,12 +113,22 @@
                 <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
                 <div class="layui-timeline-content layui-text">
                   {{# if(item.name){ }}
-                  <p>{{item.name}}</p>
+                  <p style="line-height:1.3;color:#000000;margin-bottom:5px">
+                    {{item.name}}
+                  </p>
                   {{# if(item.comment){ }}
                   <p>{{item.comment}}</p>
                   {{# } }}
-                  <button data-type="{{index}}" class="layui-btn layui-btn-xs applyList_edit">修改</button>
-                  <button data-type="{{index}}" class="layui-btn layui-btn-xs layui-btn-danger applyList_del">
+                  <button
+                    data-type="{{index}}"
+                    class="layui-btn layui-btn-xs applyList_edit"
+                  >
+                    修改
+                  </button>
+                  <button
+                    data-type="{{index}}"
+                    class="layui-btn layui-btn-xs layui-btn-danger applyList_del"
+                  >
                     删除
                   </button>
                   {{# } else { }}

@@ -1,5 +1,6 @@
 package cn.smallyoung.oa.controller;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.smallyoung.oa.entity.MessageNotification;
 import cn.smallyoung.oa.interfaces.ResponseResultBody;
 import cn.smallyoung.oa.service.MessageNotificationService;
@@ -20,6 +21,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -89,64 +91,49 @@ public class MessageNotificationController {
     /**
      * 删除消息
      *
-     * @param id 主键ID
+     * @param ids 主键ID
      */
     @DeleteMapping(value = "deleteMessageNotification")
     @ApiOperation(value = "删除消息")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "主键ID", dataType = "Long")
+            @ApiImplicitParam(name = "ids", value = "主键ID", dataType = "List")
     })
-    public void deleteMessageNotification(Long id) {
-        MessageNotification messageNotification = checkAuth(id);
-        messageNotification.setIsDelete("Y");
-        messageNotificationService.save(messageNotification);
+    public List<MessageNotification> deleteMessageNotification(List<Long> ids) {
+        if(CollUtil.isEmpty(ids)){
+            throw new NullPointerException("参数错误");
+        }
+        List<MessageNotification> messageNotifications = messageNotificationService.findByIdIn(ids);
+        if(CollUtil.isNotEmpty(messageNotifications)){
+            messageNotifications.forEach(m -> m.setIsDelete("Y"));
+            messageNotificationService.save(messageNotifications);
+        }
+        return messageNotifications;
     }
 
 
     /**
      * 阅读消息
      *
-     * @param id 主键ID
+     * @param ids 主键ID列表
      */
     @PostMapping(value = "readingMessageNotification")
     @ApiOperation(value = "阅读消息")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "主键ID", dataType = "Long")
+            @ApiImplicitParam(name = "ids", value = "主键ID列表", dataType = "List")
     })
-    public MessageNotification readingMessageNotification(Long id) {
-        MessageNotification messageNotification = checkAuth(id);
-        messageNotification.setStatus("Read");
-        messageNotification.setReadingTme(LocalDateTime.now());
-        return messageNotificationService.save(messageNotification);
-    }
-
-    /**
-     * 一键标记已读
-     */
-    @PostMapping(value = "markReadWithOneClick")
-    @ApiOperation(value = "一键标记已读")
-    public void markReadWithOneClick(){
-        messageNotificationService.markReadWithOneClick();
-    }
-
-    private MessageNotification checkAuth(Long id) {
-        if (id == null) {
+    public List<MessageNotification> readingMessageNotification(List<Long> ids) {
+        if(CollUtil.isEmpty(ids)){
             throw new NullPointerException("参数错误");
         }
-        MessageNotification messageNotification = messageNotificationService.findOne(id);
-        String isDelete = "Y";
-        if (messageNotification == null || isDelete.equals(messageNotification.getIsDelete())) {
-            String error = String.format("根据ID【%s】,没有找到消息", id);
-            log.error(error);
-            throw new RuntimeException(error);
+        List<MessageNotification> messageNotifications = messageNotificationService.findByIdIn(ids);
+        if(CollUtil.isNotEmpty(messageNotifications)){
+            LocalDateTime now = LocalDateTime.now();
+            messageNotifications.forEach(m -> {
+                m.setStatus("Read");
+                m.setReadingTme(now);
+            });
+            messageNotificationService.save(messageNotifications);
         }
-        String username = sysUserService.currentlyLoggedInUser();
-        if (!messageNotification.getRecipientUsername().equals(username)) {
-            String error = String.format("当前用户【%s】无法操作该消息【%s】", username, id);
-            log.error(error);
-            throw new RuntimeException(error);
-        }
-        return messageNotification;
+        return messageNotifications;
     }
-
 }

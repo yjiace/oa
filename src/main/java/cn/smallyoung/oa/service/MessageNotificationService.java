@@ -75,4 +75,8 @@ public class MessageNotificationService extends BaseService<MessageNotification,
     public void markReadWithOneClick(){
         messageNotificationDao.markReadWithOneClick(sysUserService.currentlyLoggedInUser());
     }
+
+    public List<MessageNotification> findByIdIn(List<Long> ids){
+        return messageNotificationDao.findByIdIn(ids);
+    }
 }

@@ -1,0 +1,32 @@
+.searh_bar {
+}
+.searh_bar .layui-form-label {
+  width: auto;
+  padding-left: 0;
+}
+.searh_bar .layui-input-block {
+  margin-left: 80px;
+}
+.layui-timeline-item:last-child:before {
+  display: none !important;
+}
+.suxue-card {
+  border-radius: 4px;
+  border: 1px solid #ebeef5;
+  background-color: #fff;
+  overflow: hidden;
+  color: #303133;
+  transition: 0.3s;
+}
+.suxue-shadow {
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+.file_a {
+  cursor: pointer;
+}
+.file_a:hover {
+  color: #409eff;
+}
+.layui-elip {
+  width: 100px;
+}

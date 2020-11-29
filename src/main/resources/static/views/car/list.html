@@ -61,18 +61,18 @@
 </script>
 <!-- 表格状态列 -->
 <script type="text/html" id="buttonTpl">
-  {{# if(d.currentCarRecord && d.currentCarRecord.status === 'NotLeaving'){ }}
-  <button class="layui-btn layui-btn-xs">未离场</button>
-  {{# } else if ( !d.currentCarRecord ){ }}
-  <button class="layui-btn layui-btn-normal layui-btn-xs">未使用</button>
-  {{# } else if (d.currentCarRecord && d.currentCarRecord.status ===
+  {{# if( d.status === 'NotLeaving'){ }}
+  <button class="layui-btn layui-btn-xs">{{d.statusText}}</button>
+  {{# } else if ( !d.status ){ }}
+  <button class="layui-btn layui-btn-normal layui-btn-xs">{{d.statusText}}</button>
+  {{# } else if (d.status ===
   'NotReturned'){ }}
-  <button class="layui-btn layui-btn-warm layui-btn-xs">未归还</button>
+  <button class="layui-btn layui-btn-warm layui-btn-xs">{{d.statusText}}</button>
   {{#}}}
 </script>
 <!-- 表格工具栏 -->
 <script type="text/html" id="car_list_table_edit">
-  {{# if (d.status !== 'NotInUse'){ }}
+  {{# if ( d.currentCarRecord && d.currentCarRecord.status !== 'NotInUse'){ }}
   <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="log">记录</a>
   {{# } }}
   <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>

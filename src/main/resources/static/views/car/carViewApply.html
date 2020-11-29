@@ -1,0 +1,276 @@
+<title>发起审批</title>
+
+<div class="layui-card layadmin-header">
+  <div class="layui-breadcrumb" lay-filter="breadcrumb">
+    <a lay-href="">主页</a>
+    <a><cite>审批管理</cite></a>
+    <a><cite>我审批的</cite></a>
+    <a><cite>查看审批</cite></a>
+  </div>
+</div>
+
+<!-- 布局 -->
+<div class="layui-fluid">
+  <div class="layui-card">
+    <div
+      class="layui-form"
+      id="createApply_form"
+      lay-filter="createApply_form"
+      style="padding: 20px 30px 20px 0"
+    > 
+    <div class="layui-form-item">
+        <label class="layui-form-label">审批编号</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
+              name="number"
+              disabled
+              value="{{ d.params.number || '' }}"
+              lay-verify="required"
+              placeholder="请输审批编号"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">标题</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
+              name="title"
+              disabled
+              value="{{ d.params.title || '' }}"
+              lay-verify="required"
+              placeholder="请输审批编号"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">目的地</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
+              name="destination"
+              disabled
+              value="{{ d.params.destination || '' }}"
+              lay-verify="required"
+              placeholder="请输审批编号"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">审批流程</label>
+        <div class="layui-input-inline" style="padding:10px 10px 10px 0px; width: auto">
+          <script type="text/html" id="apply_list">
+            <ul class="layui-timeline">
+              {{# layui.each(d, function(index, item){ }}
+              <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis" style="color: {{item.color}}">{{item.icon}}</i>
+                <div class="layui-timeline-content layui-text">
+                  {{# if(item.name){ }}
+                  <p style="line-height:1.3;color:#000000">
+                  {{item.name}}
+                  <span class="layui-badge layui-bg-orange">
+                    {{item.statusText}}
+                  </span>
+                  </p>
+                  {{# if(item.status === 'Completed' || item.status === 'Rejected' ){ }}
+                  {{# if(item.comment ){ }}
+                  <div
+                    class="suxue-card suxue-shadow"
+                    style="width:200px;height:100px;margin-top:5px;padding:10px;overflow:auto"
+                  >
+                    <p>{{item.comment}}</p>
+                  </div>
+                  {{# } else { }}
+                  <div>暂无留言</div>
+                  {{# } }} 
+                  {{# } }} 
+                  {{# } else { }}
+                  <button
+                    class="layui-btn layui-btn-xs layui-btn-normal addPeople"
+                    data-type="addPeople"
+                  >
+                    添加审批人
+                  </button>
+                  {{# } }}
+                </div>
+              </li>
+              {{# }); }} {{# if(d.length === 0){ }} 无数据 {{# } }}
+            </ul>
+          </script>
+          <div id="apply_list_view"></div>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline" id="type_1" style="display: none;">
+          <script type="text/html" template>
+            <input
+              type="button"
+              lay-submit
+              id="reApply"
+              lay-filter="apply-submit"
+              value="发起审批"
+              class="layui-btn"
+            />
+          </script>
+        </div>
+        <div class="layui-input-inline" id="type_2" style="display: none;"">
+          <script type="text/html" template>
+            <input
+              type="button"
+              lay-submit
+              id="reApply"
+              lay-filter="apply-submit"
+              value="发起审批"
+              class="layui-btn"
+            />
+          </script>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+layui.use(['table', 'admin', 'form', 'laytpl'], function () {
+    var $ = layui.$,
+      admin = layui.admin,
+      table = layui.table,
+      view = layui.view,
+      form = layui.form,
+      laytpl = layui.laytpl
+    var applyList = []
+    var file = null
+    var router = layui.router()
+    var search = router.search
+    // 渲染操作按钮
+    function renderButton(data) {
+      if (search.type === '1') {
+        $('#type_1').show()
+      } else if (search.type === '2') {
+        console.log(1)
+      }
+      $('#type_1 input').on('click', function(e){
+        admin.reqAsync({
+          method: 'POST',
+          url: '/approval/reApprove',
+          data: {
+            id: data.id
+          }
+        }).then(function(res){
+          if(res.code === 200){
+            layer.msg('操作成功')
+          }else{
+            layer.msg(res.data)
+          }
+        })
+      })
+    }
+    // 渲染申请流程
+    function renderApply(data) {
+      laytpl($('#apply_list').html()).render(data, function (html) {
+        $('#apply_list_view').html(html)
+        // addEvent()
+      })
+    }
+    // 渲染表单
+    function renderForm(data) {
+      setTimeout(function () {
+        form.val('createApply_form', data)
+        $('#reApply').val('重新提审')
+      })
+    }
+    function renderUpload(data) {
+      $('#filedList').html('<i class="layui-icon">&#xe655;</i>' + data.fileName)
+    }
+    if (router.search && router.search.id) {
+      admin
+        .reqAsync({
+          url: '/approval/findOneById',
+          method: 'GET',
+          data: {
+            id: router.search.id,
+          },
+        })
+        .then(function (res) {
+          if (res.code === 200) {
+            // if(res.data.carRecord.id){
+            // }
+            console.log(res.data)
+            // form.val('createApply_form', res.data)
+            renderForm({
+              title:res.data.title,
+              carRecord:res.data.carRecord || {},
+              number:res.data.number,
+              destination:res.data.destination,
+            })
+            if(res.data.status === 'Rejected'){
+              renderButton(res.data)
+            }
+            // // 赋值文件名
+            // renderUpload({
+            //   fileName: res.data.attachmentFiles[0].fileName,
+            // })
+            var zidian = {
+              NotStarted:{
+                text:'未开始',
+                icon:'&#xe63f;',
+                color:'#5FB878'
+              },
+              Approval:{
+                text:'审批中',
+                icon:'&#xe63f;',
+                color:'#5FB878'
+              },
+              Completed:{
+                text:'已完成',
+                icon:'&#x1005;',
+                color:'#5FB878'
+              },
+              Withdrawn:{
+                text:'已撤回',
+                icon:'&#xe63f;',
+                color:'#5FB878'
+              },
+              Rejected:{
+                text:'已拒绝',
+                icon:'&#x1007;',
+                color:'red'
+              }
+            }
+            // 获取审批数据
+            var applyData = res.data.approvalNodes.map(function (
+              item,
+              index
+            ) {
+              var approvalComment = res.data.approvalComments[index] || {}
+              return $.extend(item,{
+                name: item.user,
+                status: item.status,
+                statusText: zidian[item.status].text,
+                color:zidian[item.status].color,
+                icon:zidian[item.status].icon,
+                comment: approvalComment.message || '',
+              })
+            })
+            renderApply(applyData)
+          } else {
+            layer.msg('无权访问')
+            window.history.back()
+          }
+        })
+    }
+  })
+</script>
