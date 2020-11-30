@@ -66,6 +66,24 @@ public class AttachmentFile extends BaseEntity implements Serializable {
     private String url;
 
     /**
+     * swf路径
+     */
+    @Column(name = "swf_url" )
+    @DataName(name = "swf路径")
+    @ApiModelProperty(notes = "swf路径")
+    private String swfUrl;
+
+    /**
+     * pdf路径
+     */
+    @Column(name = "pdf_url" )
+    @DataName(name = "pdf路径")
+    @ApiModelProperty(notes = "pdf路径")
+    private String pdfUrl;
+
+
+
+    /**
      * 文件编号
      */
     @DataName(name = "文件编号")

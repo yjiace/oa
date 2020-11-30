@@ -44,7 +44,7 @@ import java.util.List;
 @Api(tags = "文件操作")
 public class AttachmentFileController {
 
-    private final TimedCache<String, Dict> attachmentFileToken = CacheUtil.newTimedCache(1000 * 60 * 2);
+    private final TimedCache<String, Dict> attachmentFileToken = CacheUtil.newTimedCache(1000 * 60);
 
     @Resource
     private AttachmentFileService attachmentFileService;
@@ -106,10 +106,20 @@ public class AttachmentFileController {
             serviceClass = AttachmentFileService.class, way = SysOperationLogWayEnum.RecordOnly)
     public String getToken(Long id) throws FileNotFoundException {
         AttachmentFile attachmentFile = checkAttachmentFile(id);
-        String token = IdUtil.simpleUUID();
-        attachmentFileToken.put(token, Dict.create()
-                .set("user", sysUserService.currentlyLoggedInUser()).set("file", attachmentFile));
-        return token;
+        return createToken("download", attachmentFile);
+    }
+
+    /**
+     * 获取在线浏览凭证
+     */
+    @GetMapping(value = "browseOnlineToken")
+    @ApiOperation(value = "获取在线浏览凭证")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "附件主键id")
+    })
+    public String browseOnlineToken(Long id) throws FileNotFoundException {
+        AttachmentFile attachmentFile = checkAttachmentFile(id);
+        return createToken("browseOnline", attachmentFile);
     }
 
     /**
@@ -126,13 +136,36 @@ public class AttachmentFileController {
         if (StrUtil.isBlank(token)) {
             throw new NullPointerException("参数错误");
         }
-        Dict dict = attachmentFileToken.get(token);
+        Dict dict = attachmentFileToken.get("download" + token);
         if (dict == null) {
             log.error("文件下载请求被拒绝，请重新请求下载文件");
             throw new AccessException("文件下载请求被拒绝，请重新请求下载文件");
         }
-        AttachmentFile attachmentFile = (AttachmentFile) dict.get("file");
-        upload(attachmentFile, response);
+        upload((AttachmentFile) dict.get("file"), response);
+    }
+
+    /**
+     * 根据凭证下载附件
+     *
+     * @param token 附件下载凭证
+     */
+    @GetMapping(value = "downloadFileByToken")
+    @ApiOperation(value = "根据凭证下载附件")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token", value = "附件下载凭证"),
+            @ApiImplicitParam(name = "type", value = "下载的类型，swf,pdf")
+    })
+    public void browseOnline(String token, String type, HttpServletResponse response) throws IOException {
+        if (StrUtil.isBlank(token)) {
+            throw new NullPointerException("参数错误");
+        }
+        Dict dict = attachmentFileToken.get("browseOnline" + token);
+        if (dict == null) {
+            log.error("文件下载请求被拒绝，请重新请求下载文件");
+            throw new AccessException("文件下载请求被拒绝，请重新请求下载文件");
+        }
+        File file  = attachmentFileService.browseOnline((AttachmentFile) dict.get("file"), type);
+        upload(file, file.getName(), response);
     }
 
     /**
@@ -148,8 +181,7 @@ public class AttachmentFileController {
     @SystemOperationLog(module = "文件管理", methods = "文件下载",
             serviceClass = AttachmentFileService.class, way = SysOperationLogWayEnum.RecordOnly)
     public void downloadFile(Long id, HttpServletResponse response) throws IOException {
-        AttachmentFile attachmentFile = checkAttachmentFile(id);
-        upload(attachmentFile, response);
+        upload(checkAttachmentFile(id), response);
     }
 
 
@@ -180,17 +212,21 @@ public class AttachmentFileController {
     }
 
     private void upload(AttachmentFile attachmentFile, HttpServletResponse response) throws IOException {
-        InputStream inputStream;
-        OutputStream outputStream;
-        response.setCharacterEncoding("utf-8");
-        response.setContentType("multipart/form-data");
-        response.setHeader("Content-Disposition", "attachment;filename=" + attachmentFile.getFileName());
         File file = new File(attachmentFile.getUrl());
         if (!file.exists()) {
             String error = String.format("根据路径【%s】,没有找到文件", attachmentFile.getUrl());
             log.error(error);
             throw new FileNotFoundException(error);
         }
+        upload(file, attachmentFile.getFileName(), response);
+    }
+    private void upload(File file, String fileName, HttpServletResponse response) throws IOException {
+        InputStream inputStream;
+        OutputStream outputStream;
+        response.setCharacterEncoding("utf-8");
+        response.setContentType("multipart/form-data");
+        response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+
         inputStream = new FileInputStream(file);
         outputStream = response.getOutputStream();
         byte[] b = new byte[1024];
@@ -200,6 +236,13 @@ public class AttachmentFileController {
         }
         outputStream.close();
         inputStream.close();
+    }
+
+    private String createToken(String type, AttachmentFile attachmentFile){
+        String token = IdUtil.simpleUUID();
+        attachmentFileToken.put(type + token, Dict.create()
+                .set("user", sysUserService.currentlyLoggedInUser()).set("file", attachmentFile));
+        return token;
     }
 
     //todo 操作日志

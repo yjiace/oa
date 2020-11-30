@@ -157,6 +157,30 @@ public class VehicleInformationController {
     }
 
     /**
+     * 删除车辆
+     *
+     * @param id        车辆id
+     */
+    @PostMapping("delVehicleRecord")
+    @ApiOperation(value = "删除车辆")
+    @PreAuthorize("hasRole('ROLE_VEHICLE') or hasRole('ROLE_VEHICLE_DELETE')")
+    @ApiImplicitParam(name = "id", value = "车辆id", required = true, dataType = "Long")
+    @SystemOperationLog(module = "车辆管理", methods = "删除车辆", serviceClass = VehicleInformationService.class,
+            queryMethod = "findOne", parameterType = "Long", parameterKey = "id")
+    public VehicleInformation delVehicleRecord(Long id){
+        if (id == null) {
+            throw new NullPointerException("参数错误");
+        }
+        VehicleInformation vehicleInformation = vehicleInformationService.findOne(id);
+        if (vehicleInformation == null) {
+            String error = String.format("根据ID【%s】没有查询到该车", id);
+            log.error(error);
+            throw new RuntimeException(error);
+        }
+        vehicleInformation.setIsDelete("Y");
+        return vehicleInformationService.save(vehicleInformation);
+    }
+    /**
      * 分页查询车辆申请记录
      *
      * @param page  页码

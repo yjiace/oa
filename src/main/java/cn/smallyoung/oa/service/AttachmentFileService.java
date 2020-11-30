@@ -1,23 +1,23 @@
 package cn.smallyoung.oa.service;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.smallyoung.oa.base.BaseService;
 import cn.smallyoung.oa.dao.AttachmentFileDao;
 import cn.smallyoung.oa.entity.AttachmentFile;
+import cn.smallyoung.oa.util.OfficeConverter;
+import cn.smallyoung.oa.util.PathUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -29,6 +29,10 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class AttachmentFileService extends BaseService<AttachmentFile, Long> {
 
+    private final static List<String> NEED_CONVERTER = Arrays.asList("doc", "docx", "xls", "xlsx","ppt","pptx", "odt", "ods", "odp");
+
+    @Resource
+    private OfficeConverter officeConverter;
     @Resource
     private AttachmentFileDao attachmentFileDao;
 
@@ -38,7 +42,7 @@ public class AttachmentFileService extends BaseService<AttachmentFile, Long> {
             return null;
         }
         List<AttachmentFile> attachmentFiles = new ArrayList<>();
-        String filePath = getPath(securityClassification);
+        String filePath = PathUtil.getPath(securityClassification);
         AttachmentFile attachmentFile;
         //将文件写入磁盘
         String fileName;
@@ -68,27 +72,62 @@ public class AttachmentFileService extends BaseService<AttachmentFile, Long> {
                 log.error("上传文件错误，{}", e.getMessage());
             }
         }
-        return attachmentFileDao.saveAll(attachmentFiles);
+        attachmentFileDao.saveAll(attachmentFiles);
+        converter(attachmentFiles);
+        return attachmentFiles;
     }
 
-    public static String getPath(String subdirectory) {
-        //获取跟目录---与jar包同级目录的upload目录下指定的子目录subdirectory
-        File upload;
-        try {
-            //本地测试时获取到的是"工程目录/target/upload/subdirectory
-            File path = new File(ResourceUtils.getURL("classpath:").getPath());
-            if (!path.exists()) {
-                path = new File("");
-            }
-            upload = new File(path.getAbsolutePath(), "upload" + File.separator + subdirectory + File.separator);
-            //如果不存在则创建目录
-            if (!upload.exists()) {
-                FileUtil.mkdir(upload);
-            }
-            return upload + File.separator;
-        } catch (FileNotFoundException e) {
-            log.error("获取服务器路径发生错误，{}", e.getMessage());
-            throw new RuntimeException("获取服务器路径发生错误！");
+    public void converter(List<AttachmentFile> attachmentFiles){
+        if(CollUtil.isEmpty(attachmentFiles)){
+            return;
         }
+        File officeFile;
+        File pdfFile;
+        File swfFile;
+        String url;
+        String pdfUrl;
+        String swfUrl;
+        boolean isOk;
+        for(AttachmentFile attachmentFile : attachmentFiles){
+            url = attachmentFile.getUrl();
+            if(!NEED_CONVERTER.contains(url.substring(url.lastIndexOf(".") + 1))){
+                continue;
+            }
+            officeFile = new File(attachmentFile.getUrl());
+            pdfUrl = url.substring(0, url.lastIndexOf(".")) + ".pdf";
+            pdfFile = new File(pdfUrl);
+            if(!officeConverter.office2pdf(officeFile, pdfFile)){
+                continue;
+            }
+            attachmentFile.setPdfUrl(pdfUrl);
+            swfUrl = url.substring(0, url.lastIndexOf(".")) + ".swf";
+            swfFile = new File(swfUrl);
+            if(!officeConverter.pdf2swf(pdfFile, swfFile)){
+                continue;
+            }
+            attachmentFile.setSwfUrl(swfUrl);
+        }
+        attachmentFileDao.saveAll(attachmentFiles);
+    }
+
+    public File browseOnline(AttachmentFile attachmentFile, String type){
+        attachmentFile = attachmentFileDao.findById(attachmentFile.getId()).orElse(attachmentFile);
+        String url = attachmentFile.getUrl();
+        if(!NEED_CONVERTER.contains(url.substring(url.lastIndexOf(".") + 1))){
+            return new File(attachmentFile.getUrl());
+        }
+        File pdfFile = new File(url.substring(0, url.lastIndexOf(".")) + ".pdf");
+        String pdf = "pdf";
+        if(!pdfFile.isFile()){
+            officeConverter.office2pdf(new File(attachmentFile.getUrl()), pdfFile);
+        }
+        if(pdf.equals(type)){
+            return pdfFile;
+        }
+        File swfFile = new File(url.substring(0, url.lastIndexOf(".")) + ".swf");
+        if(!swfFile.isFile()){
+            officeConverter.office2pdf(pdfFile, swfFile);
+        }
+        return swfFile;
     }
 }

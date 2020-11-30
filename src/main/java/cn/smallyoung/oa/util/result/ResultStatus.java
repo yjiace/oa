@@ -15,9 +15,20 @@ public enum ResultStatus {
     SUCCESS(200, "OK"),
 
     /**
-     *
+     * 400
      */
     BAD_REQUEST(400, "Bad Request"),
+
+    /**
+     * 401
+     */
+    UNAUTHORIZED(401, "Unauthorized"),
+
+    /**
+     * 403
+     */
+    FORBIDDEN(403, "Forbidden"),
+
 
     /**
      * 系统错误

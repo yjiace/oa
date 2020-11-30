@@ -72,4 +72,5 @@ jwt:
   expiration: 1440
 default:
   password: 123456
+pdf2swf-exe-url: C:\Program Files (x86)\SWFTools\pdf2swf.exe
 

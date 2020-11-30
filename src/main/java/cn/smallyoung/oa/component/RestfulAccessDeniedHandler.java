@@ -2,6 +2,7 @@ package cn.smallyoung.oa.component;
 
 import cn.hutool.json.JSONUtil;
 import cn.smallyoung.oa.util.result.Result;
+import cn.smallyoung.oa.util.result.ResultStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,7 @@ public class RestfulAccessDeniedHandler implements AccessDeniedHandler {
                        AccessDeniedException e) throws IOException {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");
-        response.getWriter().println(JSONUtil.parse(Result.failure(e.getMessage())));
+        response.getWriter().println(JSONUtil.parse(Result.result(ResultStatus.FORBIDDEN, e.getMessage())));
         response.getWriter().flush();
     }
 }
