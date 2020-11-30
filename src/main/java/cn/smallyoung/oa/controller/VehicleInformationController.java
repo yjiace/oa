@@ -50,7 +50,6 @@ public class VehicleInformationController {
             @ApiImplicitParam(name = "page", value = "页码", dataType = "Integer"),
             @ApiImplicitParam(name = "limit", value = "页数", dataType = "Integer")
     })
-    @PreAuthorize("hasRole('ROLE_ VEHICLE') or hasRole('ROLE_ VEHICLE_FIND')")
     public Page<VehicleInformation> findAll(@RequestParam(defaultValue = "1") Integer page,
                                             HttpServletRequest request, @RequestParam(defaultValue = "10") Integer limit) {
         return vehicleInformationService.findAll(WebUtils.getParametersStartingWith(request, "search_"),
@@ -67,7 +66,6 @@ public class VehicleInformationController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "车辆主键ID", dataType = "Long")
     })
-    @PreAuthorize("hasRole('ROLE_ VEHICLE') or hasRole('ROLE_ VEHICLE_FIND')")
     public VehicleInformation findById(Long id) {
         if (id == null) {
             throw new NullPointerException("参数错误");

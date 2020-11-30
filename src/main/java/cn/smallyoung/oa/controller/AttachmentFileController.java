@@ -149,7 +149,7 @@ public class AttachmentFileController {
      *
      * @param token 附件下载凭证
      */
-    @GetMapping(value = "downloadFileByToken")
+    @GetMapping(value = "browseOnline")
     @ApiOperation(value = "根据凭证下载附件")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token", value = "附件下载凭证"),

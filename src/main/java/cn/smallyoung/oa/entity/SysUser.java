@@ -124,7 +124,6 @@ public class SysUser extends BaseEntity implements Serializable, UserDetails {
 
     @Override
     @Transient
-    @JsonIgnore
     @ApiModelProperty(hidden = true)
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.getRoles().stream()

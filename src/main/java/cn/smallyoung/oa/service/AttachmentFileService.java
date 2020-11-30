@@ -10,6 +10,7 @@ import cn.smallyoung.oa.entity.AttachmentFile;
 import cn.smallyoung.oa.util.OfficeConverter;
 import cn.smallyoung.oa.util.PathUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -77,6 +78,7 @@ public class AttachmentFileService extends BaseService<AttachmentFile, Long> {
         return attachmentFiles;
     }
 
+    @Async
     public void converter(List<AttachmentFile> attachmentFiles){
         if(CollUtil.isEmpty(attachmentFiles)){
             return;
