@@ -13,12 +13,12 @@
     <div class="layui-card layuiAdmin-msg-detail">
       <div class="layui-card-header">
         <p>
-          <span>{{ layui.util.timeAgo(d.data.time) }}</span>
-          <span>来自于我</span>
+          <span>{{ layui.util.timeAgo(d.createTime) }}</span>
+          <span>来自于{{ d.initiatorUsername }}</span>
         </p>
       </div>
       <div class="layui-card-body layui-text">
-        <div class="layadmin-text">{{ d.data.content }}</div>
+        <div class="layadmin-text">{{ d.content }}</div>
 
         <div style="padding-top: 30px">
           <a
@@ -30,11 +30,11 @@
       </div>
     </div>
   </script>
-  <div class="detail_msg_view"></div>
+  <div id="detail_msg_view"></div>
 </div>
 
 <script>
-  layui.use(['admin', 'laytpl'], function () {
+  layui.use(['admin', 'laytpl','jquery'], function () {
     var $ = layui.$,
       admin = layui.admin,
       table = layui.table,
@@ -43,12 +43,18 @@
     var router = layui.router()
     var search = router.search
     admin.req({
-      url: '/message/notification/findYourOwnMessageNotification',
+      method: 'POST',
+      url: '/message/notification/readingMessageNotification',
       data: {
-        search_AND_EQ_id: search.id,
+        ids: search.id,
       },
       done: function (res) {
         console.log(res)
+        if (res.code === 200) {
+          laytpl($('#detail_msg').html()).render(res.data[0], function (html) {
+            $('#detail_msg_view').html(html)
+          })
+        }
       },
     })
   })
