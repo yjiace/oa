@@ -1,6 +1,8 @@
-
-
-<div class="layui-form" lay-filter="layuiadmin-form-role" style="padding: 20px 30px 0 0;">
+<div
+  class="layui-form"
+  lay-filter="layuiadmin-form-role"
+  style="padding: 20px 30px 0 0"
+>
   <div class="layui-form-item">
     <label class="layui-form-label">角色名称</label>
     <div class="layui-input-inline">
@@ -16,43 +18,103 @@
       </script>
     </div>
   </div>
-  <!-- <div class="layui-form-item">
+  <div class="layui-form-item">
     <label class="layui-form-label">权限范围</label>
-    <div class="layui-input-block">
-      <input type="checkbox" name="limits[]" lay-skin="primary" title="内容系统">
-      <input type="checkbox" name="limits[]" lay-skin="primary" title="社区系统">
-      <input type="checkbox" name="limits[]" lay-skin="primary" title="用户">
-      <input type="checkbox" name="limits[]" lay-skin="primary" title="角色">
-      <input type="checkbox" name="limits[]" lay-skin="primary" title="评论审核">
-      <input type="checkbox" name="limits[]" lay-skin="primary" title="发货">
-      <input type="checkbox" name="limits[]" lay-skin="primary" title="采购">
-      <input type="checkbox" name="limits[]" lay-skin="primary" title="系统设置">
-      <input type="checkbox" name="limits[]" lay-skin="primary" title="发邮件">
-      <input type="checkbox" name="limits[]" lay-skin="primary" title="发短信">
-      <input type="checkbox" name="limits[]" lay-skin="primary" title="审核">
-      <input type="checkbox" name="limits[]" lay-skin="primary" title="删库跑路">
+    <div class="layui-input-block" id="permission_list_view">
+      <script type="text/html" template>
+        {{# layui.each(d.params.allList, function(index,item){ }} 
+        {{# if(item.checked){ }}
+        <input
+          type="checkbox"
+          checked
+          name="limits[]"
+          lay-skin="primary"
+          title="{{item.name}}"
+        />
+        {{# }else { }}
+        <input
+          type="checkbox"
+          name="limits[]"
+          lay-skin="primary"
+          title="{{item.name}}"
+        />
+        {{# } }} {{# }) }}
+      </script>
     </div>
-  </div> -->
+  </div>
   <div class="layui-form-item">
     <label class="layui-form-label">具体描述</label>
     <div class="layui-input-block">
       <script type="text/html" template>
-        <textarea type="text" name="comments" lay-verify="required" autocomplete="off" class="layui-textarea">{{ d.params.comments || '' }}</textarea>
+        <textarea
+          type="text"
+          name="comments"
+          lay-verify="required"
+          autocomplete="off"
+          class="layui-textarea"
+        >
+{{ d.params.comments || '' }}</textarea
+        >
       </script>
     </div>
   </div>
   <div class="layui-form-item">
     <label class="layui-form-label"></label>
     <div class="layui-input-inline">
-      <input type="button" lay-submit lay-filter="LAY-user-role-submit" value="确认" class="layui-btn">
+      <input
+        type="button"
+        lay-submit
+        lay-filter="LAY-user-role-submit"
+        value="确认"
+        class="layui-btn"
+      />
     </div>
   </div>
 </div>
-
+<script type="text/html" id="permission_list">
+  {{# layui.each(d, function(index,item){ }}
+  <input
+    type="checkbox"
+    name="limits[]"
+    lay-skin="primary"
+    title="{{item.name}}"
+  />
+  {{# }) }}
+</script>
 <script>
-layui.use(['admin', 'form'], function(){
-  var $ = layui.$
-  ,form = layui.form;
-  
-});
+  layui.use(['admin', 'form', 'laytpl'], function () {
+    var $ = layui.$,
+      admin = layui.admin,
+      laytpl = layui.laytpl
+    form = layui.form
+    // admin.req({
+    //   url: '/sys/role/findAllPermission',
+    //   done: function (res) {
+    //     console.log(res)
+    //     if (res.code === 200) {
+    //       var realList = []
+    //       var needModel = ['1', '8', '16']
+    //       res.data.forEach(function (item) {
+    //         if (needModel.includes(item.id)) {
+    //           item.children.forEach(function (item1) {
+    //             realList.push(item1)
+    //           })
+    //         }
+    //       })
+    //       console.log(realList)
+    //       laytpl($('#permission_list').html()).render(
+    //         realList,
+    //         function (html) {
+    //           $('#permission_list_view').html(html)
+    //           form.render()
+
+    //           $('.layui-form-checkbox').click()
+    //           // form.render()
+    //         }
+    //       )
+    //     }
+    //     laytpl
+    //   },
+    // })
+  })
 </script>

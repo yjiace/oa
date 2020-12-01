@@ -115,15 +115,14 @@
     <label class="layui-form-label">职位</label>
     <div class="layui-input-inline">
       <script type="text/html" template>
-        <select name="position">
-          <option value="0" {{ d.params.position === '管理员' ? 'selected' : '' }}>管理员</option>
-          <option value="1" {{ d.params.position === '超级管理员' ? 'selected' : '' }}>超级管理员</option>
-          <option value="2" {{ d.params.position === '纠错员' ? 'selected' : '' }}>纠错员</option>
-          <option value="3" {{ d.params.position === '采购员' ? 'selected' : '' }}>采购员</option>
-          <option value="4" {{ d.params.position === '推销员' ? 'selected' : '' }}>推销员</option>
-          <option value="5" {{ d.params.position === '运营人员' ? 'selected' : '' }}>运营人员</option>
-          <option value="6" {{ d.params.position === '编辑' ? 'selected' : '' }}>编辑</option>
-        </select>
+        <input
+          type="text"
+          name="position"
+          value="{{ d.params.position || '' }}"
+          placeholder="请输入职位"
+          autocomplete="off"
+          class="layui-input"
+        />
       </script>
     </div>
   </div>

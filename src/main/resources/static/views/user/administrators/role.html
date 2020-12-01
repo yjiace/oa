@@ -15,7 +15,7 @@
       lay-filter="layadmin-useradminrole-formlist"
     >
       <div class="layui-form-item">
-        <div class="layui-inline">角色筛选</div>
+        <!-- <div class="layui-inline">角色筛选</div>
         <div class="layui-inline">
           <select name="rolename" lay-filter="LAY-user-adminrole-type">
             <option value="-1">全部角色</option>
@@ -27,12 +27,17 @@
             <option value="5">运营人员</option>
             <option value="6">编辑</option>
           </select>
-        </div>
+        </div> -->
         <div class="layui-inline">
-          <button class="layui-btn layuiadmin-btn-role" data-type="batchdel">
+          <!-- <button class="layui-btn layuiadmin-btn-role" data-type="batchdel">
             删除
-          </button>
-          <button class="layui-btn layuiadmin-btn-role" data-type="add">
+          </button> -->
+          <button
+            class="layui-btn layuiadmin-btn-role"
+            id="addRole"
+            style="display: none"
+            data-type="add"
+          >
             添加
           </button>
         </div>
@@ -48,12 +53,15 @@
         {{# } }}
       </script>
       <script type="text/html" id="table-useradmin-admin">
+        {{# if(d.ROLE_ROLE_SAVE){ }}
         <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"
           ><i class="layui-icon layui-icon-edit"></i>编辑</a
         >
+        {{# } }} {{# if(d.ROLE_ROLE_DELETE){ }}
         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"
           ><i class="layui-icon layui-icon-delete"></i>删除</a
         >
+        {{# } }}
       </script>
     </div>
   </div>
@@ -70,7 +78,10 @@
         form = layui.form
 
       form.render(null, 'layadmin-useradminrole-formlist')
-
+      console.log(window.utils.hasPermission('ROLE_ROLE_SAVE'))
+      if (window.utils.hasPermission('ROLE_ROLE_SAVE')) {
+        $('#addRole').show()
+      }
       //搜索角色
       form.on('select(LAY-user-adminrole-type)', function (data) {
         //执行重载
@@ -80,7 +91,36 @@
           },
         })
       })
-
+      var limitsObj = {
+        getIds: function (field, allList) {
+          var ids = Object.keys(field)
+            .filter(function (item) {
+              return item.includes('limits')
+            })
+            .map(function (item) {
+              return parseInt(item.split('[')[1], 10)
+            })
+            .map(function (item) {
+              return allList[item].id
+            })
+          return ids
+        },
+        addFields: function (field, sysPermissions, allList) {
+          var ids = (sysPermissions || []).map(function (item) {
+            return item.id
+          })
+          console.log(ids)
+          ids.forEach(function (item) {
+            var index = allList.findIndex(function (i) {
+              return +i.id === +item
+            })
+            if (index > -1) {
+              field.allList[+index].checked = true
+            }
+          })
+          return field
+        },
+      }
       //事件
       var active = {
         batchdel: function () {
@@ -104,37 +144,65 @@
           })
         },
         add: function () {
-          admin.popup({
-            title: '添加新角色',
-            area: ['500px', '480px'],
-            id: 'LAY-popup-user-add',
-            success: function (layero, index) {
-              view(this.id)
-                .render('user/administrators/roleform')
-                .done(function () {
-                  form.render(null, 'layuiadmin-form-role')
-
-                  //监听提交
-                  form.on('submit(LAY-user-role-submit)', function (data) {
-                    var field = data.field //获取提交的字段
-
-                    //提交 Ajax 成功后，关闭当前弹层并重载表格
-                    //$.ajax({});
-                    admin.req({
-                      url:'/sys/role/save',
-                      method:'POST',
-                      data:{
-                        name: field.name,
-                        comments: field.comments
-                      },
-                      done: function(res){
-                        console.log(res)
-                      }
+          admin.req({
+            url: '/sys/role/findAllPermission',
+            done: function (res) {
+              console.log(res)
+              if (res.code === 200) {
+                var realList = []
+                var needModel = ['1', '8', '16']
+                res.data.forEach(function (item) {
+                  if (needModel.includes(item.id)) {
+                    item.children.forEach(function (item1) {
+                      realList.push(item1)
                     })
-                    layui.table.reload('LAY-user-back-role') //重载表格
-                    layer.close(index) //执行关闭
-                  })
+                  }
                 })
+                var fieldFirst = {
+                  allList: realList,
+                }
+                admin.popup({
+                  title: '添加新角色',
+                  area: ['500px', '600px'],
+                  id: 'LAY-popup-user-add',
+                  success: function (layero, index) {
+                    view(this.id)
+                      .render('user/administrators/roleform', fieldFirst)
+                      .done(function () {
+                        form.render(null, 'layuiadmin-form-role')
+
+                        //监听提交
+                        form.on(
+                          'submit(LAY-user-role-submit)',
+                          function (data) {
+                            var field = data.field //获取提交的字段
+                            var ids = limitsObj.getIds(field, realList)
+                            //提交 Ajax 成功后，关闭当前弹层并重载表格
+                            //$.ajax({});
+                            admin.req({
+                              url: '/sys/role/save',
+                              method: 'POST',
+                              data: {
+                                name: field.name,
+                                comments: field.comments,
+                                permissions: ids.join(','),
+                              },
+                              done: function (res) {
+                                console.log(res)
+                                if (res.code === 200) {
+                                  layui.table.reload('LAY-user-back-role') //重载表格
+                                  layer.close(index) //执行关闭
+                                } else {
+                                  layer.msg('操作失败')
+                                }
+                              },
+                            })
+                          }
+                        )
+                      })
+                  },
+                })
+              }
             },
           })
         },
