@@ -75,9 +75,10 @@ public class ApprovalController {
             @ApiImplicitParam(name = "page", value = "页码", dataType = "Integer"),
             @ApiImplicitParam(name = "limit", value = "页数", dataType = "Integer")
     })
-    public Page<Approval> findAllApprovalRequired(@RequestParam(defaultValue = "1") Integer page,
+    public Page<Approval> findAllApprovalRequired(@RequestParam(defaultValue = "1") Integer page, HttpServletRequest request,
                                                   @RequestParam(defaultValue = "10") Integer limit) {
-        return approvalService.findAllApprovalRequired(page, limit);
+        Map<String, Object> map = WebUtils.getParametersStartingWith(request, "search_");
+        return approvalService.findAllApprovalRequired(page, limit, map.getOrDefault("AND_EQ_type", "document").toString());
     }
 
     /**

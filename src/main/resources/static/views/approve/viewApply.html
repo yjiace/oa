@@ -90,9 +90,6 @@
         <label class="layui-form-label">审批文件</label>
         <div class="layui-input-inline">
           <script type="text/html" template>
-            <!-- <button type="button" class="layui-btn" id="upload_word">
-              <i class="layui-icon">&#xe67c;</i>上传文件
-            </button> -->
             <div
               class="layui-input-inline"
               style="height:38px;line-height:38px"
@@ -104,6 +101,8 @@
                 >
               </a>
             </div>
+            <button type="button" class="layui-btn" id="view_word">预览
+            </button>
           </script>
         </div>
       </div>
@@ -256,10 +255,14 @@ layui.use(['table', 'admin', 'form', 'laytpl'], function () {
             if(res.data.status === 'Rejected'){
               renderButton(res.data)
             }
-            // 赋值文件名
+            // 赋值文件预览选项
             renderUpload({
               fileName: res.data.attachmentFiles[0].fileName,
             })
+            $('#view_word').on('click',function(e){
+              window.utils.viewFile(res.data.attachmentFiles[0])
+            })
+            // 字典值渲染
             var zidian = {
               NotStarted:{
                 text:'未开始',
