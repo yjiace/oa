@@ -143,6 +143,7 @@ public class ApprovalService extends BaseService<Approval, Long> {
         approval.getApprovalLogs().add(approvalLog(approval, approval.getId(),
                 ApprovalLogOperation.add, ApprovalLogOperationType.approval, null));
         messageNotificationService.releaseMessage(approval.getInitiatorUsername(), "submitForApproval", "您提交的审批已进入审批流程");
+        messageNotificationService.releaseMessage(usernameList.get(0), "submitForApproval", "有需要您的审批，请查看");
         approvalDao.save(approval);
         vehicleInformationService.submitApproval(approval);
         return approval;
@@ -169,6 +170,7 @@ public class ApprovalService extends BaseService<Approval, Long> {
                 if(user != null && "Y".equals(user.getStatus()) && "N".equals(user.getIsDelete())){
                     approval.setNode(node);
                     node.setStatus("Approval");
+                    messageNotificationService.releaseMessage(user.getUsername(), "completedApproval", "有需要您的审批，请查看");
                     break;
                 }else if(i == (size - 1)){
                     approval.setStatus("Completed");
@@ -216,6 +218,7 @@ public class ApprovalService extends BaseService<Approval, Long> {
         approval.getApprovalNodes().forEach(node -> {
             if (approval.getNode().getUser().equals(node.getUser())) {
                 node.setStatus("Approval");
+                messageNotificationService.releaseMessage(node.getUser(), "reApprove", "有需要您的审批，请查看");
             }
         });
         approval.getApprovalLogs().add(approvalLog(approval, approval.getId(),
