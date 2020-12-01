@@ -212,14 +212,16 @@ public class AttachmentFileController {
     }
 
     private void upload(AttachmentFile attachmentFile, HttpServletResponse response) throws IOException {
-        File file = new File(attachmentFile.getUrl());
+        String fullPath = attachmentFileService.fullPath(attachmentFile.getSecurityClassification(), attachmentFile.getFileName());
+        File file = new File(fullPath);
         if (!file.exists()) {
-            String error = String.format("根据路径【%s】,没有找到文件", attachmentFile.getUrl());
+            String error = String.format("根据路径【%s】,没有找到文件", fullPath);
             log.error(error);
             throw new FileNotFoundException(error);
         }
-        upload(file, attachmentFile.getFileName(), response);
+        upload(file, attachmentFile.getUploadFileName(), response);
     }
+
     private void upload(File file, String fileName, HttpServletResponse response) throws IOException {
         InputStream inputStream;
         OutputStream outputStream;

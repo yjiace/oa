@@ -36,6 +36,11 @@ public class AttachmentFile extends BaseEntity implements Serializable {
     /**
      * 系统文件名
      */
+    @Column(name = "upload_file_name" )
+    @DataName(name = "上传文件名")
+    @ApiModelProperty(notes = "上传文件名")
+    private String uploadFileName;
+
     @Column(name = "file_name" )
     @DataName(name = "系统文件名")
     @ApiModelProperty(notes = "系统文件名")
@@ -58,28 +63,20 @@ public class AttachmentFile extends BaseEntity implements Serializable {
     private Long size;
 
     /**
-     * 路径
-     */
-    @Column(name = "url" )
-    @DataName(name = "路径")
-    @ApiModelProperty(notes = "路径")
-    private String url;
-
-    /**
      * swf路径
      */
-    @Column(name = "swf_url" )
+    @Column(name = "swf_name" )
     @DataName(name = "swf路径")
     @ApiModelProperty(notes = "swf路径")
-    private String swfUrl;
+    private String swfName;
 
     /**
      * pdf路径
      */
-    @Column(name = "pdf_url" )
+    @Column(name = "pdf_name" )
     @DataName(name = "pdf路径")
     @ApiModelProperty(notes = "pdf路径")
-    private String pdfUrl;
+    private String pdfName;
 
 
 

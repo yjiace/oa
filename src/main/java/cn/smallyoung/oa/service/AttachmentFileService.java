@@ -46,22 +46,22 @@ public class AttachmentFileService extends BaseService<AttachmentFile, Long> {
         String filePath = PathUtil.getPath(securityClassification);
         AttachmentFile attachmentFile;
         //将文件写入磁盘
+        String uploadFileName;
         String fileName;
-        String url;
         File file;
 
         for (MultipartFile multipartFile : multipartFiles) {
             try {
-                fileName = multipartFile.getOriginalFilename();
-                if(StrUtil.isBlank(fileName) || !fileName.contains(".")){
+                uploadFileName = multipartFile.getOriginalFilename();
+                if(StrUtil.isBlank(uploadFileName) || !uploadFileName.contains(".")){
                     continue;
                 }
-                url = filePath + IdUtil.objectId() + fileName.substring(fileName.lastIndexOf("."));
-                file = new File(url);
+                fileName = IdUtil.objectId() + uploadFileName.substring(uploadFileName.lastIndexOf("."));
+                file = new File(filePath + fileName);
                 multipartFile.transferTo(file);
                 //保存文件基础信息到数据库
                 attachmentFile = new AttachmentFile();
-                attachmentFile.setUrl(url);
+                attachmentFile.setUploadFileName(uploadFileName);
                 attachmentFile.setFileName(fileName);
                 attachmentFile.setSize(multipartFile.getSize());
                 attachmentFile.setMd5(DigestUtil.md5Hex(file));
@@ -86,42 +86,41 @@ public class AttachmentFileService extends BaseService<AttachmentFile, Long> {
         File officeFile;
         File pdfFile;
         File swfFile;
-        String url;
-        String pdfUrl;
-        String swfUrl;
-        boolean isOk;
+        String fileName;
+        String pdfName;
+        String swfName;
         for(AttachmentFile attachmentFile : attachmentFiles){
-            url = attachmentFile.getUrl();
-            if(!NEED_CONVERTER.contains(url.substring(url.lastIndexOf(".") + 1))){
+            fileName = attachmentFile.getFileName();
+            if(!NEED_CONVERTER.contains(fileName.substring(fileName.lastIndexOf(".") + 1))){
                 continue;
             }
-            officeFile = new File(attachmentFile.getUrl());
-            pdfUrl = url.substring(0, url.lastIndexOf(".")) + ".pdf";
-            pdfFile = new File(pdfUrl);
+            officeFile = new File(fullPath(attachmentFile.getSecurityClassification(), fileName));
+            pdfName = fileName.substring(0, fileName.lastIndexOf(".")) + ".pdf";
+            pdfFile = new File(fullPath(attachmentFile.getSecurityClassification(), pdfName));
             if(!officeConverter.office2pdf(officeFile, pdfFile)){
                 continue;
             }
-            attachmentFile.setPdfUrl(pdfUrl);
-            swfUrl = url.substring(0, url.lastIndexOf(".")) + ".swf";
-            swfFile = new File(swfUrl);
+            attachmentFile.setPdfName(pdfName);
+            swfName = fileName.substring(0, fileName.lastIndexOf(".")) + ".swf";
+            swfFile = new File(fullPath(attachmentFile.getSecurityClassification(), swfName));
             if(!officeConverter.pdf2swf(pdfFile, swfFile)){
                 continue;
             }
-            attachmentFile.setSwfUrl(swfUrl);
+            attachmentFile.setSwfName(swfName);
         }
         attachmentFileDao.saveAll(attachmentFiles);
     }
 
     public File browseOnline(AttachmentFile attachmentFile, String type){
         attachmentFile = attachmentFileDao.findById(attachmentFile.getId()).orElse(attachmentFile);
-        String url = attachmentFile.getUrl();
+        String url = fullPath(attachmentFile.getSecurityClassification(), attachmentFile.getFileName());
         if(!NEED_CONVERTER.contains(url.substring(url.lastIndexOf(".") + 1))){
-            return new File(attachmentFile.getUrl());
+            return new File(url);
         }
         File pdfFile = new File(url.substring(0, url.lastIndexOf(".")) + ".pdf");
         String pdf = "pdf";
         if(!pdfFile.isFile()){
-            officeConverter.office2pdf(new File(attachmentFile.getUrl()), pdfFile);
+            officeConverter.office2pdf(new File(url), pdfFile);
         }
         if(pdf.equals(type)){
             return pdfFile;
@@ -131,5 +130,9 @@ public class AttachmentFileService extends BaseService<AttachmentFile, Long> {
             officeConverter.office2pdf(pdfFile, swfFile);
         }
         return swfFile;
+    }
+
+    public String fullPath(String securityClassification, String fileName){
+        return PathUtil.getPath(securityClassification) + fileName;
     }
 }
