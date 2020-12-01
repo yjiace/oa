@@ -256,6 +256,7 @@ INSERT INTO `oa`.`t_sys_permission`(`id`, `parent_id`, `name`, `val`, `creator`,
 INSERT INTO `oa`.`t_sys_permission`(`id`, `parent_id`, `name`, `val`, `creator`, `create_time`, `updater`, `update_time`, `is_delete`) VALUES (19, 16, '车辆管理-添加记录', 'ROLE_VEHICLE_RECORD', 'smallyoung', '2020-11-19 15:31:21', 'smallyoung', '2020-11-19 15:31:24', 'N');
 INSERT INTO `oa`.`t_sys_permission`(`id`, `parent_id`, `name`, `val`, `creator`, `create_time`, `updater`, `update_time`, `is_delete`) VALUES (20, 16, '车辆管理-查询记录', 'ROLE_VEHICLE_RECORD_FIND', 'smallyoung', '2020-11-19 15:31:21', 'smallyoung', '2020-11-19 15:31:24', 'N');
 INSERT INTO `oa`.`t_sys_permission`(`id`, `parent_id`, `name`, `val`, `creator`, `create_time`, `updater`, `update_time`, `is_delete`) VALUES (21, 16, '车辆管理-下载记录', 'ROLE_VEHICLE_RECORD_EXCEL', 'smallyoung', '2020-11-19 15:31:21', 'smallyoung', '2020-11-19 15:31:24', 'N');
+INSERT INTO `oa`.`t_sys_permission`(`id`, `parent_id`, `name`, `val`, `creator`, `create_time`, `updater`, `update_time`, `is_delete`) VALUES (22, 16, '车辆管理-删除', 'ROLE_VEHICLE_DELETE', 'smallyoung', '2020-11-19 15:31:21', 'smallyoung', '2020-11-19 15:31:24', 'N');
 INSERT INTO `oa`.`t_sys_role`(`id`, `name`, `comments`, `creator`, `create_time`, `updater`, `update_time`, `is_delete`) VALUES (1, 'admin', NULL, 'smallyoung', '2020-11-03 21:23:39', 'smallyoung', '2020-11-03 21:23:41', 'N');
 INSERT INTO `oa`.`t_sys_role_permission`(`permission_id`, `role_id`) VALUES (1, 1);
 INSERT INTO `oa`.`t_sys_role_permission`(`permission_id`, `role_id`) VALUES (2, 1);
@@ -278,4 +279,5 @@ INSERT INTO `oa`.`t_sys_role_permission`(`permission_id`, `role_id`) VALUES (18,
 INSERT INTO `oa`.`t_sys_role_permission`(`permission_id`, `role_id`) VALUES (19, 1);
 INSERT INTO `oa`.`t_sys_role_permission`(`permission_id`, `role_id`) VALUES (20, 1);
 INSERT INTO `oa`.`t_sys_role_permission`(`permission_id`, `role_id`) VALUES (21, 1);
+INSERT INTO `oa`.`t_sys_role_permission`(`permission_id`, `role_id`) VALUES (22, 1);
 INSERT INTO `oa`.`t_sys_user_role`(`role_id`, `user_name`) VALUES (1, 'smallyoung');

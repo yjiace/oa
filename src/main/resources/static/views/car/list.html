@@ -40,7 +40,12 @@
           <!-- <button class="layui-btn layuiadmin-btn-admin" data-type="delCar">
             删除
           </button> -->
-          <button class="layui-btn layuiadmin-btn-admin" data-type="addCar">
+          <button
+            class="layui-btn layuiadmin-btn-admin"
+            id="addCar"
+            style="display: none;"
+            data-type="addCar"
+          >
             添加
           </button>
         </div>
@@ -99,4 +104,13 @@
       class="layui-textarea"
     ></textarea>
   </div>
+</script>
+<script>
+  layui.use(['admin', 'form', 'common'], function () {
+    var $ = layui.$,
+      form = layui.form
+    if (window.utils.hasPermission('ROLE_USER_SAVE')) {
+      $('#addCar').show()
+    }
+  })
 </script>

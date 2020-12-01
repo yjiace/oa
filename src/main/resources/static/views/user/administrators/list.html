@@ -193,6 +193,7 @@
                   form.render(null, 'layuiadmin-form-admin')
                   //监听提交
                   form.on('submit(LAY-user-back-submit)', function (data) {
+                    var i = layer.load(1)
                     var field = data.field //获取提交的字段
                     console.log(field)
                     admin.req({
@@ -200,10 +201,14 @@
                       method: 'post',
                       data: field,
                       done: function (res) {
+                        layer.close(i)
                         console.log(res)
                         if (res.code === 200) {
+                          layer.msg('操作成功')
                           layui.table.reload('LAY-user-back-manage') //重载表格
                           layer.close(index) //执行关闭
+                        } else {
+                          layer.msg('操作失败')
                         }
                       },
                     })

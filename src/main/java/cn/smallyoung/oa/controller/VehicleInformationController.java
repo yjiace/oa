@@ -23,6 +23,7 @@ import org.springframework.web.util.WebUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * @author smallyoung
@@ -52,8 +53,9 @@ public class VehicleInformationController {
     })
     public Page<VehicleInformation> findAll(@RequestParam(defaultValue = "1") Integer page,
                                             HttpServletRequest request, @RequestParam(defaultValue = "10") Integer limit) {
-        return vehicleInformationService.findAll(WebUtils.getParametersStartingWith(request, "search_"),
-                PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, "updateTime")));
+        Map<String, Object> map = WebUtils.getParametersStartingWith(request, "search_");
+        map.put("AND_EQ_isDelete","N");
+        return vehicleInformationService.findAll(map, PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, "updateTime")));
     }
 
     /**

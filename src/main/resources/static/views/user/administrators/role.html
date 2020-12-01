@@ -179,6 +179,7 @@
                             var ids = limitsObj.getIds(field, realList)
                             //提交 Ajax 成功后，关闭当前弹层并重载表格
                             //$.ajax({});
+                            var i =layer.load(1)
                             admin.req({
                               url: '/sys/role/save',
                               method: 'POST',
@@ -188,8 +189,10 @@
                                 permissions: ids.join(','),
                               },
                               done: function (res) {
+                                layer.close(i)
                                 console.log(res)
                                 if (res.code === 200) {
+                                  layer.msg('操作成功')
                                   layui.table.reload('LAY-user-back-role') //重载表格
                                   layer.close(index) //执行关闭
                                 } else {

@@ -153,19 +153,16 @@
       <div class="layui-form-item">
         <label class="layui-form-label"></label>
         <div class="layui-input-inline" id="type_1" style="display: none;">
-          <script type="text/html" template>
             <input
               type="button"
               lay-submit
               id="reApply"
               lay-filter="apply-submit"
-              value="发起审批"
+              value="重新提醒"
               class="layui-btn"
             />
-          </script>
         </div>
         <div class="layui-input-inline" id="type_2" style="display: none;"">
-          <script type="text/html" template>
             <input
               type="button"
               lay-submit
@@ -174,7 +171,6 @@
               value="发起审批"
               class="layui-btn"
             />
-          </script>
         </div>
       </div>
     </div>
@@ -194,12 +190,14 @@ layui.use(['table', 'admin', 'form', 'laytpl'], function () {
     var search = router.search
     // 渲染操作按钮
     function renderButton(data) {
+      console.log(1)
       if (search.type === '1') {
         $('#type_1').show()
       } else if (search.type === '2') {
         console.log(1)
       }
       $('#type_1 input').on('click', function(e){
+        var index = layer.load(1)
         admin.reqAsync({
           method: 'POST',
           url: '/approval/reApprove',
@@ -208,7 +206,11 @@ layui.use(['table', 'admin', 'form', 'laytpl'], function () {
           }
         }).then(function(res){
           if(res.code === 200){
+            layer.close(index)
             layer.msg('操作成功')
+            setTimeout(function(){
+              window.history.back()
+            },1000)
           }else{
             layer.msg(res.data)
           }
@@ -252,7 +254,7 @@ layui.use(['table', 'admin', 'form', 'laytpl'], function () {
               securityClassification:
                 res.data.attachmentFiles[0].securityClassification,
             })
-            if(res.data.status === 'Rejected'){
+            if(res.data.status === 'Rejected'||res.data.status === "Withdrawn"){
               renderButton(res.data)
             }
             // 赋值文件预览选项
