@@ -78,7 +78,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/webjars/**",
                         "/start/**",
                         "/file/downloadFileByToken",
-                        "/file/browseOnline"
+                        "/file/browseOnline",
+                        "/upload/**"
                 )
                 .permitAll()
                 // 对登录注册要允许匿名访问
