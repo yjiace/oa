@@ -78,6 +78,8 @@ CREATE TABLE `oa`.`t_attachment_file`  (
   `md5` varchar(255) NULL,
   `size` int NULL,
   `url` varchar(255) NULL,
+  `swf_url` varchar(255) NULL,
+  `pdf_url` varchar(255) NULL,
   `document_number` varchar(255) NULL,
   `security_classification` varchar(255) NULL,
   `creator` varchar(50) NOT NULL,
