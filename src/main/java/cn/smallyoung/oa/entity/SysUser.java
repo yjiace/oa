@@ -122,6 +122,13 @@ public class SysUser extends BaseEntity implements Serializable, UserDetails {
     @JoinTable(name = "t_sys_user_role", joinColumns = {@JoinColumn(name = "user_name")}, inverseJoinColumns = {@JoinColumn(name = "role_id")})
     private List<SysRole> roles = new ArrayList<>();
 
+    @Transient
+    private List<String> roleNames = new ArrayList<>();
+
+    public List<String> getRoleNames() {
+        return roles.stream().map(SysRole::getName).collect(Collectors.toList());
+    }
+
     @Override
     @Transient
     @ApiModelProperty(hidden = true)
