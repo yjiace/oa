@@ -45,6 +45,7 @@ public class SysRole extends BaseEntity implements Serializable {
     @ApiModelProperty(notes = "角色备注")
     private String comments;
 
+    @DataName(name = "权限")
     @ApiModelProperty(hidden = true)
     @Where(clause = " is_delete = 'N' ")
     @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)

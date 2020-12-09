@@ -212,7 +212,7 @@ public class ApprovalController {
             @ApiImplicitParam(name = "extra", value = "额外信息，JSON格式", dataType = "String")
     })
     @SystemOperationLog(module = "审批", methods = "提交审批",
-            serviceClass = ApprovalService.class, way = SysOperationLogWayEnum.RecordOnly)
+            serviceClass = ApprovalService.class, way = SysOperationLogWayEnum.UserAfter)
     public Approval submitForApproval(ApprovalVO approvalVO) {
         if(approvalService.checkNumber(approvalVO.getNumber())){
             String error = String.format("当前审批编号[%s]重复", approvalVO.getNumber());

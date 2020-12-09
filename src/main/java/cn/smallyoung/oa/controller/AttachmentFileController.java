@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.rmi.AccessException;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * @author smallyoung
@@ -89,9 +88,9 @@ public class AttachmentFileController {
             @ApiImplicitParam(name = "securityClassification", value = "文件密级", dataType = "String")
     })
     @SystemOperationLog(module = "文件操作", methods = "上传文件",
-            serviceClass = AttachmentFileService.class, way = SysOperationLogWayEnum.RecordOnly)
-    public List<AttachmentFile> uploadFile(MultipartFile file, String documentNumber, String securityClassification) {
-        return attachmentFileService.uploadFile(Collections.singletonList(file), documentNumber, securityClassification);
+            serviceClass = AttachmentFileService.class, way = SysOperationLogWayEnum.UserAfter)
+    public AttachmentFile uploadFile(MultipartFile file, String documentNumber, String securityClassification) {
+        return attachmentFileService.uploadFile(Collections.singletonList(file), documentNumber, securityClassification).get(0);
     }
 
     /**
@@ -103,7 +102,7 @@ public class AttachmentFileController {
             @ApiImplicitParam(name = "id", value = "附件主键id")
     })
     @SystemOperationLog(module = "文件管理", methods = "获取下载凭证",
-            serviceClass = AttachmentFileService.class, way = SysOperationLogWayEnum.RecordOnly)
+            serviceClass = AttachmentFileService.class, way = SysOperationLogWayEnum.UserAfter)
     public String getToken(Long id) throws FileNotFoundException {
         AttachmentFile attachmentFile = checkAttachmentFile(id);
         return createToken("download", attachmentFile);
@@ -117,6 +116,8 @@ public class AttachmentFileController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "附件主键id")
     })
+    @SystemOperationLog(module = "文件管理", methods = "获取在线浏览凭证",
+            serviceClass = AttachmentFileService.class, way = SysOperationLogWayEnum.UserAfter)
     public String browseOnlineToken(Long id) throws FileNotFoundException {
         AttachmentFile attachmentFile = checkAttachmentFile(id);
         return createToken("browseOnline", attachmentFile);
@@ -196,8 +197,8 @@ public class AttachmentFileController {
             @ApiImplicitParam(name = "id", value = "附件主键id")
     })
     @SystemOperationLog(module = "文件操作", methods = "删除文件",
-            serviceClass = AttachmentFileService.class, way = SysOperationLogWayEnum.RecordOnly)
-    public void deleteFile(Long id) throws FileNotFoundException {
+            serviceClass = AttachmentFileService.class, way = SysOperationLogWayEnum.UserAfter)
+    public AttachmentFile deleteFile(Long id) throws FileNotFoundException {
         if (id == null) {
             throw new NullPointerException("参数错误");
         }
@@ -208,7 +209,7 @@ public class AttachmentFileController {
             throw new FileNotFoundException(error);
         }
         attachmentFile.setIsDelete("Y");
-        attachmentFileService.save(attachmentFile);
+        return attachmentFileService.save(attachmentFile);
     }
 
     private void upload(AttachmentFile attachmentFile, HttpServletResponse response) throws IOException {

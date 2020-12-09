@@ -72,7 +72,7 @@ public class SysOperationLogAspect {
         sysOperationLog.setParams(params.toString());
         String value = getValue(systemOperationLog.parameterKey(), params);
         Map<String, Object> oldMap = null;
-        if(SysOperationLogWayEnum.RecordBeforeAndAfterChanges == systemOperationLog.way() || SysOperationLogWayEnum.RecordTheBefore == systemOperationLog.way()){
+        if(systemOperationLog.way() != SysOperationLogWayEnum.RecordOnly){
             Object oldObject = getOperateBeforeDataByParamType(systemOperationLog.serviceClass(),
                     systemOperationLog.queryMethod(), value, MAP_TO_FUNCTION.get(systemOperationLog.parameterType()));
             oldMap = BeanUtil.beanToMap(oldObject);
@@ -91,7 +91,10 @@ public class SysOperationLogAspect {
             sysOperationLogService.save(sysOperationLog);
             throw e;
         }
-        if(SysOperationLogWayEnum.RecordBeforeAndAfterChanges == systemOperationLog.way() || SysOperationLogWayEnum.RecordTheAfter == systemOperationLog.way()){
+        if(SysOperationLogWayEnum.UserAfter == systemOperationLog.way()){
+            sysOperationLog.setAfterData(new JSONObject(object).toString());
+            sysOperationLog.setContent(updateContent(oldMap, object));
+        }else if(systemOperationLog.way() != SysOperationLogWayEnum.RecordOnly) {
             Object newObject = getOperateBeforeDataByParamType(systemOperationLog.serviceClass(),
                     systemOperationLog.queryMethod(), value, MAP_TO_FUNCTION.get(systemOperationLog.parameterType()));
             if (newObject != null) {
@@ -166,7 +169,6 @@ public class SysOperationLogAspect {
         for (Map.Entry<String, Object> entry : newMap.entrySet()) {
             //查询操作ID
             field = ReflectUtil.getField(newObject.getClass(), entry.getKey());
-            dataName = AnnotationUtil.getAnnotation(field, DataName.class);
             id = AnnotationUtil.getAnnotation(field, Id.class);
             if(id != null){
                 stringBuilder.append(entry.getValue()).append(";");
@@ -178,6 +180,7 @@ public class SysOperationLogAspect {
             }
             jsonObject = new JSONObject();
             //默认只有注释字段方可增加变更，避免敏感信息泄露。
+            dataName = AnnotationUtil.getAnnotation(field, DataName.class);
             if (dataName != null ) {
                 jsonObject.set("name", dataName.name());
                 jsonObject.set("oldVal", val);

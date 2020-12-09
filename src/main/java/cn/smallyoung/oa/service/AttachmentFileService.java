@@ -40,7 +40,7 @@ public class AttachmentFileService extends BaseService<AttachmentFile, Long> {
     @Transactional(rollbackFor = Exception.class)
     public List<AttachmentFile> uploadFile(List<MultipartFile> multipartFiles, String documentNumber, String securityClassification) {
         if (CollUtil.isEmpty(multipartFiles)) {
-            return null;
+            return new ArrayList<>();
         }
         List<AttachmentFile> attachmentFiles = new ArrayList<>();
         String filePath = PathUtil.getPath(securityClassification);

@@ -3,7 +3,6 @@ package cn.smallyoung.oa.controller;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.util.StrUtil;
-import cn.smallyoung.oa.entity.SysOperationLogWayEnum;
 import cn.smallyoung.oa.entity.SysRole;
 import cn.smallyoung.oa.entity.SysUser;
 import cn.smallyoung.oa.interfaces.ResponseResultBody;
@@ -139,7 +138,7 @@ public class SysUserController {
             @ApiImplicitParam(name = "department", value = "部门", dataType = "String"),
     })
     @SystemOperationLog(module = "用户管理", methods = "新增用户", serviceClass = SysUserService.class, queryMethod = "findByUsername",
-            parameterType = "String", parameterKey = "sysUserVO.username", way = SysOperationLogWayEnum.RecordTheAfter)
+            parameterType = "String", parameterKey = "sysUserVO.username")
     public SysUser save(SysUserVO sysUserVO){
         if (sysUserVO == null || StrUtil.hasBlank(sysUserVO.getUsername())) {
             throw new NullPointerException("参数错误");

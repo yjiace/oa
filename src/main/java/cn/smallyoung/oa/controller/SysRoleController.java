@@ -95,7 +95,7 @@ public class SysRoleController {
     })
     @PreAuthorize("hasRole('ROLE_ROLE') or hasRole('ROLE_ROLE_SAVE')")
     @SystemOperationLog(module = "角色管理", methods = "编辑角色", serviceClass = SysRoleService.class, queryMethod = "findOne",
-            parameterType = "Long", parameterKey = "role.id")
+            parameterType = "Long", parameterKey = "roleVO.id")
     public SysRole save(SysRoleVO roleVO) {
         if (roleVO == null || StrUtil.hasBlank(roleVO.getName())) {
             throw new NullPointerException("参数错误");
@@ -123,7 +123,7 @@ public class SysRoleController {
     })
     @PreAuthorize("hasRole('ROLE_ROLE') or hasRole('ROLE_ROLE_SAVE')")
     @SystemOperationLog(module = "角色管理", methods = "编辑角色", serviceClass = SysRoleService.class, queryMethod = "findOne",
-            parameterType = "Long", parameterKey = "role.id")
+            parameterType = "Long", parameterKey = "roleVO.id")
     public SysRole update(SysRoleVO roleVO) {
         if (roleVO == null || roleVO.getId() == null || StrUtil.hasBlank(roleVO.getName())) {
             throw new NullPointerException("参数错误");

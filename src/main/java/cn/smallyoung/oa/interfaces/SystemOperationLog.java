@@ -53,5 +53,5 @@ public @interface SystemOperationLog {
      * RecordTheChange：记录变化后的值；
      * RecordTheBefore：记录变换之前的值；
      */
-    SysOperationLogWayEnum way() default SysOperationLogWayEnum.RecordBeforeAndAfterChanges;
+    SysOperationLogWayEnum way() default SysOperationLogWayEnum.UserAfter;
 }

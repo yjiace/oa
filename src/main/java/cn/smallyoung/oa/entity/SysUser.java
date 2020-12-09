@@ -116,6 +116,7 @@ public class SysUser extends BaseEntity implements Serializable, UserDetails {
     private String password;
 
     @JsonIgnore
+    @DataName(name = "角色")
     @ApiModelProperty(hidden = true)
     @Where(clause = " is_delete = 'N' ")
     @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)

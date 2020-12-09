@@ -86,16 +86,25 @@ public class Approval implements Serializable {
     @ApiModelProperty(notes = "状态，Approval：审批中，Completed：已完成，Withdrawn：已撤回，Rejected：已拒绝")
     private String status;
 
+    /**
+     * 额外信息
+     */
     @DataName(name = "额外信息")
     @Column(name = "extra")
     @ApiModelProperty(notes = "额外信息，JSON格式")
     private String extra;
 
+    /**
+     * 申请用车ID
+     */
     @DataName(name = "申请用车ID")
     @Column(name = "vehicle_id")
     @ApiModelProperty(notes = "申请用车ID")
     private Long vehicleId;
 
+    /**
+     * 目的地
+     */
     @DataName(name = "目的地")
     @Column(name = "destination")
     @ApiModelProperty(notes = "目的地")
@@ -120,6 +129,7 @@ public class Approval implements Serializable {
     /**
      * 关联的文件列表
      */
+    @DataName(name = "关联的文件列表")
     @ApiModelProperty(notes = "关联的文件列表")
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "t_approval_file",
@@ -127,10 +137,12 @@ public class Approval implements Serializable {
     private List<AttachmentFile> attachmentFiles = new ArrayList<>();
 
 
+    @DataName(name = "审批节点")
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "approval", fetch = FetchType.LAZY)
     @OrderBy(value = " sort ASC ")
     private List<ApprovalNode> approvalNodes = new ArrayList<>();
 
+    @DataName(name = "审批评论")
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "approval", fetch = FetchType.LAZY)
     private List<ApprovalComment> approvalComments = new ArrayList<>();
 

@@ -88,7 +88,7 @@ public class VehicleInformationController {
             @ApiImplicitParam(name = "model", value = "车辆型号", dataType = "String")
     })
     @PreAuthorize("hasRole('ROLE_VEHICLE') or hasRole('ROLE_VEHICLE_SAVE')")
-    @SystemOperationLog(module = "车辆管理", methods = "新增车辆", way = SysOperationLogWayEnum.RecordOnly)
+    @SystemOperationLog(module = "车辆管理", methods = "新增车辆")
     public VehicleInformation save(VehicleInformationVO vehicleInformationVO) {
         VehicleInformation vehicleInformation = new VehicleInformation();
         BeanUtil.copyProperties(vehicleInformationVO, vehicleInformation, CopyOptions.create().setIgnoreNullValue(true));
@@ -111,7 +111,7 @@ public class VehicleInformationController {
     })
     @PreAuthorize("hasRole('ROLE_VEHICLE') or hasRole('ROLE_VEHICLE_SAVE')")
     @SystemOperationLog(module = "车辆管理", methods = "编辑车辆", serviceClass = VehicleInformationService.class, queryMethod = "findOne",
-            parameterType = "Long", parameterKey = "vehicleInformationVO.id", way = SysOperationLogWayEnum.RecordBeforeAndAfterChanges)
+            parameterType = "Long", parameterKey = "vehicleInformationVO.id", way = SysOperationLogWayEnum.UserAfter)
     public VehicleInformation update(VehicleInformationVO vehicleInformationVO) {
         if (vehicleInformationVO == null || vehicleInformationVO.getId() == null) {
             throw new NullPointerException("参数错误");

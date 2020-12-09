@@ -10,25 +10,17 @@ public enum SysOperationLogWayEnum {
     /**
      * 记录变化
      */
-    RecordBeforeAndAfterChanges("记录变化"),
+    RecordBeforeAndAfterChanges,
 
     /**
      * 仅记录
      */
-    RecordOnly("仅记录"),
+    RecordOnly,
 
     /**
-     * 记录变化后的值
+     * 使用变化后的返回值
      */
-    RecordTheAfter("记录变化后的值"),
-
-    /**
-     * 记录变换之前的值
-     */
-    RecordTheBefore("记录变换之前的值");
-
-    SysOperationLogWayEnum(String str) {
-    }
+    UserAfter;
 }
 
 
