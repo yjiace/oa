@@ -116,7 +116,6 @@ public class SysUser extends BaseEntity implements Serializable, UserDetails {
     private String password;
 
     @JsonIgnore
-    @DataName(name = "角色")
     @ApiModelProperty(hidden = true)
     @Where(clause = " is_delete = 'N' ")
     @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
@@ -124,6 +123,7 @@ public class SysUser extends BaseEntity implements Serializable, UserDetails {
     private List<SysRole> roles = new ArrayList<>();
 
     @Transient
+    @DataName(name = "角色")
     private List<String> roleNames = new ArrayList<>();
 
     public List<String> getRoleNames() {

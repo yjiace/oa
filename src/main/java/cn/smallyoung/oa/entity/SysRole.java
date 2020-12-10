@@ -12,6 +12,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author smallyoung
@@ -45,10 +46,18 @@ public class SysRole extends BaseEntity implements Serializable {
     @ApiModelProperty(notes = "角色备注")
     private String comments;
 
-    @DataName(name = "权限")
     @ApiModelProperty(hidden = true)
     @Where(clause = " is_delete = 'N' ")
     @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
     @JoinTable(name = "t_sys_role_permission", joinColumns = {@JoinColumn(name = "role_id")}, inverseJoinColumns = {@JoinColumn(name = "permission_id")})
     private List<SysPermission> sysPermissions = new ArrayList<>();
+
+
+    @Transient
+    @DataName(name = "权限")
+    private List<String> permissionNames = new ArrayList<>();
+
+    public List<String> getPermissionNames() {
+        return sysPermissions.stream().map(SysPermission::getName).collect(Collectors.toList());
+    }
 }

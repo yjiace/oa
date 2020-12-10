@@ -142,7 +142,6 @@ public class Approval implements Serializable {
     @OrderBy(value = " sort ASC ")
     private List<ApprovalNode> approvalNodes = new ArrayList<>();
 
-    @DataName(name = "审批评论")
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "approval", fetch = FetchType.LAZY)
     private List<ApprovalComment> approvalComments = new ArrayList<>();
 
