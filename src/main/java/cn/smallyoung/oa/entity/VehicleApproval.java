@@ -38,7 +38,7 @@ public class VehicleApproval implements Serializable {
     private String id;
 
     @DataName(name = "车辆审批时间")
-    @Column(name = "application_ime" )
+    @Column(name = "application_time" )
     @ApiModelProperty(notes = "车辆审批时间")
     private String applicationTime;
     /**

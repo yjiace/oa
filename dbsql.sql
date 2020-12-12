@@ -205,7 +205,7 @@ CREATE TABLE `oa`.`t_vehicle_approval_node`
     `status`         varchar(20)   NOT NULL,
     `sort`           int           NOT NULL,
     `username`       varchar(50)   NOT NULL,
-    `message`        varchar(1024) NOT NULL,
+    `message`        varchar(1024) NULL,
     `completed_time` datetime,
     `update_time`    datetime      NOT NULL,
     PRIMARY KEY (`id`)
