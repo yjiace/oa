@@ -24,6 +24,7 @@ import java.io.Serializable;
 @EntityListeners({AuditingEntityListener.class})
 public class AttachmentFile extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = -3392721513294143000L;
     /**
      * 主键ID
      */

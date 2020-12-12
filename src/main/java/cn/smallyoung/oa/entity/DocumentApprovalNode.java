@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 @EntityListeners({AuditingEntityListener.class})
 public class DocumentApprovalNode implements Serializable {
 
+    private static final long serialVersionUID = -1045192949319535042L;
     /**
      * 主键ID
      */

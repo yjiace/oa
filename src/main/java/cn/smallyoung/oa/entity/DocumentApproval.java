@@ -28,6 +28,8 @@ import java.util.List;
 @EntityListeners({AuditingEntityListener.class})
 public class DocumentApproval implements Serializable {
 
+    private static final long serialVersionUID = 6145432694126865384L;
+
     /**
      * 主键ID
      */

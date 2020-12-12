@@ -58,11 +58,11 @@ public class VehicleApproval implements Serializable {
     private String transportUnit;
 
     /**
-     * 车辆编号
+     * 车牌号
      */
-    @DataName(name = "车辆编号")
+    @DataName(name = "车牌号")
     @Column(name = "vehicle_number")
-    @ApiModelProperty(notes = "车辆编号")
+    @ApiModelProperty(notes = "车牌号")
     private String vehicleNumber;
 
     /**
