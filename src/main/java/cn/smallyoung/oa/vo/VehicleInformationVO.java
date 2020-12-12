@@ -23,12 +23,6 @@ public class VehicleInformationVO implements Serializable {
     @ApiModelProperty(notes = "主键ID")
     private Long id;
 
-    @ApiModelProperty(notes = "车辆名称")
-    private String name;
-
-    @ApiModelProperty(notes = "车辆编号")
-    private String number;
-
     @ApiModelProperty(notes = "车牌号")
     private String plateNumber;
 

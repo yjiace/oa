@@ -84,13 +84,12 @@ public class AttachmentFileController {
     @ApiOperation(value = "上传附件")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "file", value = "附件", dataType = "File"),
-            @ApiImplicitParam(name = "documentNumber", value = "文件编号", dataType = "String"),
             @ApiImplicitParam(name = "securityClassification", value = "文件密级", dataType = "String")
     })
     @SystemOperationLog(module = "文件操作", methods = "上传文件",
             serviceClass = AttachmentFileService.class, way = SysOperationLogWayEnum.UserAfter)
-    public AttachmentFile uploadFile(MultipartFile file, String documentNumber, String securityClassification) {
-        return attachmentFileService.uploadFile(Collections.singletonList(file), documentNumber, securityClassification).get(0);
+    public AttachmentFile uploadFile(MultipartFile file, String securityClassification) {
+        return attachmentFileService.uploadFile(Collections.singletonList(file), securityClassification).get(0);
     }
 
     /**
@@ -248,8 +247,6 @@ public class AttachmentFileController {
         return token;
     }
 
-    //todo 操作日志
-
     private AttachmentFile checkAttachmentFile(Long id) throws FileNotFoundException {
         if (id == null) {
             throw new NullPointerException("参数错误");
@@ -261,8 +258,6 @@ public class AttachmentFileController {
             log.error(error);
             throw new FileNotFoundException(error);
         }
-        //todo 权限校验
-
         return attachmentFile;
     }
 }

@@ -35,21 +35,6 @@ public class VehicleInformation extends BaseEntity implements Serializable {
     private Long id;
 
     /**
-     * 车辆名称
-     */
-    @DataName(name = "车辆名称")
-    @Column(name = "name" )
-    @ApiModelProperty(notes = "车辆名称")
-    private String name;
-    /**
-     * 车辆编号
-     */
-    @DataName(name = "车辆编号")
-    @Column(name = "number" )
-    @ApiModelProperty(notes = "车辆编号")
-    private String number;
-
-    /**
      * 车牌号
      */
     @DataName(name = "车牌号")
@@ -74,11 +59,19 @@ public class VehicleInformation extends BaseEntity implements Serializable {
     private String model;
 
     /**
+     * 状态：NotInUse：未使用，Approval：审批中，NotLeaving：未离场，NotReturned：未归还
+     */
+    @DataName(name = "状态")
+    @Column(name = "status" )
+    @ApiModelProperty(notes = "状态：NotInUse：未使用，Approval：审批中，NotLeaving：未离场，NotReturned：未归还")
+    private String status;
+
+    /**
      * 当前车辆审批审批
      */
     @OneToOne
     @JoinColumn(name = "current_car_record_id" )
     @ApiModelProperty(notes = "当前车辆审批审批")
-    private CarRecord currentCarRecord;
+    private VehicleApproval currentCarRecord;
 
 }

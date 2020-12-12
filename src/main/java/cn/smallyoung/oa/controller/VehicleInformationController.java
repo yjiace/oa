@@ -2,7 +2,6 @@ package cn.smallyoung.oa.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
-import cn.smallyoung.oa.entity.CarRecord;
 import cn.smallyoung.oa.entity.SysOperationLogWayEnum;
 import cn.smallyoung.oa.entity.VehicleInformation;
 import cn.smallyoung.oa.interfaces.ResponseResultBody;
@@ -127,36 +126,6 @@ public class VehicleInformationController {
     }
 
     /**
-     * 车辆记录操作
-     *
-     * @param id        车辆id
-     * @param remarks   备注
-     * @param operation 操作 VehicleDeparture：车辆离场；ReturnVehicle：归还车辆
-     */
-    @PostMapping("createVehicleRecord")
-    @ApiOperation(value = "车辆记录操作")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "车辆id", dataType = "Long"),
-            @ApiImplicitParam(name = "remarks", value = "备注", dataType = "String"),
-            @ApiImplicitParam(name = "operation", value = "操作，VehicleDeparture：车辆离场；ReturnVehicle：归还车辆", dataType = "String")
-    })
-    @PreAuthorize("hasRole('ROLE_VEHICLE') or hasRole('ROLE_VEHICLE_RECORD')")
-    public CarRecord createVehicleRecord(Long id, String remarks, String operation) {
-        if (id == null || !VehicleInformationService.VEHICLE_INFORMATION_OPERATION.contains(operation)
-                || VehicleInformationService.VEHICLE_INFORMATION_OPERATION.get(0).equals(operation)) {
-            throw new NullPointerException("参数错误");
-        }
-        VehicleInformation vehicleInformation = vehicleInformationService.findOne(id);
-        String isDelete = "Y";
-        if (vehicleInformation == null || isDelete.equals(vehicleInformation.getIsDelete())) {
-            String error = String.format("根据ID【%s】没有查询到该车", id);
-            log.error(error);
-            throw new RuntimeException(error);
-        }
-        return vehicleInformationService.createVehicleRecord(vehicleInformation, remarks, operation);
-    }
-
-    /**
      * 删除车辆
      *
      * @param id        车辆id
@@ -180,25 +149,4 @@ public class VehicleInformationController {
         vehicleInformation.setIsDelete("Y");
         return vehicleInformationService.save(vehicleInformation);
     }
-    /**
-     * 分页查询车辆申请记录
-     *
-     * @param page  页码
-     * @param limit 页数
-     */
-    @GetMapping(value = "findAllCarRecord")
-    @ApiOperation(value = "分页查询车辆申请记录")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", value = "页码", dataType = "Integer"),
-            @ApiImplicitParam(name = "limit", value = "页数", dataType = "Integer")
-    })
-    @PreAuthorize("hasRole('ROLE_ VEHICLE') or hasRole('ROLE_VEHICLE_RECORD_FIND')")
-    public Page<CarRecord> findAllCarRecord(@RequestParam(defaultValue = "1") Integer page,
-                                            HttpServletRequest request, @RequestParam(defaultValue = "10") Integer limit) {
-        return vehicleInformationService.findAllCarRecord(WebUtils.getParametersStartingWith(request, "search_"),
-                PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, "createTime")));
-    }
-
-    //todo 每天18点生成Excel
-
 }

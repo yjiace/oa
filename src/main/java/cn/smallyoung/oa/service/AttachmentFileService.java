@@ -38,7 +38,7 @@ public class AttachmentFileService extends BaseService<AttachmentFile, Long> {
     private AttachmentFileDao attachmentFileDao;
 
     @Transactional(rollbackFor = Exception.class)
-    public List<AttachmentFile> uploadFile(List<MultipartFile> multipartFiles, String documentNumber, String securityClassification) {
+    public List<AttachmentFile> uploadFile(List<MultipartFile> multipartFiles, String securityClassification) {
         if (CollUtil.isEmpty(multipartFiles)) {
             return new ArrayList<>();
         }
@@ -66,7 +66,6 @@ public class AttachmentFileService extends BaseService<AttachmentFile, Long> {
                 attachmentFile.setSize(multipartFile.getSize());
                 attachmentFile.setMd5(DigestUtil.md5Hex(file));
                 attachmentFile.setSecurityClassification(securityClassification);
-                attachmentFile.setDocumentNumber(documentNumber);
                 attachmentFile.setIsDelete("N");
                 attachmentFiles.add(attachmentFile);
             } catch (Exception e) {

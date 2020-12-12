@@ -78,16 +78,6 @@ public class AttachmentFile extends BaseEntity implements Serializable {
     @ApiModelProperty(notes = "pdf路径")
     private String pdfName;
 
-
-
-    /**
-     * 文件编号
-     */
-    @DataName(name = "文件编号")
-    @Column(name = "document_number" )
-    @ApiModelProperty(notes = "文件编号")
-    private String documentNumber;
-
     /**
      * 密级指定
      */
