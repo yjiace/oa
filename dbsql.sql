@@ -120,7 +120,7 @@ CREATE TABLE `oa`.`t_vehicle_information`
     `company`               varchar(10) NULL COMMENT '所属单位',
     `model`                 varchar(10) NULL COMMENT '车辆型号',
     `creator`               varchar(50) NOT NULL,
-    `status`               varchar(50) NOT NULL,
+    `status`                varchar(50) NOT NULL,
     `current_car_record_id` int NULL,
     `create_time`           datetime    NOT NULL,
     `updater`               varchar(50) NOT NULL,
@@ -134,8 +134,9 @@ CREATE TABLE `oa`.`t_document_approval`
 (
     `id`                 int NOT NULL,
     `initiator_username` varchar(50) NULL COMMENT '发起人用户名',
-    `template_tml` text NULL,
-    `organizer`              varchar(255) NULL COMMENT '承办单位',
+    `template_html`      text NULL,
+    `application_time`   varchar(50) NULL COMMENT '车辆审批时间',
+    `organizer`          varchar(255) NULL COMMENT '承办单位',
     `title`              varchar(255) NULL COMMENT '标题',
     `status`             varchar(255) NULL COMMENT '状态，Approval：审批中，Completed：已完成，Withdrawn：已撤回，Rejected：已拒绝',
     `extra`              json NULL COMMENT '额外信息',
@@ -150,7 +151,7 @@ CREATE TABLE `oa`.`t_document_approval_node`
     `id`             int         NOT NULL AUTO_INCREMENT,
     `approval_id`    int         NOT NULL,
     `status`         varchar(20) NOT NULL,
-    `message`         varchar(1024) NULL,
+    `message`        varchar(1024) NULL,
     `sort`           int         NOT NULL,
     `username`       varchar(50) NOT NULL,
     `completed_time` datetime,
@@ -166,9 +167,9 @@ CREATE TABLE `oa`.`t_document_approval_file`
 CREATE TABLE `oa`.`t_vehicle_approval`
 (
     `id`                    int          NOT NULL AUTO_INCREMENT,
-    `initiator_username` varchar(50) NULL COMMENT '发起人用户名',
+    `initiator_username`    varchar(50) NULL COMMENT '发起人用户名',
     `transport_unit`        varchar(255) NULL COMMENT '用车单位',
-    `application_ime`        varchar(255) NULL COMMENT '车辆审批时间',
+    `application_ime`       varchar(255) NULL COMMENT '车辆审批时间',
     `vehicle_number`        varchar(255) NOT NULL COMMENT '车辆编号',
     `model`                 varchar(255) NULL COMMENT '车辆型号',
     `pick_up_location`      varchar(255) NULL COMMENT '乘车地点',
@@ -191,23 +192,23 @@ CREATE TABLE `oa`.`t_vehicle_approval`
     `approved_chief`        varchar(255) NULL COMMENT '批准首长',
     `remarks`               varchar(255) NULL COMMENT '备注',
     `node_id`               int NULL COMMENT '当前审批节点（谁在审批）',
-    `status`             varchar(255) NULL COMMENT '状态，Approval：审批中，Completed：已完成，Withdrawn：已撤回，Rejected：已拒绝',
+    `status`                varchar(255) NULL COMMENT '状态，Approval：审批中，Completed：已完成，Withdrawn：已撤回，Rejected：已拒绝',
     `create_time`           datetime     NOT NULL COMMENT '审批创建时间',
     `update_time`           datetime     NOT NULL COMMENT '审批修改时间',
-    `extra`              json NULL COMMENT '额外信息',
+    `extra`                 json NULL COMMENT '额外信息',
     PRIMARY KEY (`id`)
 );
 
 CREATE TABLE `oa`.`t_vehicle_approval_node`
 (
-    `id`             int           NOT NULL AUTO_INCREMENT,
-    `approval_id`    int           NOT NULL,
-    `status`         varchar(20)   NOT NULL,
-    `sort`           int           NOT NULL,
-    `username`       varchar(50)   NOT NULL,
+    `id`             int         NOT NULL AUTO_INCREMENT,
+    `approval_id`    int         NOT NULL,
+    `status`         varchar(20) NOT NULL,
+    `sort`           int         NOT NULL,
+    `username`       varchar(50) NOT NULL,
     `message`        varchar(1024) NULL,
     `completed_time` datetime,
-    `update_time`    datetime      NOT NULL,
+    `update_time`    datetime    NOT NULL,
     PRIMARY KEY (`id`)
 );
 

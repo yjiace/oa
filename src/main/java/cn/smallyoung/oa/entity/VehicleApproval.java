@@ -35,7 +35,7 @@ public class VehicleApproval implements Serializable {
     @Column(name = "id")
     @ApiModelProperty(notes = "主键ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Long id;
 
     @DataName(name = "车辆审批时间")
     @Column(name = "application_time" )
