@@ -81,7 +81,6 @@ public class VehicleInformationController {
     @ApiOperation(value = "新增车辆")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "name", value = "车辆名称", dataType = "Long"),
-            @ApiImplicitParam(name = "number", value = "车辆编号", dataType = "String"),
             @ApiImplicitParam(name = "plateNumber", value = "车牌号", dataType = "String"),
             @ApiImplicitParam(name = "company", value = "所属单位", dataType = "String"),
             @ApiImplicitParam(name = "model", value = "车辆型号", dataType = "String")
@@ -103,7 +102,6 @@ public class VehicleInformationController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "车辆主键ID", dataType = "Long"),
             @ApiImplicitParam(name = "name", value = "车辆名称", dataType = "Long"),
-            @ApiImplicitParam(name = "number", value = "车辆编号", dataType = "String"),
             @ApiImplicitParam(name = "plateNumber", value = "车牌号", dataType = "String"),
             @ApiImplicitParam(name = "company", value = "所属单位", dataType = "String"),
             @ApiImplicitParam(name = "model", value = "车辆型号", dataType = "String")
