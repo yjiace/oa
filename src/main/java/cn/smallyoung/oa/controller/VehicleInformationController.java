@@ -92,6 +92,7 @@ public class VehicleInformationController {
         VehicleInformation vehicleInformation = new VehicleInformation();
         BeanUtil.copyProperties(vehicleInformationVO, vehicleInformation, CopyOptions.create().setIgnoreNullValue(true));
         vehicleInformation.setIsDelete("N");
+        vehicleInformation.setStatus(VehicleInformationService.VEHICLE_INFORMATION_STATUS.get(0));
         return vehicleInformationService.save(vehicleInformation);
     }
 

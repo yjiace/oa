@@ -82,6 +82,7 @@ public class VehicleApprovalService extends BaseService<VehicleApproval, Long> {
      */
     @Transactional(rollbackFor = Exception.class)
     public VehicleApproval submitForApproval(VehicleApproval vehicleApproval) {
+        vehicleInformationService.updateVehicleStatus(vehicleApproval.getVehicleNumber(), VehicleInformationService.VEHICLE_INFORMATION_OPERATION.get(0));
         List<String> usernameList = vehicleApproval.getUsername().stream().distinct().collect(Collectors.toList());
         //查询用户集合
         List<SysUser> userList = sysUserService.findByUsernameIn(usernameList);
@@ -111,7 +112,6 @@ public class VehicleApprovalService extends BaseService<VehicleApproval, Long> {
         messageNotificationService.releaseMessage(vehicleApproval.getInitiatorUsername(), "submitForApproval", "您提交的车辆审批已进入审批流程");
         messageNotificationService.releaseMessage(usernameList.get(0), "submitForApproval", "有需要您审批的车辆审批，请查看");
         vehicleApprovalDao.save(vehicleApproval);
-        vehicleInformationService.updateVehicleStatus(vehicleApproval.getVehicleNumber(), VehicleInformationService.VEHICLE_INFORMATION_OPERATION.get(0));
         return vehicleApproval;
     }
 

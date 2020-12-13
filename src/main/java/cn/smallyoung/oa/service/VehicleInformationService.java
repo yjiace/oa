@@ -83,6 +83,9 @@ public class VehicleInformationService extends BaseService<VehicleInformation, L
     }
 
     public VehicleInformation updateVehicleStatus(VehicleInformation vehicleInformation, String operation) {
+        if(vehicleInformation == null){
+            throw  new RuntimeException("该车辆不存在");
+        }
         if (VEHICLE_INFORMATION_STATUS.indexOf(vehicleInformation.getStatus()) != VEHICLE_INFORMATION_OPERATION.indexOf(operation)) {
             String error = String.format(VEHICLE_INFORMATION_DESCRIPTION.get(vehicleInformation.getStatus() + operation), vehicleInformation.getPlateNumber());
             log.error(error);
