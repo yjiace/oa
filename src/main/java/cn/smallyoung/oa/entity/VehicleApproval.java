@@ -30,6 +30,7 @@ public class VehicleApproval implements Serializable {
 
     private static final long serialVersionUID = -4389105416338012221L;
     /**
+    /**
      * 主键ID
      */
     @Id

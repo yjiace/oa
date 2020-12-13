@@ -20,6 +20,6 @@ public interface DocumentApprovalDao extends BaseDao<DocumentApproval, Long> {
     long countApprovalRequired(String username);
 
     @Query(value = "SELECT a.* FROM t_document_approval a INNER JOIN t_document_approval_node n on n.approval_id = a.id" +
-            " where n.username = ?1 and n.status = 'Approval' ORDER BY a.sort limit ?2 offset ?3 ", nativeQuery = true)
+            " where n.username = ?1 and n.status = 'Approval' ORDER BY a.create_time limit ?2 offset ?3 ", nativeQuery = true)
     List<DocumentApproval> findAllApprovalRequired(String username, Integer page, Integer limit);
 }

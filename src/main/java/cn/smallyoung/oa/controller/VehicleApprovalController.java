@@ -89,7 +89,6 @@ public class VehicleApprovalController {
     })
     public Page<VehicleApproval> findAllApprovalRequired(@RequestParam(defaultValue = "1") Integer page, HttpServletRequest request,
                                                           @RequestParam(defaultValue = "10") Integer limit) {
-        Map<String, Object> map = WebUtils.getParametersStartingWith(request, "search_");
         return vehicleApprovalService.findAllApprovalRequired(page, limit);
     }
 
@@ -199,7 +198,6 @@ public class VehicleApprovalController {
     public VehicleApproval submitForApproval(VehicleApproval vehicleApproval) {
         return vehicleApprovalService.submitForApproval(vehicleApproval);
     }
-
 
     private VehicleApproval checkApproval(Long id) {
         if (id == null) {

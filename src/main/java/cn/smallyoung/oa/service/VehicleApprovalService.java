@@ -3,10 +3,10 @@ package cn.smallyoung.oa.service;
 import cn.hutool.core.collection.CollUtil;
 import cn.smallyoung.oa.base.BaseService;
 import cn.smallyoung.oa.dao.VehicleApprovalDao;
-import cn.smallyoung.oa.dao.VehicleInformationDao;
 import cn.smallyoung.oa.entity.SysUser;
 import cn.smallyoung.oa.entity.VehicleApproval;
 import cn.smallyoung.oa.entity.VehicleApprovalNode;
+import cn.smallyoung.oa.entity.VehicleInformation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -32,7 +32,7 @@ public class VehicleApprovalService extends BaseService<VehicleApproval, Long> {
     @Resource
     private VehicleApprovalDao vehicleApprovalDao;
     @Resource
-    private VehicleInformationDao vehicleInformationDao;
+    private VehicleInformationService vehicleInformationService;
     @Resource
     private MessageNotificationService messageNotificationService;
 
@@ -70,6 +70,10 @@ public class VehicleApprovalService extends BaseService<VehicleApproval, Long> {
         approval.setStatus("Withdrawn");
         messageNotificationService.releaseMessage(approval.getInitiatorUsername(), "withdrawalOfApproval", "已经成功撤销您提交的车辆审批");
         vehicleApprovalDao.save(approval);
+        //修改车辆状态
+        VehicleInformation vehicleInformation = vehicleInformationService.findByPlateNumber(approval.getVehicleNumber());
+        vehicleInformation.setStatus(VehicleInformationService.VEHICLE_INFORMATION_STATUS.get(0));
+        vehicleInformationService.save(vehicleInformation);
         return approval;
     }
 
@@ -107,6 +111,7 @@ public class VehicleApprovalService extends BaseService<VehicleApproval, Long> {
         messageNotificationService.releaseMessage(vehicleApproval.getInitiatorUsername(), "submitForApproval", "您提交的车辆审批已进入审批流程");
         messageNotificationService.releaseMessage(usernameList.get(0), "submitForApproval", "有需要您审批的车辆审批，请查看");
         vehicleApprovalDao.save(vehicleApproval);
+        vehicleInformationService.updateVehicleStatus(vehicleApproval.getVehicleNumber(), VehicleInformationService.VEHICLE_INFORMATION_OPERATION.get(0));
         return vehicleApproval;
     }
 
@@ -121,7 +126,6 @@ public class VehicleApprovalService extends BaseService<VehicleApproval, Long> {
         String userName;
         SysUser user;
         boolean needNextUserApproval = false;
-        boolean completed = false;
         for (int i = 0, size = nodes.size(); i < size; i++) {
             node = nodes.get(i);
             if (needNextUserApproval) {
@@ -145,13 +149,14 @@ public class VehicleApprovalService extends BaseService<VehicleApproval, Long> {
                 //最后的审批者
                 if (i == (size - 1)) {
                     approval.setStatus("Completed");
+                    approval.setApprovedChief(username);
                     messageNotificationService.releaseMessage(approval.getInitiatorUsername(), "completedApproval",
                             "您提交的审批已经审核通过");
-                    completed = true;
                 } else {
                     needNextUserApproval = true;
                     messageNotificationService.releaseMessage(approval.getInitiatorUsername(), "completedApproval",
                             String.format("【%s】已经同意您提交的审批", username));
+                    vehicleInformationService.updateVehicleStatus(approval.getVehicleNumber(), VehicleInformationService.VEHICLE_INFORMATION_OPERATION.get(1));
                 }
                 messageNotificationService.releaseMessage(node.getUser(), "rejectedApproval",
                         String.format("您同意了用户【%s】提交的审批", approval.getInitiatorUsername()));
@@ -175,6 +180,7 @@ public class VehicleApprovalService extends BaseService<VehicleApproval, Long> {
         });
         messageNotificationService.releaseMessage(approval.getInitiatorUsername(), "reApprove", "您提交的车辆审批已重新进入审批流程");
         vehicleApprovalDao.save(approval);
+        vehicleInformationService.updateVehicleStatus(approval.getVehicleNumber(), VehicleInformationService.VEHICLE_INFORMATION_OPERATION.get(0));
         return approval;
     }
 
@@ -200,6 +206,10 @@ public class VehicleApprovalService extends BaseService<VehicleApproval, Long> {
         }
         messageNotificationService.releaseMessage(approval.getInitiatorUsername(), "rejectedApproval", "您提交的车辆审批未通过审核。");
         vehicleApprovalDao.save(approval);
+        //修改车辆状态
+        VehicleInformation vehicleInformation = vehicleInformationService.findByPlateNumber(approval.getVehicleNumber());
+        vehicleInformation.setStatus(VehicleInformationService.VEHICLE_INFORMATION_STATUS.get(0));
+        vehicleInformationService.save(vehicleInformation);
         return approval;
     }
 
@@ -216,26 +226,5 @@ public class VehicleApprovalService extends BaseService<VehicleApproval, Long> {
             log.error(error);
             throw new RuntimeException(error);
         }
-
     }
-}
-
-
-enum VehicleApprovalEnum {
-    /**
-     * 未使用
-     */
-    NotInUse,
-    /**
-     * 审批中
-     */
-    Approval,
-    /**
-     * 未离场
-     */
-    NotLeaving,
-    /**
-     * 未归还
-     */
-    NotReturned
 }

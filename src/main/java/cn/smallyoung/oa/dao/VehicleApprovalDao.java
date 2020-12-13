@@ -19,7 +19,7 @@ public interface VehicleApprovalDao extends BaseDao<VehicleApproval, Long> {
     long countApprovalRequired(String username);
 
     @Query(value = "SELECT a.* FROM t_vehicle_approval a INNER JOIN t_vehicle_approval_node n on n.approval_id = a.id" +
-            " where n.username = ?1 and n.status = 'Approval' ORDER BY a.sort limit ?2 offset ?3 ", nativeQuery = true)
+            " where n.username = ?1 and n.status = 'Approval' ORDER BY a.create_time limit ?2 offset ?3 ", nativeQuery = true)
     List<VehicleApproval> findAllApprovalRequired(String username, Integer page, Integer limit);
     
 }

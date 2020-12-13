@@ -2,6 +2,7 @@ package cn.smallyoung.oa.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.util.StrUtil;
 import cn.smallyoung.oa.entity.SysOperationLogWayEnum;
 import cn.smallyoung.oa.entity.VehicleInformation;
 import cn.smallyoung.oa.interfaces.ResponseResultBody;
@@ -22,6 +23,7 @@ import org.springframework.web.util.WebUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -53,7 +55,7 @@ public class VehicleInformationController {
     public Page<VehicleInformation> findAll(@RequestParam(defaultValue = "1") Integer page,
                                             HttpServletRequest request, @RequestParam(defaultValue = "10") Integer limit) {
         Map<String, Object> map = WebUtils.getParametersStartingWith(request, "search_");
-        map.put("AND_EQ_isDelete","N");
+        map.put("AND_EQ_isDelete", "N");
         return vehicleInformationService.findAll(map, PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, "updateTime")));
     }
 
@@ -124,7 +126,7 @@ public class VehicleInformationController {
     /**
      * 删除车辆
      *
-     * @param id        车辆id
+     * @param id 车辆id
      */
     @PostMapping("delVehicleRecord")
     @ApiOperation(value = "删除车辆")
@@ -132,7 +134,7 @@ public class VehicleInformationController {
     @ApiImplicitParam(name = "id", value = "车辆id", required = true, dataType = "Long")
     @SystemOperationLog(module = "车辆管理", methods = "删除车辆", serviceClass = VehicleInformationService.class,
             queryMethod = "findOne", parameterType = "Long", parameterKey = "id")
-    public VehicleInformation delVehicleRecord(Long id){
+    public VehicleInformation delVehicleRecord(Long id) {
         if (id == null) {
             throw new NullPointerException("参数错误");
         }
@@ -144,5 +146,31 @@ public class VehicleInformationController {
         }
         vehicleInformation.setIsDelete("Y");
         return vehicleInformationService.save(vehicleInformation);
+    }
+
+    /**
+     * 车辆离场和归还
+     *
+     * @param id        车辆id
+     * @param operation 操作 VehicleDeparture：车辆离场；ReturnVehicle：归还车辆
+     */
+    @PostMapping("updateVehicleStatus")
+    @ApiOperation(value = "车辆离场和归还")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "车辆id", dataType = "Long"),
+            @ApiImplicitParam(name = "operation", value = "操作，VehicleDeparture：车辆离场；ReturnVehicle：归还车辆", dataType = "String")
+    })
+    public VehicleInformation updateVehicleStatus(Long id, String operation) {
+        if (StrUtil.isBlank(operation) || !Arrays.asList("VehicleDeparture", "ReturnVehicle").contains(operation)) {
+            throw new NullPointerException("参数错误");
+        }
+        VehicleInformation vehicleInformation = vehicleInformationService.findOne(id);
+        String isDelete = "Y";
+        if (vehicleInformation == null || isDelete.equals(vehicleInformation.getIsDelete())) {
+            String error = String.format("根据ID【%s】没有查询到该车", id);
+            log.error(error);
+            throw new RuntimeException(error);
+        }
+        return vehicleInformationService.updateVehicleStatus(vehicleInformation, operation);
     }
 }

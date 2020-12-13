@@ -29,6 +29,11 @@ public class VehicleInformationService extends BaseService<VehicleInformation, L
      */
     public final static List<String> VEHICLE_INFORMATION_STATUS = Arrays.asList("NotInUse", "Approval", "NotLeaving", "NotReturned", "NotInUse");
 
+    /**
+     * 操作 ReviewCar：申请用车；CompletedApproval：同意审批；VehicleDeparture：车辆离场；ReturnVehicle：归还车辆
+     */
+    public final static List<String> VEHICLE_INFORMATION_OPERATION = Arrays.asList("ReviewCar", "CompletedApproval", "VehicleDeparture", "ReturnVehicle");
+
     public final static Map<String, String> VEHICLE_INFORMATION_DESCRIPTION = new HashMap<String, String>() {
 
         private static final long serialVersionUID = 4299492764225991279L;
@@ -61,11 +66,6 @@ public class VehicleInformationService extends BaseService<VehicleInformation, L
         }
     };
 
-    /**
-     * 操作 ReviewCar：申请用车；CompletedApproval：同意审批；VehicleDeparture：车辆离场；ReturnVehicle：归还车辆
-     */
-    public final static List<String> VEHICLE_INFORMATION_OPERATION = Arrays.asList("ReviewCar", "CompletedApproval", "VehicleDeparture", "ReturnVehicle");
-
     @Resource
     private VehicleInformationDao vehicleInformationDao;
 
@@ -74,8 +74,22 @@ public class VehicleInformationService extends BaseService<VehicleInformation, L
         return super.findOne(id);
     }
 
-    public VehicleInformation findByPlateNumber(String plateNumber){
+    public VehicleInformation findByPlateNumber(String plateNumber) {
         return StrUtil.isNotBlank(plateNumber) ? vehicleInformationDao.findByPlateNumber(plateNumber) : null;
+    }
+
+    public void updateVehicleStatus(String plateNumber, String operation){
+        updateVehicleStatus(findByPlateNumber(plateNumber), operation);
+    }
+
+    public VehicleInformation updateVehicleStatus(VehicleInformation vehicleInformation, String operation) {
+        if (VEHICLE_INFORMATION_STATUS.indexOf(vehicleInformation.getStatus()) != VEHICLE_INFORMATION_OPERATION.indexOf(operation)) {
+            String error = String.format(VEHICLE_INFORMATION_DESCRIPTION.get(vehicleInformation.getStatus() + operation), vehicleInformation.getPlateNumber());
+            log.error(error);
+            throw new RuntimeException(error);
+        }
+        vehicleInformation.setStatus(VEHICLE_INFORMATION_STATUS.get(VEHICLE_INFORMATION_OPERATION.indexOf(operation) + 1));
+        return vehicleInformationDao.save(vehicleInformation);
     }
 
 }

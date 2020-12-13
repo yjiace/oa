@@ -129,7 +129,6 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
         String userName;
         SysUser user;
         boolean needNextUserApproval = false;
-        boolean completed = false;
         for (int i = 0, size = nodes.size(); i < size; i++) {
             node = nodes.get(i);
             if (needNextUserApproval) {
@@ -155,7 +154,6 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
                     approval.setStatus("Completed");
                     messageNotificationService.releaseMessage(approval.getInitiatorUsername(), "completedApproval",
                             "您提交的审批已经审核通过");
-                    completed = true;
                 } else {
                     needNextUserApproval = true;
                     messageNotificationService.releaseMessage(approval.getInitiatorUsername(), "completedApproval",

@@ -10,6 +10,7 @@ import cn.smallyoung.oa.interfaces.SystemOperationLog;
 import cn.smallyoung.oa.service.DocumentApprovalService;
 import cn.smallyoung.oa.service.SysRoleService;
 import cn.smallyoung.oa.service.SysUserService;
+import cn.smallyoung.oa.service.VehicleApprovalService;
 import cn.smallyoung.oa.vo.SysUserVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -50,6 +51,8 @@ public class SysUserController {
     private SysUserService sysUserService;
     @Resource
     private BCryptPasswordEncoder passwordEncoder;
+    @Resource
+    private VehicleApprovalService vehicleApprovalService;
     @Resource
     private DocumentApprovalService documentApprovalService;
 
@@ -222,6 +225,7 @@ public class SysUserController {
             throw new RuntimeException(error);
         }
         documentApprovalService.checkUserHaveApproval(user);
+        vehicleApprovalService.checkUserHaveApproval(user);
         user.setStatus(status);
         return sysUserService.save(user);
     }
@@ -290,6 +294,7 @@ public class SysUserController {
     public SysUser deleteUser(String username) {
         SysUser user = checkUser(username);
         documentApprovalService.checkUserHaveApproval(user);
+        vehicleApprovalService.checkUserHaveApproval(user);
         user.setIsDelete("Y");
         return sysUserService.save(user);
     }
