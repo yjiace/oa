@@ -56,7 +56,7 @@ public class DocumentApproval implements Serializable {
      * 呈批件HTML
      */
     @DataName(name = "呈批件HTML")
-    @Column(name = "template_tml" )
+    @Column(name = "template_html" )
     @ApiModelProperty(notes = "呈批件HTML")
     private String templateHtml;
 
