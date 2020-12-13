@@ -74,7 +74,7 @@ public class DocumentApprovalController {
     public Page<DocumentApproval> findAllApprovalRequired(@RequestParam(defaultValue = "1") Integer page, HttpServletRequest request,
                                                           @RequestParam(defaultValue = "10") Integer limit) {
         Map<String, Object> map = WebUtils.getParametersStartingWith(request, "search_");
-        return documentApprovalService.findAllApprovalRequired(page, limit, map.getOrDefault("AND_EQ_type", "document").toString());
+        return documentApprovalService.findAllApprovalRequired(page, limit);
     }
 
     /**

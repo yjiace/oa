@@ -50,14 +50,14 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
      * @param page  页码
      * @param limit 页数
      */
-    public Page<DocumentApproval> findAllApprovalRequired(Integer page, Integer limit, String type) {
+    public Page<DocumentApproval> findAllApprovalRequired(Integer page, Integer limit) {
         String username = sysUserService.currentlyLoggedInUser();
         Pageable pageable = PageRequest.of(page, limit, Sort.by(Sort.Direction.ASC, "sort"));
-        long count = documentApprovalDao.countApprovalRequired(username, type);
+        long count = documentApprovalDao.countApprovalRequired(username);
         if (count <= 0) {
             return new PageImpl<>(new ArrayList<>(), pageable, 0);
         }
-        List<DocumentApproval> approvals = documentApprovalDao.findAllApprovalRequired(username, type, limit, (page - 1) * limit);
+        List<DocumentApproval> approvals = documentApprovalDao.findAllApprovalRequired(username, limit, (page - 1) * limit);
         return new PageImpl<>(approvals, pageable, count);
     }
 

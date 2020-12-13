@@ -3,10 +3,12 @@ package cn.smallyoung.oa.controller;
 import cn.hutool.core.util.StrUtil;
 import cn.smallyoung.oa.entity.SysOperationLogWayEnum;
 import cn.smallyoung.oa.entity.VehicleApproval;
+import cn.smallyoung.oa.entity.VehicleInformation;
 import cn.smallyoung.oa.interfaces.ResponseResultBody;
 import cn.smallyoung.oa.interfaces.SystemOperationLog;
 import cn.smallyoung.oa.service.SysUserService;
 import cn.smallyoung.oa.service.VehicleApprovalService;
+import cn.smallyoung.oa.service.VehicleInformationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -37,6 +39,21 @@ public class VehicleApprovalController {
     private SysUserService sysUserService;
     @Resource
     private VehicleApprovalService vehicleApprovalService;
+    @Resource
+    private VehicleInformationService vehicleInformationService;
+
+    @GetMapping("checkVehicleStatus")
+    @ApiOperation(value = "分页查询")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "plateNumber", value = "车牌号", dataType = "String")
+    })
+    public String checkVehicleStatus(String plateNumber){
+        VehicleInformation vehicleInformation = vehicleInformationService.findByPlateNumber(plateNumber);
+        if(vehicleInformation == null){
+            throw  new RuntimeException("该车辆不存在");
+        }
+        return vehicleInformation.getStatus();
+    }
 
     /**
      * 查询我提交的审批
@@ -73,7 +90,7 @@ public class VehicleApprovalController {
     public Page<VehicleApproval> findAllApprovalRequired(@RequestParam(defaultValue = "1") Integer page, HttpServletRequest request,
                                                           @RequestParam(defaultValue = "10") Integer limit) {
         Map<String, Object> map = WebUtils.getParametersStartingWith(request, "search_");
-        return vehicleApprovalService.findAllApprovalRequired(page, limit, map.getOrDefault("AND_EQ_type", "document").toString());
+        return vehicleApprovalService.findAllApprovalRequired(page, limit);
     }
 
     /**

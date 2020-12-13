@@ -3,6 +3,7 @@ package cn.smallyoung.oa.service;
 import cn.hutool.core.collection.CollUtil;
 import cn.smallyoung.oa.base.BaseService;
 import cn.smallyoung.oa.dao.VehicleApprovalDao;
+import cn.smallyoung.oa.dao.VehicleInformationDao;
 import cn.smallyoung.oa.entity.SysUser;
 import cn.smallyoung.oa.entity.VehicleApproval;
 import cn.smallyoung.oa.entity.VehicleApprovalNode;
@@ -31,6 +32,8 @@ public class VehicleApprovalService extends BaseService<VehicleApproval, Long> {
     @Resource
     private VehicleApprovalDao vehicleApprovalDao;
     @Resource
+    private VehicleInformationDao vehicleInformationDao;
+    @Resource
     private MessageNotificationService messageNotificationService;
 
     @Override
@@ -44,14 +47,14 @@ public class VehicleApprovalService extends BaseService<VehicleApproval, Long> {
      * @param page  页码
      * @param limit 页数
      */
-    public Page<VehicleApproval> findAllApprovalRequired(Integer page, Integer limit, String type) {
+    public Page<VehicleApproval> findAllApprovalRequired(Integer page, Integer limit) {
         String username = sysUserService.currentlyLoggedInUser();
         Pageable pageable = PageRequest.of(page, limit, Sort.by(Sort.Direction.ASC, "sort"));
-        long count = vehicleApprovalDao.countApprovalRequired(username, type);
+        long count = vehicleApprovalDao.countApprovalRequired(username);
         if (count <= 0) {
             return new PageImpl<>(new ArrayList<>(), pageable, 0);
         }
-        List<VehicleApproval> approvals = vehicleApprovalDao.findAllApprovalRequired(username, type, limit, (page - 1) * limit);
+        List<VehicleApproval> approvals = vehicleApprovalDao.findAllApprovalRequired(username, limit, (page - 1) * limit);
         return new PageImpl<>(approvals, pageable, count);
     }
 
@@ -215,4 +218,24 @@ public class VehicleApprovalService extends BaseService<VehicleApproval, Long> {
         }
 
     }
+}
+
+
+enum VehicleApprovalEnum {
+    /**
+     * 未使用
+     */
+    NotInUse,
+    /**
+     * 审批中
+     */
+    Approval,
+    /**
+     * 未离场
+     */
+    NotLeaving,
+    /**
+     * 未归还
+     */
+    NotReturned
 }

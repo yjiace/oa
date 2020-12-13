@@ -91,6 +91,7 @@ public class VehicleApprovalNode implements Serializable {
     @ManyToOne
     @PropIgnore
     @JsonIgnore
+    @ApiModelProperty(hidden = true)
     @JoinColumn(name = "approval_id")
     private VehicleApproval vehicleApproval;
 

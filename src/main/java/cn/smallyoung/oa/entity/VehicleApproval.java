@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -40,7 +41,8 @@ public class VehicleApproval implements Serializable {
     @DataName(name = "车辆审批时间")
     @Column(name = "application_time" )
     @ApiModelProperty(notes = "车辆审批时间")
-    private String applicationTime;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime applicationTime;
     /**
      * 发起人用户名
      */
@@ -103,6 +105,7 @@ public class VehicleApproval implements Serializable {
     @DataName(name = "出场时间")
     @Column(name = "playing_time")
     @ApiModelProperty(notes = "出场时间")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime playingTime;
 
     /**
@@ -183,6 +186,7 @@ public class VehicleApproval implements Serializable {
     @DataName(name = "回场时间")
     @Column(name = "return_time")
     @ApiModelProperty(notes = "回场时间")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime returnTime;
 
     /**

@@ -1,5 +1,6 @@
 package cn.smallyoung.oa.service;
 
+import cn.hutool.core.util.StrUtil;
 import cn.smallyoung.oa.base.BaseService;
 import cn.smallyoung.oa.dao.VehicleInformationDao;
 import cn.smallyoung.oa.entity.VehicleInformation;
@@ -66,13 +67,15 @@ public class VehicleInformationService extends BaseService<VehicleInformation, L
     public final static List<String> VEHICLE_INFORMATION_OPERATION = Arrays.asList("ReviewCar", "CompletedApproval", "VehicleDeparture", "ReturnVehicle");
 
     @Resource
-    private SysUserService sysUserService;
-    @Resource
     private VehicleInformationDao vehicleInformationDao;
 
     @Override
     public VehicleInformation findOne(Long id) {
         return super.findOne(id);
+    }
+
+    public VehicleInformation findByPlateNumber(String plateNumber){
+        return StrUtil.isNotBlank(plateNumber) ? vehicleInformationDao.findByPlateNumber(plateNumber) : null;
     }
 
 }
