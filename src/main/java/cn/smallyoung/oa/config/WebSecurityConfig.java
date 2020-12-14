@@ -79,6 +79,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/start/**",
                         "/file/downloadFileByToken",
                         "/file/browseOnline",
+                        "/approval/vehicle/carStatistics",
                         "/upload/**"
                 )
                 .permitAll()

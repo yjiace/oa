@@ -1,5 +1,6 @@
 package cn.smallyoung.oa.controller;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.smallyoung.oa.entity.DocumentApproval;
 import cn.smallyoung.oa.entity.SysOperationLogWayEnum;
@@ -71,9 +72,8 @@ public class DocumentApprovalController {
             @ApiImplicitParam(name = "page", value = "页码", dataType = "Integer"),
             @ApiImplicitParam(name = "limit", value = "页数", dataType = "Integer")
     })
-    public Page<DocumentApproval> findAllApprovalRequired(@RequestParam(defaultValue = "1") Integer page, HttpServletRequest request,
+    public Page<DocumentApproval> findAllApprovalRequired(@RequestParam(defaultValue = "1") Integer page,
                                                           @RequestParam(defaultValue = "10") Integer limit) {
-        Map<String, Object> map = WebUtils.getParametersStartingWith(request, "search_");
         return documentApprovalService.findAllApprovalRequired(page, limit);
     }
 
@@ -190,6 +190,9 @@ public class DocumentApprovalController {
     @SystemOperationLog(module = "审批", methods = "提交审批",
             serviceClass = DocumentApprovalService.class, way = SysOperationLogWayEnum.UserAfter)
     public DocumentApproval submitForApproval(DocumentApprovalVO documentApprovalVO) {
+        if(CollectionUtil.isEmpty(documentApprovalVO.getUsername())){
+            throw new NullPointerException("参数错误");
+        }
         return documentApprovalService.submitForApproval(documentApprovalVO);
     }
 

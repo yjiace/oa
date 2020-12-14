@@ -1,6 +1,14 @@
 package cn.smallyoung.oa.controller;
 
+import cn.hutool.cache.CacheUtil;
+import cn.hutool.cache.impl.TimedCache;
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.lang.Dict;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.poi.excel.ExcelUtil;
+import cn.hutool.poi.excel.ExcelWriter;
 import cn.smallyoung.oa.entity.SysOperationLogWayEnum;
 import cn.smallyoung.oa.entity.VehicleApproval;
 import cn.smallyoung.oa.entity.VehicleInformation;
@@ -20,8 +28,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.WebUtils;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.rmi.AccessException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,6 +50,8 @@ import java.util.Map;
 @Api(tags = "车辆审批")
 public class VehicleApprovalController {
 
+    private final TimedCache<String, Dict> downloadExcelToken = CacheUtil.newTimedCache(1000 * 60);
+
     @Resource
     private SysUserService sysUserService;
     @Resource
@@ -42,15 +59,29 @@ public class VehicleApprovalController {
     @Resource
     private VehicleInformationService vehicleInformationService;
 
+    @PostConstruct
+    private void init() {
+        downloadExcelToken.schedulePrune(5);
+    }
+
+    /**
+     * 根据车牌号查询正在审批的车辆审批
+     */
+    @GetMapping("findByVehicleNumber")
+    @ApiOperation(value = "根据车牌号查询正在审批的车辆审批")
+    public VehicleApproval findByVehicleNumber(String vehicleNumber) {
+        return vehicleApprovalService.findByVehicleNumberAndStatus(vehicleNumber);
+    }
+
     @GetMapping("checkVehicleStatus")
     @ApiOperation(value = "分页查询")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "plateNumber", value = "车牌号", dataType = "String")
     })
-    public String checkVehicleStatus(String plateNumber){
+    public String checkVehicleStatus(String plateNumber) {
         VehicleInformation vehicleInformation = vehicleInformationService.findByPlateNumber(plateNumber);
-        if(vehicleInformation == null){
-            throw  new RuntimeException("该车辆不存在");
+        if (vehicleInformation == null) {
+            throw new RuntimeException("该车辆不存在");
         }
         return vehicleInformation.getStatus();
     }
@@ -68,7 +99,7 @@ public class VehicleApprovalController {
             @ApiImplicitParam(name = "limit", value = "页数", dataType = "Integer")
     })
     public Page<VehicleApproval> findAll(@RequestParam(defaultValue = "1") Integer page,
-                                  HttpServletRequest request, @RequestParam(defaultValue = "10") Integer limit) {
+                                         HttpServletRequest request, @RequestParam(defaultValue = "10") Integer limit) {
         Map<String, Object> map = WebUtils.getParametersStartingWith(request, "search_");
         map.put("AND_EQ_initiatorUsername", sysUserService.currentlyLoggedInUser());
         return vehicleApprovalService.findAll(map, PageRequest.of(page - 1, limit,
@@ -87,8 +118,8 @@ public class VehicleApprovalController {
             @ApiImplicitParam(name = "page", value = "页码", dataType = "Integer"),
             @ApiImplicitParam(name = "limit", value = "页数", dataType = "Integer")
     })
-    public Page<VehicleApproval> findAllApprovalRequired(@RequestParam(defaultValue = "1") Integer page, HttpServletRequest request,
-                                                          @RequestParam(defaultValue = "10") Integer limit) {
+    public Page<VehicleApproval> findAllApprovalRequired(@RequestParam(defaultValue = "1") Integer page,
+                                                         @RequestParam(defaultValue = "10") Integer limit) {
         return vehicleApprovalService.findAllApprovalRequired(page, limit);
     }
 
@@ -138,7 +169,7 @@ public class VehicleApprovalController {
             throw new RuntimeException(error);
         }
         String username = sysUserService.currentlyLoggedInUser();
-        if(!approval.getNode().getUser().equals(username)){
+        if (!approval.getNode().getUser().equals(username)) {
             String error = String.format("您【%s】当前不可对本次审批【%s】进行操作", username, id);
             log.error(error);
             throw new RuntimeException(error);
@@ -171,7 +202,6 @@ public class VehicleApprovalController {
         return vehicleApprovalService.reApprove(approval);
     }
 
-
     /**
      * 撤回审批
      *
@@ -196,7 +226,65 @@ public class VehicleApprovalController {
     @SystemOperationLog(module = "审批", methods = "提交审批",
             serviceClass = VehicleApprovalService.class, way = SysOperationLogWayEnum.UserAfter)
     public VehicleApproval submitForApproval(VehicleApproval vehicleApproval) {
+        if(CollectionUtil.isEmpty(vehicleApproval.getUsername())){
+            throw new NullPointerException("参数错误");
+        }
         return vehicleApprovalService.submitForApproval(vehicleApproval);
+    }
+
+
+    /**
+     * 获取下载凭证
+     */
+    @GetMapping(value = "getToken")
+    @ApiOperation(value = "获取下载凭证")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "data", value = "查询日期")
+    })
+    public String getToken(HttpServletRequest request) throws FileNotFoundException {
+        Map<String, Object> map = WebUtils.getParametersStartingWith(request, "search_");
+        String token = IdUtil.simpleUUID();
+        downloadExcelToken.put(token, Dict.create()
+                .set("params", map)
+                .set("user", sysUserService.currentlyLoggedInUser()));
+        return token;
+    }
+
+    /**
+     * 每日用车统计
+     */
+    @GetMapping("carStatistics")
+    @ApiOperation(value = "每日用车统计")
+    public void carStatistics(String token, HttpServletResponse response) throws IOException {
+        if (StrUtil.isBlank(token)) {
+            throw new NullPointerException("参数错误");
+        }
+        Dict dict = downloadExcelToken.get(token);
+        if (dict == null) {
+            log.error("文件下载请求被拒绝，请重新请求下载文件");
+            throw new AccessException("文件下载请求被拒绝，请重新请求下载文件");
+        }
+        Map<String, Object> params = dict.getBean("params");
+        List<VehicleApproval> vehicleApprovals = vehicleApprovalService.findAll(params, Sort.by(Sort.Direction.DESC, "updateTime"));
+        ExcelWriter writer = ExcelUtil.getWriter();
+        writer.addHeaderAlias("initiatorUsername", "提审批用户");
+        writer.addHeaderAlias("transportUnit", "用车单位");
+        writer.addHeaderAlias("vehicleNumber", "车号");
+        writer.addHeaderAlias("model", "车辆型号");
+        writer.addHeaderAlias("pickUpLocation", "乘车地点");
+        writer.addHeaderAlias("driverName", "驾驶员姓名");
+        writer.addHeaderAlias("carCadre", "带车干部");
+        writer.addHeaderAlias("departmentHeads", "部门领导");
+
+        writer.write(vehicleApprovals, true);
+
+        response.setCharacterEncoding("utf-8");
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setHeader("Content-Disposition", "attachment;filename=" + dict.get("data") + "用车统计.xls");
+        ServletOutputStream out = response.getOutputStream();
+        writer.flush(out, true);
+        writer.close();
+        IoUtil.close(out);
     }
 
     private VehicleApproval checkApproval(Long id) {

@@ -82,6 +82,7 @@ public class VehicleInformationService extends BaseService<VehicleInformation, L
         updateVehicleStatus(findByPlateNumber(plateNumber), operation);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public VehicleInformation updateVehicleStatus(VehicleInformation vehicleInformation, String operation) {
         if(vehicleInformation == null){
             throw  new RuntimeException("该车辆不存在");
