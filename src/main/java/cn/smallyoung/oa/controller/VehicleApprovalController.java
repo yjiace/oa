@@ -2,6 +2,8 @@ package cn.smallyoung.oa.controller;
 
 import cn.hutool.cache.CacheUtil;
 import cn.hutool.cache.impl.TimedCache;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.lang.Dict;
@@ -17,6 +19,7 @@ import cn.smallyoung.oa.interfaces.SystemOperationLog;
 import cn.smallyoung.oa.service.SysUserService;
 import cn.smallyoung.oa.service.VehicleApprovalService;
 import cn.smallyoung.oa.service.VehicleInformationService;
+import cn.smallyoung.oa.vo.CarStatisticsVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -36,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.AccessException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -226,7 +230,7 @@ public class VehicleApprovalController {
     @SystemOperationLog(module = "审批", methods = "提交审批",
             serviceClass = VehicleApprovalService.class, way = SysOperationLogWayEnum.UserAfter)
     public VehicleApproval submitForApproval(VehicleApproval vehicleApproval) {
-        if(CollectionUtil.isEmpty(vehicleApproval.getUsername())){
+        if (CollectionUtil.isEmpty(vehicleApproval.getUsername())) {
             throw new NullPointerException("参数错误");
         }
         return vehicleApprovalService.submitForApproval(vehicleApproval);
@@ -238,9 +242,6 @@ public class VehicleApprovalController {
      */
     @GetMapping(value = "getToken")
     @ApiOperation(value = "获取下载凭证")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "data", value = "查询日期")
-    })
     public String getToken(HttpServletRequest request) throws FileNotFoundException {
         Map<String, Object> map = WebUtils.getParametersStartingWith(request, "search_");
         String token = IdUtil.simpleUUID();
@@ -265,22 +266,39 @@ public class VehicleApprovalController {
             throw new AccessException("文件下载请求被拒绝，请重新请求下载文件");
         }
         Map<String, Object> params = dict.getBean("params");
-        List<VehicleApproval> vehicleApprovals = vehicleApprovalService.findAll(params, Sort.by(Sort.Direction.DESC, "updateTime"));
         ExcelWriter writer = ExcelUtil.getWriter();
-        writer.addHeaderAlias("initiatorUsername", "提审批用户");
+        writer.addHeaderAlias("index", "序号");
+        writer.addHeaderAlias("applicationTime", "日期");
         writer.addHeaderAlias("transportUnit", "用车单位");
-        writer.addHeaderAlias("vehicleNumber", "车号");
-        writer.addHeaderAlias("model", "车辆型号");
-        writer.addHeaderAlias("pickUpLocation", "乘车地点");
-        writer.addHeaderAlias("driverName", "驾驶员姓名");
+        writer.addHeaderAlias("vehicleNumber", "车牌号");
+        writer.addHeaderAlias("model", "车型");
         writer.addHeaderAlias("carCadre", "带车干部");
-        writer.addHeaderAlias("departmentHeads", "部门领导");
+        writer.addHeaderAlias("drivingRoute", "行驶路线");
+        writer.addHeaderAlias("playingTime", "出场时间");
+        writer.addHeaderAlias("returnTime", "回场时间");
+        writer.addHeaderAlias("carDispatcher", "派车人");
+        writer.addHeaderAlias("approvedChief", "批准首长");
 
-        writer.write(vehicleApprovals, true);
-
+        List<VehicleApproval> vehicleApprovals = vehicleApprovalService.findAll(params, Sort.by(Sort.Direction.DESC, "updateTime"));
+        List<CarStatisticsVO> carStatisticsVOList = new ArrayList<>();
+        CarStatisticsVO carStatisticsVO;
+        for (int i = 0; i < vehicleApprovals.size(); i++) {
+            carStatisticsVO = new CarStatisticsVO();
+            BeanUtil.copyProperties(vehicleApprovals.get(i), carStatisticsVO, CopyOptions.create().setIgnoreNullValue(true));
+            carStatisticsVO.setIndex(i + 1);
+            carStatisticsVOList.add(carStatisticsVO);
+        }
+        if(carStatisticsVOList.size() == 0){
+            carStatisticsVOList.add(new CarStatisticsVO());
+        }
+        writer.write(carStatisticsVOList, true);
+        writer.autoSizeColumnAll();
+        writer.setColumnWidth(1, 16);
+        writer.setColumnWidth(7, 16);
+        writer.setColumnWidth(8, 16);
         response.setCharacterEncoding("utf-8");
-        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
-        response.setHeader("Content-Disposition", "attachment;filename=" + dict.get("data") + "用车统计.xls");
+        response.setContentType("multipart/form-data");
+        response.setHeader("Content-Disposition", "attachment;filename=" + token + ".xls");
         ServletOutputStream out = response.getOutputStream();
         writer.flush(out, true);
         writer.close();
