@@ -1,6 +1,7 @@
 package cn.smallyoung.oa.service;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
@@ -36,6 +37,10 @@ public class AttachmentFileService extends BaseService<AttachmentFile, Long> {
     private OfficeConverter officeConverter;
     @Resource
     private AttachmentFileDao attachmentFileDao;
+
+    public List<AttachmentFile> findByIdIn(List<Long> idList){
+        return CollectionUtil.isNotEmpty(idList) ? attachmentFileDao.findByIdIn(idList) : new ArrayList<>();
+    }
 
     @Transactional(rollbackFor = Exception.class)
     public List<AttachmentFile> uploadFile(List<MultipartFile> multipartFiles, String securityClassification) {

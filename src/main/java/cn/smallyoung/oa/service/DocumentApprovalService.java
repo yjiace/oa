@@ -3,6 +3,7 @@ package cn.smallyoung.oa.service;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.smallyoung.oa.base.BaseService;
 import cn.smallyoung.oa.dao.DocumentApprovalDao;
 import cn.smallyoung.oa.entity.AttachmentFile;
@@ -95,8 +96,15 @@ public class DocumentApprovalService extends BaseService<DocumentApproval, Long>
         }
         approval.setInitiatorUsername(sysUserService.currentlyLoggedInUser());
         approval.setStatus("Approval");
-
-        List<AttachmentFile> attachmentFiles = attachmentFileService.uploadFile(documentApprovalVO.getFile(), documentApprovalVO.getSecurityClassification());
+        List<AttachmentFile> attachmentFiles = attachmentFileService.findByIdIn(documentApprovalVO.getFileIds());
+        if(CollectionUtil.isNotEmpty(documentApprovalVO.getFileIds()) && attachmentFiles.size() != documentApprovalVO.getFileIds().size()){
+            List<Long> ids = attachmentFiles.stream().map(AttachmentFile::getId).collect(Collectors.toList());
+            String error = String.format("文件【%s】为无效文件", documentApprovalVO.getFileIds().stream()
+                    .filter(f -> !ids.contains(f)).map(String::valueOf).collect(Collectors.joining(",")));
+            log.error(error);
+            throw new RuntimeException(error);
+        }
+        attachmentFiles.addAll(attachmentFileService.uploadFile(documentApprovalVO.getFile(), documentApprovalVO.getSecurityClassification()));
         //上传的文件列表
         approval.setAttachmentFiles(attachmentFiles);
         documentApprovalDao.save(approval);

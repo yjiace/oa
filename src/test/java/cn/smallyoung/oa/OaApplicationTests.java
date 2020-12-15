@@ -4,6 +4,7 @@ import cn.hutool.core.util.ClassUtil;
 import cn.hutool.json.JSONObject;
 import cn.smallyoung.oa.entity.SysUser;
 import cn.smallyoung.oa.entity.VehicleInformation;
+import cn.smallyoung.oa.service.IndexService;
 import cn.smallyoung.oa.service.MessageNotificationService;
 import cn.smallyoung.oa.service.SysUserService;
 import cn.smallyoung.oa.service.VehicleInformationService;
@@ -22,6 +23,8 @@ import java.util.List;
 @SpringBootTest(classes = OaApplication.class)
 class OaApplicationTests {
 
+    @Resource
+    private IndexService indexService;
     @Resource
     private JwtTokenUtil JwtTokenUtil;
     @Resource
@@ -75,5 +78,9 @@ class OaApplicationTests {
         System.out.println(ClassUtil.isSimpleValueType(JSONObject.class));
     }
 
+    @Test
+    public void testIndex(){
+        System.out.println(indexService.getIndex("test"));
+    }
 
 }

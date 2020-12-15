@@ -22,6 +22,8 @@ public class DocumentApprovalVO implements Serializable {
 
     private static final long serialVersionUID = -5071610822869072373L;
 
+    @ApiModelProperty(notes = "上传的文件ID列表")
+    private List<Long> fileIds;
     /**
      * 上传的文件列表
      */

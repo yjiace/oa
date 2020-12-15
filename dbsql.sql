@@ -211,6 +211,14 @@ CREATE TABLE `oa`.`t_vehicle_approval_node`
     PRIMARY KEY (`id`)
 );
 
+CREATE TABLE `oa`.`t_index`
+(
+    `max_id`    int         NOT NULL,
+    `name`         varchar(50) NOT NULL,
+    `years`         varchar(4) NOT NULL,
+    PRIMARY KEY (`name`)
+);
+
 ALTER TABLE `oa`.`t_vehicle_approval`
     ADD FOREIGN KEY (`node_id`) REFERENCES `oa`.`t_vehicle_approval_node` (`id`);
 

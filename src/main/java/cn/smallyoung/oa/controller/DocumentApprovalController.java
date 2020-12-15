@@ -179,7 +179,8 @@ public class DocumentApprovalController {
     @PostMapping("submitForApproval")
     @ApiOperation(value = "提交审批")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "file", value = "文件：上传的文件列表", dataType = "List"),
+            @ApiImplicitParam(name = "fileIds", value = "上传的文件ID列表", dataType = "List"),
+            @ApiImplicitParam(name = "file", value = "上传的文件列表", dataType = "List"),
             @ApiImplicitParam(name = "securityClassification", value = "文件：密级指定", dataType = "String"),
             @ApiImplicitParam(name = "username", value = "用户名列表", dataType = "List", required = true),
             @ApiImplicitParam(name = "title", value = "标题", dataType = "String", required = true),
