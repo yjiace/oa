@@ -106,6 +106,9 @@ public class VehicleApprovalService extends BaseService<VehicleApproval, Long> {
         vehicleApproval.setInitiatorUsername(sysUserService.currentlyLoggedInUser());
         vehicleApproval.setStatus("Approval");
 
+        //生成编号
+        vehicleApproval.setId(indexService.getIndex("vehicleApproval"));
+        vehicleApproval.setCreateTime(LocalDateTime.now());
         vehicleApprovalDao.save(vehicleApproval);
         List<VehicleApprovalNode> nodes = new ArrayList<>();
         VehicleApprovalNode approvalNode;
@@ -121,8 +124,6 @@ public class VehicleApprovalService extends BaseService<VehicleApproval, Long> {
         vehicleApproval.setVehicleApprovalNodes(nodes);
         messageNotificationService.releaseMessage(vehicleApproval.getInitiatorUsername(), "submitForApproval", "您提交的车辆审批已进入审批流程");
         messageNotificationService.releaseMessage(usernameList.get(0), "submitForApproval", "有需要您审批的车辆审批，请查看");
-        //生成编号
-        vehicleApproval.setId(indexService.getIndex("vehicleApproval"));
         vehicleApprovalDao.save(vehicleApproval);
         return vehicleApproval;
     }

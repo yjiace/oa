@@ -36,7 +36,6 @@ import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.AccessException;
 import java.util.ArrayList;
@@ -77,7 +76,11 @@ public class VehicleApprovalController {
         return vehicleApprovalService.findByVehicleNumberAndStatus(vehicleNumber);
     }
 
-    @GetMapping("checkVehicleStatus")
+    /**
+     * 校验车辆状态
+     * @param plateNumber 车牌号
+     */
+    @GetMapping("校验车辆状态")
     @ApiOperation(value = "分页查询")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "plateNumber", value = "车牌号", dataType = "String")
@@ -242,13 +245,32 @@ public class VehicleApprovalController {
      */
     @GetMapping(value = "getToken")
     @ApiOperation(value = "获取下载凭证")
-    public String getToken(HttpServletRequest request) throws FileNotFoundException {
+    public String getToken(HttpServletRequest request) {
         Map<String, Object> map = WebUtils.getParametersStartingWith(request, "search_");
         String token = IdUtil.simpleUUID();
         downloadExcelToken.put(token, Dict.create()
                 .set("params", map)
                 .set("user", sysUserService.currentlyLoggedInUser()));
         return token;
+    }
+
+    /**
+     * 查询用车统计
+     *
+     * @param page  页码
+     * @param limit 页数
+     */
+    @GetMapping(value = "findStatistics")
+    @ApiOperation(value = "查询用车统计")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", value = "页码", dataType = "Integer"),
+            @ApiImplicitParam(name = "limit", value = "页数", dataType = "Integer")
+    })
+    public Page<VehicleApproval> findStatistics(@RequestParam(defaultValue = "1") Integer page,
+                                         HttpServletRequest request, @RequestParam(defaultValue = "10") Integer limit) {
+        Map<String, Object> map = WebUtils.getParametersStartingWith(request, "search_");
+        return vehicleApprovalService.findAll(map, PageRequest.of(page - 1, limit,
+                Sort.by(Sort.Direction.DESC, "updateTime")));
     }
 
     /**
