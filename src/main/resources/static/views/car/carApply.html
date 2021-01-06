@@ -14,8 +14,8 @@
   <div class="layui-card">
     <div
       class="layui-form"
-      id="createApply_form"
-      lay-filter="createApply_form"
+      id="car_createApply_form"
+      lay-filter="car_createApply_form"
       style="padding: 20px 30px 20px 0"
     >
       <div class="layui-form-item">
@@ -27,7 +27,7 @@
               name="number"
               value="{{ d.params.number || '' }}"
               lay-verify="required|onlyone"
-              placeholder="请输审批编号"
+              placeholder="请输入审批编号"
               autocomplete="off"
               class="layui-input"
             />
@@ -42,8 +42,330 @@
               type="text"
               name="title"
               value="{{ d.params.title || '' }}"
-              lay-verify="required|onlyone"
-              placeholder="请输审批编号"
+              lay-verify="required"
+              placeholder="请输入标题"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">用车单位</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
+              name="userCarDanwei"
+              value="{{ d.params.userCarDanwei || '' }}"
+              lay-verify="required"
+              placeholder="请输入用车单位"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">带车干部（职务）</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
+              name="daicheganbu"
+              value="{{ d.params.daicheganbu || '' }}"
+              lay-verify="required"
+              placeholder="请输入带车干部（职务）"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">联系电话</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
+              name="lianxidianhua"
+              value="{{ d.params.lianxidianhua || '' }}"
+              lay-verify="required"
+              placeholder="请输入联系电话"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">驾驶员姓名</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
+              name="jiashiren"
+              value="{{ d.params.jiashiren || '' }}"
+              lay-verify="required"
+              placeholder="请输入驾驶员姓名"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">乘车地点</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
+              name="chengchedidian"
+              value="{{ d.params.chengchedidian || '' }}"
+              lay-verify="required"
+              placeholder="请输入乘车地点"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">承运员额（名）</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
+              name="chengyunminge"
+              value="{{ d.params.chengyunminge || '' }}"
+              lay-verify="required"
+              placeholder="请输入承运员额（名）"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">出车事由</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
+              name="chucheshiyou"
+              value="{{ d.params.chucheshiyou || '' }}"
+              lay-verify="required"
+              placeholder="请输用车单位"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">承运物品（吨、件）</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
+              name="chengyunwupin"
+              value="{{ d.params.chengyunwupin || '' }}"
+              lay-verify="required"
+              placeholder="请输用车单位"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">行驶路线</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
+              name="xingshiluxian"
+              value="{{ d.params.xingshiluxian || '' }}"
+              lay-verify="required"
+              placeholder="请输入行驶路线"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">用车台次</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
+              name="yongchetaici"
+              value="{{ d.params.yongchetaici || '' }}"
+              lay-verify="required"
+              placeholder="请输入用车台次"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">出场时间</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
+              id="chuchangshijian"
+              name="chuchangshijian"
+              value="{{ d.params.chuchangshijian || '' }}"
+              lay-verify="required"
+              placeholder="请输入出场时间"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">回场时间</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
+              name="huichangshijian"
+              id="huichangshijian"
+              value="{{ d.params.huichangshijian || '' }}"
+              lay-verify="required"
+              placeholder="请输入回场时间"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">出库表底</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
+              name="chukubiaodi"
+              value="{{ d.params.chukubiaodi || '' }}"
+              lay-verify="required"
+              placeholder="请输入出库表底"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">回库表底</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
+              name="huikubiaodi"
+              value="{{ d.params.huikubiaodi || '' }}"
+              lay-verify="required"
+              placeholder="请输入回库表底"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">行驶公里</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
+              name="xingshigongli"
+              value="{{ d.params.xingshigongli || '' }}"
+              lay-verify="required"
+              placeholder="请输入行驶公里"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">乘车人签字</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
+              name="chengcheren"
+              value="{{ d.params.chengcheren || '' }}"
+              lay-verify="required"
+              placeholder="请输入乘车人签字"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">部门领导</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
+              name="bumenlingdao"
+              value="{{ d.params.bumenlingdao || '' }}"
+              lay-verify="required"
+              placeholder="请输入部门领导"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">派车人</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
+              name="paicheren"
+              value="{{ d.params.paicheren || '' }}"
+              lay-verify="required"
+              placeholder="请输入派车人"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">批准首长</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
+              name="shouzhang"
+              value="{{ d.params.shouzhang || '' }}"
+              lay-verify="required"
+              placeholder="请输入批准首长"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </script>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">备注</label>
+        <div class="layui-input-inline">
+          <script type="text/html" template>
+            <input
+              type="text"
+              name="beizhu"
+              value="{{ d.params.beizhu || '' }}"
+              lay-verify="required"
+              placeholder="请输入备注"
               autocomplete="off"
               class="layui-input"
             />
@@ -58,7 +380,7 @@
               type="text"
               name="destination"
               value="{{ d.params.destination || '' }}"
-              lay-verify="required|onlyone"
+              lay-verify="required"
               placeholder="请输目的地"
               autocomplete="off"
               class="layui-input"
@@ -66,7 +388,7 @@
           </script>
         </div>
       </div>
-      <div class="layui-form-item">
+      <div class="layui-form-item" style="display: block">
         <label class="layui-form-label">审批流程</label>
         <div class="layui-input-inline" style="padding: 10px; width: auto">
           <script type="text/html" id="apply_list">
@@ -110,7 +432,7 @@
           <div id="apply_list_view"></div>
         </div>
       </div>
-      <div class="layui-form-item">
+      <div class="layui-form-item" style="display: block">
         <label class="layui-form-label"></label>
         <div class="layui-input-inline">
           <script type="text/html" template>
@@ -129,9 +451,18 @@
   </div>
 </div>
 <script>
-  layui
-    .use('carCreateApply', layui.factory('carCreateApply'))
-    .use(['admin', 'table'], function () {
-      var table = layui.table
-    })
+  // layui
+  //   .use('carCreateApply', layui.factory('carCreateApply'))
+  //   .use(['admin', 'table', 'laydate'], function () {
+  //     var table = layui.table
+  //     var laydate = layui.laydate
+  //     laydate.render({
+  //       type: 'datetime',
+  //       elem: '#chuchangshijian', //指定元素
+  //     })
+  //     laydate.render({
+  //       type: 'datetime',
+  //       elem: '#huichangshijian', //指定元素
+  //     })
+  //   })
 </script>

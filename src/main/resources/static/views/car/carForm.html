@@ -20,22 +20,6 @@
     </div>
   </div>
   <div class="layui-form-item">
-    <label class="layui-form-label">车辆名称</label>
-    <div class="layui-input-inline">
-      <script type="text/html" template>
-        <input
-          type="text"
-          name="name"
-          value="{{ d.params.name || '' }}"
-          lay-verify="required"
-          placeholder="请输入单位"
-          autocomplete="off"
-          class="layui-input"
-        />
-      </script>
-    </div>
-  </div>
-  <div class="layui-form-item">
     <label class="layui-form-label">车辆型号</label>
     <div class="layui-input-inline">
       <script type="text/html" template>
@@ -44,21 +28,6 @@
           name="model"
           value="{{ d.params.model || '' }}"
           placeholder="请输入车辆型号"
-          autocomplete="off"
-          class="layui-input"
-        />
-      </script>
-    </div>
-  </div>
-  <div class="layui-form-item">
-    <label class="layui-form-label">车辆编号</label>
-    <div class="layui-input-inline">
-      <script type="text/html" template>
-        <input
-          type="text"
-          name="number"
-          value="{{ d.params.number || '' }}"
-          placeholder="请输入车辆编号"
           autocomplete="off"
           class="layui-input"
         />

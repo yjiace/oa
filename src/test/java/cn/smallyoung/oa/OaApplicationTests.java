@@ -9,12 +9,14 @@ import cn.smallyoung.oa.service.MessageNotificationService;
 import cn.smallyoung.oa.service.SysUserService;
 import cn.smallyoung.oa.service.VehicleInformationService;
 import cn.smallyoung.oa.util.JwtTokenUtil;
+import cn.smallyoung.oa.util.OfficeConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,6 +31,8 @@ class OaApplicationTests {
     private JwtTokenUtil JwtTokenUtil;
     @Resource
     private SysUserService sysUserService;
+    @Resource
+    private OfficeConverter officeConverter;
     @Resource
     private BCryptPasswordEncoder passwordEncoder;
     @Resource
@@ -81,6 +85,15 @@ class OaApplicationTests {
     @Test
     public void testIndex(){
         System.out.println(indexService.getIndex("test"));
+    }
+
+    @Test
+    public void testOpenOffice(){
+        File file1 = new File("C:\\Users\\yangn\\Desktop\\1.xlsx");
+        File file2 = new File("C:\\Users\\yangn\\Desktop\\2.xlsx");
+
+        officeConverter.office2pdf(file1,new File("C:\\Users\\yangn\\Desktop\\1.pdf"));
+        officeConverter.office2pdf(file2,new File("C:\\Users\\yangn\\Desktop\\2.pdf"));
     }
 
 }

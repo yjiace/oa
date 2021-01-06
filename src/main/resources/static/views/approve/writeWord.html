@@ -1,0 +1,166 @@
+<div id="templete_1" style="width: 650px">
+  <style>
+    @font-face {
+      font-family: 'heiti_regular';
+      src: url('./font/heiti_regular.ttf');
+    }
+    @font-face {
+      font-family: 'fangsong_regular';
+      src: url('./font/fangsong_regular.ttf');
+    }
+    @font-face {
+      font-family: 'fangzhengxiaosong';
+      src: url('./font/fangzhengxiaosong.ttf');
+    }
+    @font-face {
+      font-family: 'kaiti_regular';
+      src: url('./font/kaiti_regular.ttf');
+    }
+    #templete_1 {
+      padding: 15px 30px;
+      box-sizing: content-box;
+    }
+    #templete_1 p {
+      word-break: break-all;
+      margin: 0;
+      padding: 0;
+    }
+    #templete_1 .jimi {
+      font-size: 16px;
+      font-family: 'heiti_regular';
+    }
+    #templete_1 .jimi span {
+      text-align: left;
+      font-size: 16px;
+    }
+    #templete_1 .title {
+      text-align: center;
+      margin-top: 30px;
+    }
+    #templete_1 .title span {
+      font-size: 33px;
+      font-family: 'fangzhengxiaosong';
+      text-align: center;
+      color: #e03e2d;
+    }
+    #templete_1 .fuTitle {
+      text-align: center;
+      font-family: 'fangsong_regular';
+      margin-top: 40px;
+      margin-bottom: 5px;
+    }
+    #templete_1 .fuTitle span {
+    }
+    #templete_1 .redLine {
+      border-top: 1px solid red;
+    }
+    #templete_1 .content {
+      display: flex;
+    }
+    #templete_1 .content .left {
+      width: 50%;
+      border-right: 1px solid red;
+    }
+    #templete_1 .content .left .chengyue {
+      margin-top: 10px;
+      font-size: 18px;
+      color: #000000;
+      font-weight: 800;
+      font-family: 'fangsong_regular';
+    }
+    #templete_1 .content .left .people {
+      margin-top: 20px;
+      line-height: 27px;
+      font-size: 15px;
+      font-family: 'fangsong_regular';
+    }
+    #templete_1 .content .left .zhengwen {
+      padding-right: 3px;
+      line-height: 27px;
+      text-indent: 30px;
+      font-size: 15px;
+      font-family: 'fangsong_regular';
+    }
+    #templete_1 .content .left .shuming {
+      padding-right: 10px;
+      margin-top: 40px;
+      text-align: right;
+      font-size: 15px;
+      font-family: 'fangsong_regular';
+    }
+    #templete_1 .content .left .shijian {
+      padding-right: 10px;
+      margin-top: 10px;
+      text-align: right;
+      font-size: 15px;
+      font-family: 'fangsong_regular';
+    }
+    #templete_1 .content .right {
+      width: 50%;
+    }
+    #templete_1 .bottom {
+      margin-top: 5px;
+      padding-left: 10px;
+      text-align: left;
+    }
+    #templete_1 .bottom span {
+      position: relative;
+      display: inline-block;
+    }
+    #templete_1 .bottom i {
+      display: inline-block;
+      font-style: normal;
+      color: #000000;
+    }
+  </style>
+  <script type="text/html" template>
+      <p class="jimi">
+        <span class="edit" data-key="jimi">{{d.params.jimi||''}}</span>
+      </p>
+      <p class="title">
+        <span class="edit" data-key="title"> {{d.params.title||''}} </span>
+      </p>
+      <p class="fuTitle">
+        <span
+          class="edit"
+          data-key="fuTitle"
+          style="font-size: 12pt; text-align: center; color: #34495e"
+          >{{d.params.fuTitle||''}}</span
+        >
+      </p>
+      <div class="redLine" style="margin-top: 20px" />
+      <div class="content">
+        <div class="left">
+          <p class="chengyue edit" data-key="chengyue">{{d.params.chengyue||''}}</p>
+          <p class="people edit" data-key="bushou">{{d.params.bushou||''}}</p>
+          <p class="zhengwen edit" data-key="content">
+            {{d.params.content||''}}
+          </p>
+          <p class="shuming edit" data-key="name">{{d.params.name||''}}</p>
+          <p class="shijian edit" data-key="time">{{d.params.time||''}}</p>
+        </div>
+        <div class="right" style="display:flex;flex-flow:column;justify-content:flex-end;font-size:16px">
+          {{# if(d.params.canApprove){ }}
+          {{# layui.each(d.params.approve, function(index, item){ }}
+          {{# if(item.input){ }}
+            <p  style="flex-grow:1;max-height:200px;padding:5px">
+              <span data-index="{{index}}" class="edit">{{item.approveContent||'点击输入审批内容'}}</span>
+            </p>
+          {{# }else{ }}
+            <p style="flex-grow:1;max-height:200px;padding:5px">
+              <span>{{item.approveContent||''}}</span>
+            </p>
+          {{# }}}
+          {{# }) }}
+          {{# } }}
+        </div>
+      </div>
+      <div class="redLine" />
+      <p class="bottom">
+        <span style="color: #e03e2d">科长：<i style="width: 180px;" data-key="kezhang">{{d.params.kezhang||''}}</i></span>
+        <span style="color: #e03e2d">承办人：<i style="width: 150px;" data-key="chengbanren">{{d.params.chengbanren||''}}</i></span>
+        <span style="color: #e03e2d">电话： <i style="width: 130px;" data-key="dianhua">{{d.params.dianhua||''}}</i></span>
+      </p>
+    </div>
+  </script>
+</div>

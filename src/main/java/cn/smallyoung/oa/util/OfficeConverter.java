@@ -3,13 +3,12 @@ package cn.smallyoung.oa.util;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RuntimeUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.office.OfficeException;
-import org.jodconverter.core.office.OfficeUtils;
-import org.jodconverter.local.JodConverter;
-import org.jodconverter.local.office.LocalOfficeManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 
@@ -26,6 +25,9 @@ public class OfficeConverter {
     @Value("${pdf2swf-exe-url}")
     private String pdf2swfExeUrl;
 
+    @Resource
+    private DocumentConverter documentConverter;
+
     public boolean office2swf(File officeFile, File swfFile) throws IOException {
         File pdfFile = new File(PathUtil.getPath("tem") + IdUtil.objectId() + ".pdf");
         boolean isOk = office2pdf(officeFile, pdfFile);
@@ -38,19 +40,14 @@ public class OfficeConverter {
         if (!inputFile.isFile()) {
             return false;
         }
-        LocalOfficeManager officeManager = LocalOfficeManager.install();
         try {
-            officeManager.start();
-            JodConverter
+            documentConverter
                     .convert(inputFile)
                     .to(outputFile)
                     .execute();
             return true;
         } catch (OfficeException e) {
             log.error("office文件转PDF错误：{}", e.getMessage());
-            e.printStackTrace();
-        } finally {
-            OfficeUtils.stopQuietly(officeManager);
         }
         return false;
     }

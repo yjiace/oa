@@ -1,3 +1,19 @@
+@font-face {
+  font-family: 'heiti_regular';
+  src: url('./font/heiti_regular.ttf');
+}
+@font-face {
+  font-family: 'fangsong_regular';
+  src: url('./font/fangsong_regular.ttf');
+}
+@font-face {
+  font-family: 'fangzhengxiaosong';
+  src: url('./font/fangzhengxiaosong.ttf');
+}
+@font-face {
+  font-family: 'kaiti_regular';
+  src: url('./font/kaiti_regular.ttf');
+}
 .searh_bar {
 }
 .searh_bar .layui-form-label {
@@ -29,4 +45,10 @@
 }
 .layui-elip {
   width: 100px;
+}
+#car_createApply_form .layui-form-item {
+  display: inline-block;
+}
+#car_createApply_form .layui-form-label {
+  width: 140px;
 }

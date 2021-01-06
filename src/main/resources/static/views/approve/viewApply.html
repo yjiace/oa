@@ -12,172 +12,212 @@
 <!-- 布局 -->
 <div class="layui-fluid">
   <div class="layui-card">
-    <div
-      class="layui-form"
-      id="createApply_form"
-      lay-filter="createApply_form"
-      style="padding: 20px 30px 20px 0"
-    >
-      <div class="layui-form-item">
-        <label class="layui-form-label">审批编号</label>
-        <div class="layui-input-inline">
-          <script type="text/html" template>
-            <input
-              type="text"
-              name="number"
-              disabled
-              value="{{ d.params.number || '' }}"
-              lay-verify="required"
-              placeholder="请输审批编号"
-              autocomplete="off"
-              class="layui-input"
-            />
-          </script>
-        </div>
+    <div style="display: flex">
+      <div>
+        <button
+          style="margin: 15px"
+          id="writePrint"
+          type="button"
+          class="layui-btn layui-btn-normal"
+        >
+          打印/预览
+        </button>
+        <div
+          id="writeWord"
+          style="
+            margin: 15px;
+            box-sizing: border-box;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+          "
+        ></div>
       </div>
-      <div class="layui-form-item">
-        <label class="layui-form-label">标题</label>
-        <div class="layui-input-inline">
-          <script type="text/html" template>
-            <input
-              type="text"
-              disabled
-              name="title"
-              value="{{ d.params.title || '' }}"
-              lay-verify="required"
-              placeholder="请输审批编号"
-              autocomplete="off"
-              class="layui-input"
-            />
-          </script>
-        </div>
-      </div>
-      <div class="layui-form-item">
-        <label class="layui-form-label">文件编号</label>
-        <div class="layui-input-inline">
-          <script type="text/html" template>
-            <input
-              type="text"
-              disabled
-              name="documentNumber"
-              value="{{ d.params.documentNumber || '' }}"
-              lay-verify="required"
-              placeholder="请输审批编号"
-              autocomplete="off"
-              class="layui-input"
-            />
-          </script>
-        </div>
-      </div>
-      <div class="layui-form-item">
-        <label class="layui-form-label">密级</label>
-        <div class="layui-input-inline">
-          <script type="text/html" template>
-            <input
-              type="text"
-              disabled
-              name="securityClassification"
-              value="{{ d.params.securityClassification || '' }}"
-              lay-verify="required"
-              placeholder="请输密级"
-              autocomplete="off"
-              class="layui-input"
-            />
-          </script>
-        </div>
-      </div>
-      <div class="layui-form-item">
-        <label class="layui-form-label">审批文件</label>
-        <div class="layui-input-inline">
-          <script type="text/html" template>
-            <div
-              class="layui-input-inline"
-              style="height:38px;line-height:38px"
-            >
-              <a
-                class="file_a"
-                style="display:block;height:100%;"
-                id="filedList"
-                >
-              </a>
+      <div>
+        <div
+          class="layui-form"
+          id="createApply_form"
+          lay-filter="createApply_form"
+          style="padding: 20px 30px 20px 0"
+        >
+          <div class="layui-form-item">
+            <label class="layui-form-label">承办单位</label>
+            <div class="layui-input-inline">
+              <script type="text/html" template>
+                <input
+                  type="text"
+                  disabled
+                  name="organizer"
+                  value="{{ d.params.organizer || '' }}"
+                  lay-verify="required"
+                  placeholder="请输承办单位"
+                  autocomplete="off"
+                  class="layui-input"
+                />
+              </script>
             </div>
-            <button type="button" class="layui-btn" id="view_word">预览
-            </button>
-          </script>
-        </div>
-      </div>
-      <div class="layui-form-item">
-        <label class="layui-form-label">审批流程</label>
-        <div class="layui-input-inline" style="padding:10px 10px 10px 0px; width: auto">
-          <script type="text/html" id="apply_list">
-            <ul class="layui-timeline">
-              {{# layui.each(d, function(index, item){ }}
-              <li class="layui-timeline-item">
-                <i class="layui-icon layui-timeline-axis" style="color: {{item.color}}">{{item.icon}}</i>
-                <div class="layui-timeline-content layui-text">
-                  {{# if(item.name){ }}
-                  <p style="line-height:1.3;color:#000000">
-                  {{item.name}}
-                  <span class="layui-badge layui-bg-orange">
-                    {{item.statusText}}
-                  </span>
-                  </p>
-                  {{# if(item.status === 'Completed' || item.status === 'Rejected' ){ }}
-                  {{# if(item.comment ){ }}
-                  <div
-                    class="suxue-card suxue-shadow"
-                    style="width:200px;height:100px;margin-top:5px;padding:10px;overflow:auto"
+          </div>
+          <div class="layui-form-item">
+            <label class="layui-form-label">标题</label>
+            <div class="layui-input-inline">
+              <script type="text/html" template>
+                <input
+                  type="text"
+                  disabled
+                  name="title"
+                  value="{{ d.params.title || '' }}"
+                  lay-verify="required"
+                  placeholder="请输标题"
+                  autocomplete="off"
+                  class="layui-input"
+                />
+              </script>
+            </div>
+          </div>
+          <!-- <div class="layui-form-item">
+            <label class="layui-form-label">文件编号</label>
+            <div class="layui-input-inline">
+              <script type="text/html" template>
+                <input
+                  type="text"
+                  name="documentNumber"
+                  value="{{ d.params.documentNumber || '' }}"
+                  lay-verify="required"
+                  placeholder="请输文件编号"
+                  autocomplete="off"
+                  class="layui-input"
+                />
+              </script>
+            </div>
+          </div> -->
+          <div class="layui-form-item">
+            <label class="layui-form-label">密级</label>
+            <div class="layui-input-inline">
+              <script type="text/html" template>
+                <input
+                  type="text"
+                  name="securityClassification"
+                  disabled
+                  value="{{ d.params.securityClassification || '' }}"
+                  lay-verify="required"
+                  placeholder="请输密级"
+                  autocomplete="off"
+                  class="layui-input"
+                />
+              </script>
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <label class="layui-form-label">附件</label>
+            <div class="layui-input-inline">
+              <script type="text/html" template>
+                <div
+                  class="layui-input-inline fileList_div"
+                  style="line-height:38px"
+                >
+                  <a
+                    class="file_a"
+                    style="display:block;height:100%;"
+                    id="filedList"
                   >
-                    <p>{{item.comment}}</p>
-                  </div>
-                  {{# } else { }}
-                  <div>暂无留言</div>
-                  {{# } }} 
-                  {{# } }} 
-                  {{# } else { }}
-                  <button
-                    class="layui-btn layui-btn-xs layui-btn-normal addPeople"
-                    data-type="addPeople"
-                  >
-                    添加审批人
-                  </button>
-                  {{# } }}
+                  </a>
                 </div>
-              </li>
-              {{# }); }} {{# if(d.length === 0){ }} 无数据 {{# } }}
-            </ul>
-          </script>
-          <div id="apply_list_view"></div>
-        </div>
-      </div>
-      <div class="layui-form-item">
-        <label class="layui-form-label"></label>
-        <div class="layui-input-inline" id="type_1" style="display: none;">
-            <input
-              type="button"
-              lay-submit
-              id="reApply"
-              lay-filter="apply-submit"
-              value="重新提醒"
-              class="layui-btn"
-            />
-        </div>
-        <div class="layui-input-inline" id="type_2" style="display: none;"">
-            <input
-              type="button"
-              lay-submit
-              id="reApply"
-              lay-filter="apply-submit"
-              value="发起审批"
-              class="layui-btn"
-            />
+              </script>
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <label class="layui-form-label">审批流程</label>
+            <div class="layui-input-inline" style="padding: 10px; width: auto">
+              <script type="text/html" id="apply_list">
+                <ul class="layui-timeline">
+                  {{# layui.each(d, function(index, item){ }}
+                  <li class="layui-timeline-item">
+                    <i
+                      class="layui-icon layui-timeline-axis"
+                      style="color: {{item.color}}"
+                      >{{item.icon}}</i
+                    >
+                    <div class="layui-timeline-content layui-text">
+                      {{# if(item.name){ }}
+                      <p style="line-height:1.3;color:#000000">
+                        {{item.name}}
+                        <span class="layui-badge layui-bg-orange">
+                          {{item.statusText}}
+                        </span>
+                      </p>
+                      {{# if(item.status === 'Completed' || item.status ===
+                      'Rejected' ){ }} {{# if(item.comment ){ }}
+                      <div
+                        class="suxue-card suxue-shadow"
+                        style="width:200px;height:100px;margin-top:5px;padding:10px;overflow:auto"
+                      >
+                        <p>{{item.comment}}</p>
+                      </div>
+                      {{# } else { }}
+                      <div>暂无留言</div>
+                      {{# } }} {{# } }} {{# } else { }}
+                      <button
+                        class="layui-btn layui-btn-xs layui-btn-normal addPeople"
+                        data-type="addPeople"
+                      >
+                        添加审批人
+                      </button>
+                      {{# } }}
+                    </div>
+                  </li>
+                  {{# }); }} {{# if(d.length === 0){ }} 无数据 {{# } }}
+                </ul>
+              </script>
+              <div id="apply_list_view"></div>
+            </div>
+          </div>
+          <div class="layui-form-item" id="type_1" style="display: none">
+            <label class="layui-form-label"></label>
+            <div class="layui-input-inline">
+              <script type="text/html" template>
+                <input
+                  type="button"
+                  lay-submit
+                  id="reApply"
+                  lay-filter="apply-submit"
+                  value="发起审批"
+                  class="layui-btn"
+                />
+              </script>
+            </div>
+          </div>
+          <div class="layui-form-item" id="type_2" style="display: none">
+            <label class="layui-form-label"></label>
+            <div class="layui-input-inline" style="width: auto">
+              <script type="text/html" template>
+                <input
+                  type="button"
+                  lay-submit
+                  id="reApply"
+                  lay-filter="apply-submit"
+                  value="审批同意"
+                  class="layui-btn"
+                />
+              </script>
+            </div>
+            <div class="layui-input-inline" style="width: auto">
+              <script type="text/html" template>
+                <input
+                  type="button"
+                  lay-submit
+                  id="reApply"
+                  lay-filter="apply-submit"
+                  value="审批拒绝"
+                  class="layui-btn layui-btn-danger"
+                />
+              </script>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
 <script>
-layui.use(['table', 'admin', 'form', 'laytpl'], function () {
+  layui.use(['table', 'admin', 'form', 'laytpl'], function () {
     var $ = layui.$,
       admin = layui.admin,
       table = layui.table,
@@ -189,32 +229,75 @@ layui.use(['table', 'admin', 'form', 'laytpl'], function () {
     var router = layui.router()
     var search = router.search
     // 渲染操作按钮
-    function renderButton(data) {
+    function renderButton(data, canInput) {
       console.log(1)
       if (search.type === '1') {
         $('#type_1').show()
-      } else if (search.type === '2') {
+      } else if (search.type === '2' && canInput) {
+        $('#type_2').show()
         console.log(1)
       }
-      $('#type_1 input').on('click', function(e){
+      // 重新提审
+      $('#type_1 input').on('click', function (e) {
         var index = layer.load(1)
-        admin.reqAsync({
-          method: 'POST',
-          url: '/approval/reApprove',
-          data: {
-            id: data.id
-          }
-        }).then(function(res){
-          if(res.code === 200){
+        admin
+          .reqAsync({
+            method: 'POST',
+            url: '/approval/reApprove',
+            data: {
+              id: data.id,
+            },
+          })
+          .then(function (res) {
+            if (res.code === 200) {
+              layer.close(index)
+              layer.msg('操作成功')
+              setTimeout(function () {
+                window.history.back()
+              }, 1000)
+            } else {
+              layer.msg(res.data)
+            }
+          })
+      })
+      // 审批
+      $('#type_2 input').on('click', function (e) {
+        var _thisel = $(this)
+        console.log(_thisel)
+        layer.prompt(
+          {
+            formType: 2,
+            value: '',
+            title: '请输入文本',
+            area: ['300px', '200px'], //自定义文本域宽高
+          },
+          function (value, index, elem) {
+            var operation =
+              _thisel.attr('value') === '审批同意' ? 'Completed' : 'Rejected'
+            var i = layer.load(1)
+            admin.req({
+              url: '/approval/document/operationApproval',
+              method: 'POST',
+              data: {
+                id: search.id,
+                operation: operation,
+              },
+              done: function (res) {
+                if (res.code === 200) {
+                  layer.msg(_thisel.attr('value'))
+                  layer.close(index)
+                  setTimeout(function () {
+                    window.history.back()
+                  }, 1500)
+                } else {
+                  layer.msg('操作失败')
+                }
+                layer.close(i)
+              },
+            })
             layer.close(index)
-            layer.msg('操作成功')
-            setTimeout(function(){
-              window.history.back()
-            },1000)
-          }else{
-            layer.msg(res.data)
           }
-        })
+        )
       })
     }
     // 渲染申请流程
@@ -232,12 +315,126 @@ layui.use(['table', 'admin', 'form', 'laytpl'], function () {
       })
     }
     function renderUpload(data) {
-      $('#filedList').html('<i class="layui-icon">&#xe655;</i>' + data.fileName)
+      $('.fileList_div').show()
+      var html = data.reduce(function (prev, curr, index) {
+        return (
+          prev +
+          '<a data-index="' +
+          index +
+          '" class="file_a" style="display:block" id="filedList"><i class="layui-icon"></i>' +
+          curr.name +
+          '</a>'
+        )
+      }, '')
+      $('.fileList_div').html(html)
+      $('.file_a').on('click', function (e) {
+        var i = $(this).data('index')
+        console.log(data[i])
+        window.utils.viewFile(data[i])
+      })
+    }
+    function renderWord(data, canEdit, canInput) {
+      console.log(data)
+      var data = data || {
+        jimi: '内部机密文件',
+        title: '武警第一机动总队机动第六支队参谋部呈件',
+        fuTitle: '参管呈 [ 2020 ]           号',
+        chengyue: '呈阅《XXXXXXXXXXX》',
+        bushou: '部首长',
+        content: '请输入正文',
+        name: '姓名',
+        time: window.utils.format('yyyy年MM月dd日'),
+        kezhang: '',
+        chengbanren: '',
+        dianhua: '',
+        approve: [],
+      }
+      view('writeWord')
+        .render('approve/writeWord', data)
+        .done(function () {
+          var width = $('#writeWord').width()
+          var height = (width * 297) / 210
+          $('#templete_1 .content').height(height * 0.8 + 1)
+          $('#templete_1 .content')
+            .children()
+            .height(height * 0.8)
+          if (canInput) {
+            // 审批
+            $('#templete_1 .right .edit').on('click', function (e) {
+              var el = $(this)
+              var text = el.text()
+              var dataIndex = el.data('index')
+              layer.prompt(
+                {
+                  formType: 2,
+                  value: text,
+                  title: '请输入文本',
+                  area: ['300px', '200px'], //自定义文本域宽高
+                },
+                function (value, index, elem) {
+                  el.text(value)
+                  data.approve[dataIndex].approveContent = value
+                  layer.close(index)
+                }
+              )
+            })
+          }
+          if (canEdit) {
+            // 内容编辑
+            $('#templete_1 .edit').on('click', function (e) {
+              var el = $(this)
+              var text = el.text()
+              var key = el.data('key')
+              layer.prompt(
+                {
+                  formType: 2,
+                  value: text,
+                  title: '请输入文本',
+                  area: ['300px', '200px'], //自定义文本域宽高
+                },
+                function (value, index, elem) {
+                  el.text(value)
+                  data[key] = value
+                  layer.close(index)
+                }
+              )
+            })
+            // 底部编辑
+            $('#templete_1 .bottom span').on('click', function (e) {
+              var el = $(this).find('i')
+              var text = el.text()
+              var key = el.data('key')
+              layer.prompt(
+                {
+                  formType: 2,
+                  value: text,
+                  title: '请输入文本',
+                  area: ['300px', '200px'], //自定义文本域宽高
+                },
+                function (value, index, elem) {
+                  el.text(value)
+                  data[key] = value
+                  layer.close(index)
+                }
+              )
+            })
+          }
+        })
+      $('#writePrint').on('click', function () {
+        $('#templete_1').jqprint({})
+        // printJS({
+        //   printable:'writeWord',
+        //   css:'/style/print.css',
+        //   type:'html',
+        //   scanStyles:false,
+        // })
+      })
+      return data
     }
     if (router.search && router.search.id) {
       admin
         .reqAsync({
-          url: '/approval/findOneById',
+          url: '/approval/document/findOneById',
           method: 'GET',
           data: {
             id: router.search.id,
@@ -248,63 +445,86 @@ layui.use(['table', 'admin', 'form', 'laytpl'], function () {
             console.log(res.data)
             // form.val('createApply_form', res.data)
             renderForm({
-              documentNumber: res.data.attachmentFiles[0].documentNumber,
-              title:res.data.title,
-              number:res.data.number,
+              organizer: res.data.organizer,
+              title: res.data.title,
               securityClassification:
                 res.data.attachmentFiles[0].securityClassification,
             })
-            if(res.data.status === 'Rejected'||res.data.status === "Withdrawn"){
-              renderButton(res.data)
+            // 渲染文件
+            var wordData = JSON.parse(res.data.extra || '')
+            var store = layui.data('store')
+            var userInfo = store.userInfo
+            var canInput =
+              userInfo.username === (res.data.node || {}).user &&
+              res.data.node.status === 'Approval'
+            if (canInput) {
+              wordData.approve = res.data.documentApprovalNodes
+                .map(function (item) {
+                  if (userInfo.username === item.user) {
+                    item.input = true
+                  }
+                  return item
+                })
+                .reverse()
+              wordData.canApprove = true
             }
+            console.log(userInfo.username, res.data.node)
+            renderWord(wordData, false, canInput)
+
+            // 渲染按钮
+            if (
+              res.data.status === 'Rejected' ||
+              res.data.status === 'Approval'
+            ) {
+              renderButton(res.data, canInput)
+            }
+
             // 赋值文件预览选项
-            renderUpload({
-              fileName: res.data.attachmentFiles[0].fileName,
-            })
-            $('#view_word').on('click',function(e){
-              window.utils.viewFile(res.data.attachmentFiles[0])
-            })
+            renderUpload(
+              res.data.attachmentFiles.map(function (item) {
+                item.name = item.fileName
+                return item
+              })
+            )
             // 字典值渲染
             var zidian = {
-              NotStarted:{
-                text:'未开始',
-                icon:'&#xe63f;',
-                color:'#5FB878'
+              NotStarted: {
+                text: '未开始',
+                icon: '&#xe63f;',
+                color: '#5FB878',
               },
-              Approval:{
-                text:'审批中',
-                icon:'&#xe63f;',
-                color:'#5FB878'
+              Approval: {
+                text: '审批中',
+                icon: '&#xe63f;',
+                color: '#5FB878',
               },
-              Completed:{
-                text:'已完成',
-                icon:'&#x1005;',
-                color:'#5FB878'
+              Completed: {
+                text: '已完成',
+                icon: '&#x1005;',
+                color: '#5FB878',
               },
-              Withdrawn:{
-                text:'已撤回',
-                icon:'&#xe63f;',
-                color:'#5FB878'
+              Withdrawn: {
+                text: '已撤回',
+                icon: '&#xe63f;',
+                color: '#5FB878',
               },
-              Rejected:{
-                text:'已拒绝',
-                icon:'&#x1007;',
-                color:'red'
-              }
+              Rejected: {
+                text: '已拒绝',
+                icon: '&#x1007;',
+                color: 'red',
+              },
             }
             // 获取审批数据
-            var applyData = res.data.approvalNodes.map(function (
+            var applyData = res.data.documentApprovalNodes.map(function (
               item,
               index
             ) {
-              var approvalComment = res.data.approvalComments[index] || {}
-              return $.extend(item,{
+              return $.extend(item, {
                 name: item.user,
                 status: item.status,
                 statusText: zidian[item.status].text,
-                color:zidian[item.status].color,
-                icon:zidian[item.status].icon,
-                comment: approvalComment.message || '',
+                color: zidian[item.status].color,
+                icon: zidian[item.status].icon,
               })
             })
             renderApply(applyData)

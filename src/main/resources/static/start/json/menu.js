@@ -14,11 +14,18 @@
     "name": "approve"
     ,"title": "审批管理"
     ,"icon": "layui-icon-component"
-    ,"list": [{
+    ,"list": [
+    {
+      "name": "file-apply"
+      ,"title": "发起审批"
+      ,"jump": "/approve/createApply"
+    },
+    {
       "name": "approve-apply"
       ,"title": "我发起的"
       ,"jump": "/approve/apply"
-    }, {
+    },
+    {
       "name": "approve-approve"
       ,"title": "我审批的"
       ,"jump": "/approve/approve"
@@ -44,7 +51,13 @@
       "name": "approve-approve"
       ,"title": "我审批的"
       ,"jump": "/car/carNeedApprove"
-    }]
+    },
+    {
+      "name": "car-log"
+      ,"title": "日用车统计"
+      ,"jump": "/car/log"
+    }
+    ]
   },
   {
     "name": "fileList"

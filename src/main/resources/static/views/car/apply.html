@@ -4,56 +4,333 @@
   <div class="layui-breadcrumb" lay-filter="breadcrumb">
     <a lay-href="">主页</a>
     <a><cite>车辆</cite></a>
-    <a><cite>车辆列表</cite></a>
+    <a><cite>申请用车</cite></a>
   </div>
 </div>
-
 <div class="layui-fluid">
-  <div class="layui-card">
-    <div
-      class="layui-form layui-card-header layuiadmin-card-header-auto searh_bar"
-      lay-filter="layadmin-useradmin-formlist"
+  <div class="layui-card" style="padding-bottom: 20px">
+    <button
+      style="margin: 10px"
+      id="dayin"
+      type="button"
+      class="layui-btn layui-btn-normal"
     >
-      <div class="layui-form-item">
-        <div class="layui-inline">
-          <label class="layui-form-label">车牌号</label>
-          <div class="layui-input-block">
-            <input
-              type="text"
-              name="plateNumber"
-              placeholder="请输入"
-              autocomplete="off"
-              class="layui-input"
-            />
+      打印/预览
+    </button>
+    <div id="table_wrap" class="table_wrap" style="padding: 10px">
+      <style>
+        .table_wrap {
+          background: #ffffff;
+        }
+        .table_wrap * {
+          box-sizing: border-box;
+        }
+        .class_table {
+          position: relative;
+          width: 97%;
+          background: #ffffff;
+        }
+        .class_table .defText {
+          color: #000000;
+        }
+        .class_table .left {
+          display: inline-block;
+          float: left;
+        }
+        .class_table .left input {
+          margin-right: 4px;
+          text-align: right;
+          width: 40px;
+          display: inline-block;
+        }
+        .class_table .right {
+          display: inline-block;
+        }
+        .class_table h2 {
+          text-align: center;
+          font-size: 32px;
+          margin-bottom: 20px;
+          color: #000000;
+        }
+        .class_table .number {
+          font-size: 18px;
+          margin-bottom: 5px;
+          text-align: right;
+        }
+        .class_table .number span {
+          color: #000000;
+        }
+        .class_table input {
+          width: 100%;
+          border: none;
+        }
+        .class_table td {
+          padding: 7px;
+          text-align: center;
+        }
+        .class_table .zhu {
+          margin-top: 10px;
+        }
+        .class_table .right_text {
+          position: absolute;
+          right: -20px;
+          top: 40%;
+          width: 10px;
+          text-align: center;
+        }
+        .class_table .col1 {
+          width: 100px;
+        }
+        .class_table .col2 {
+          width: 35%;
+        }
+        .class_table .col3 {
+          width: 200px;
+        }
+        .key_wrap {
+        }
+        .key_wrap input {
+          text-align: center;
+        }
+      </style>
+      <!-- 表格 -->
+      <div class="class_table">
+        <h2>中国人民武装警察部队派车命令</h2>
+        <div class="number">
+          <div class="left defText" id="application_time">
+            <input type="text" />年 <input type="text" />月
+            <input type="text" />日
           </div>
+          <div class="right"><span style="margin-right:100px;">NO:</span></div>
         </div>
-        <div class="layui-inline">
-          <button
-            class="layui-btn layuiadmin-btn-admin"
-            lay-submit
-            lay-filter="carList_search_form"
-          >
-            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
-          </button>
-        </div>
+        <table border="1" style="width: 100%;outline: none;">
+          <tr>
+            <td class="col1" class="defText">用车单位</td>
+            <td class="col2">
+              <div class="key_wrap" data-name="transport_unit">
+                <input type="text" />
+              </div>
+            </td>
+            <td class="col3" class="defText">带车干部(职务)</td>
+            <td class="col4">
+              <div class="key_wrap" data-name="car_cadre">
+                <input type="text" />
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="col1" class="defText">车号</td>
+            <td class="col2">
+              <div class="key_wrap" data-name="vehicle_number">
+                <input type="text" />
+              </div>
+            </td>
+            <td class="col3" class="defText">联系电话</td>
+            <td class="col4">
+              <div class="key_wrap" data-name="phone">
+                <input type="text" />
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="col1" class="defText">车型</td>
+            <td class="col2" class="defText">
+              <div class="key_wrap" data-name="model">
+                <input type="text" />
+              </div>
+            </td>
+            <td class="col3" class="defText">驾驶员姓名</td>
+            <td class="col4">
+              <div class="key_wrap" data-name="driver_name">
+                <input type="text" />
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="col1" class="defText">乘车地点</td>
+            <td class="col2">
+              <div class="key_wrap" data-name="pick_up_location">
+                <input type="text" />
+              </div>
+            </td>
+            <td class="col3" class="defText">承运员额（名）</td>
+            <td class="col4">
+              <div class="key_wrap" data-name="carriage_amount">
+                <input type="text" />
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="col1" class="defText">出车事由</td>
+            <td class="col2">
+              <div class="key_wrap" data-name="cause_of_car">
+                <input type="text" />
+              </div>
+            </td>
+            <td class="col3" class="defText">承运物品（吨、件）</td>
+            <td>
+              <div class="key_wrap" data-name="carriage_items">
+                <input type="text" />
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="col1" class="defText">行驶路线</td>
+            <td class="col2" style="text-align: left">
+              <div class="key_wrap" data-name="driving_route">
+                <input type="text" style="width: 45%" />
+                至
+                <input type="text" style="width: 45%" />
+              </div>
+            </td>
+            <td class="col3" class="defText">用车台次</td>
+            <td class="col4">
+              <div class="key_wrap" data-name="user_car_number">
+                <input type="text" />
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="col1" class="defText">出场时间</td>
+            <td class="col2">
+              <div class="key_wrap" id="playing_time" data-name="playing_time">
+                <input style="width: 15%" type="text" />月
+                <input style="width: 15%" type="text" />日
+                <input style="width: 15%" type="text" />时
+                <input style="width: 15%" type="text" />分
+              </div>
+            </td>
+            <td class="col3" class="defText">回场时间</td>
+            <td class="col4">
+              <div class="key_wrap" data-name="return_time" id="return_time">
+                <input style="width: 15%" type="text" />月
+                <input style="width: 15%" type="text" />日
+                <input style="width: 15%" type="text" />时
+                <input style="width: 15%" type="text" />分
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="col1" class="defText">出库表底</td>
+            <td class="col2">
+              <div class="key_wrap" data-name="outbound_table_bottom">
+                <input type="text" />
+              </div>
+            </td>
+            <td class="col3" class="defText">回库表底</td>
+            <td class="col4">
+              <div class="key_wrap" data-name="return_table_bottom">
+                <input type="text" />
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="col1" class="defText">行驶公里</td>
+            <td class="col2">
+              <div class="key_wrap" data-name="kilometers_traveled">
+                <input type="text" />
+              </div>
+            </td>
+            <td class="col3" class="defText">乘车人签字</td>
+            <td class="col4">
+              <div class="key_wrap" data-name="passenger_signs">
+                <input type="text" />
+              </div>
+            </td>
+          </tr>
+          <tr style="height: 60px">
+            <td class="col1" class="defText">部门领导</td>
+            <td class="col2">
+              <div class="key_wrap" data-name="department_heads">
+                <input type="text" />
+              </div>
+            </td>
+            <td class="col3" class="defText">派车人</td>
+            <td class="col4">
+              <div class="key_wrap" data-name="car_dispatcher">
+                <input type="text" />
+              </div>
+            </td>
+          </tr>
+          <tr style="height: 80px">
+            <td class="col1" class="defText">批准首长</td>
+            <td colspan="3">
+              <div class="key_wrap" data-name="approved_chief">
+                <input disabled style="height: 70px" type="text" />
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="col1" class="defText">备注</td>
+            <td colspan="3">
+              <div class="key_wrap" data-name="remarks">
+                <input disabled type="text" />
+              </div>
+            </td>
+          </tr>
+        </table>
+        <span class="zhu defText"
+          >注：此表一式四联，一联由车管部门或车勤分队存查；二联车辆加油凭证，完成任务后交回油站；三联车辆出场凭证，完成任务后交回车场；四联交营门哨兵查验。</span
+        >
+        <div class="right_text defText">第一联 由车管部门或车勤分队存查</div>
       </div>
     </div>
-
-    <!-- <div class="layui-card-body">
-      <div style="padding-bottom: 10px">
-        <button class="layui-btn layuiadmin-btn-admin" data-type="delCar">
-          删除
-        </button>
-        <button class="layui-btn layuiadmin-btn-admin" data-type="addCar">
-          添加
-        </button>
+    <!-- 审批人选择 -->
+    <div class="layui-form-item" style="margin-top: 20px">
+      <label class="layui-form-label">审批流程</label>
+      <div class="layui-input-inline" style="padding: 10px; width: auto">
+        <script type="text/html" id="apply_list">
+          <ul class="layui-timeline">
+            {{# layui.each(d, function(index, item){ }}
+            <li class="layui-timeline-item">
+              <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+              <div class="layui-timeline-content layui-text">
+                {{# if(item.name){ }}
+                <p style="line-height:1.3;color:#000000;margin-bottom:5px">
+                  {{item.name}}
+                </p>
+                {{# if(item.comment){ }}
+                <p>{{item.comment}}</p>
+                {{# } }}
+                <button
+                  data-type="{{index}}"
+                  class="layui-btn layui-btn-xs applyList_edit"
+                >
+                  修改
+                </button>
+                <button
+                  data-type="{{index}}"
+                  class="layui-btn layui-btn-xs layui-btn-danger applyList_del"
+                >
+                  删除
+                </button>
+                {{# } else { }}
+                <button
+                  class="layui-btn layui-btn-xs layui-btn-normal addPeople"
+                  data-type="addPeople"
+                >
+                  添加审批人
+                </button>
+                {{# } }}
+              </div>
+            </li>
+            {{# }); }} {{# if(d.length === 0){ }} 无数据 {{# } }}
+          </ul>
+        </script>
+        <div id="apply_list_view"></div>
       </div>
-    </div> -->
-    <div class="layui-card-body">
-      <table
-        id="car_list_apply_table"
-        lay-filter="car_list_apply_table"
-      ></table>
+    </div>
+    <div class="layui-form-item" style="display: block; padding-left: 40px">
+      <div class="layui-input-inline">
+        <input
+          type="button"
+          lay-submit
+          id="apply_button"
+          lay-filter="apply-submit"
+          value="发起审批"
+          class="layui-btn"
+        />
+      </div>
     </div>
   </div>
 </div>
@@ -61,8 +338,16 @@
 <script>
   layui
     .use('carApply', layui.factory('carApply'))
-    .use(['admin', 'table'], function () {
+    .use(['admin', 'table', 'jquery', 'laydate'], function () {
       var table = layui.table
+      var laydate = layui.laydate
+      var $ = layui.jquery
+      $('#dayin').on('click', function () {
+        $('#table_wrap input').each(function () {
+          $(this).attr('value', $(this).val())
+        })
+        $('#table_wrap').jqprint()
+      })
     })
 </script>
 <script type="text/html" id="buttonTpl">
@@ -77,7 +362,8 @@
   <button lay-event="apply" class="layui-btn layui-btn-normal layui-btn-xs">
     申请用车
   </button>
-  {{# } else if(d.currentCarRecord && d.currentCarRecord.username === 'smallyoung') { }}
+  {{# } else if(d.currentCarRecord && d.currentCarRecord.username ===
+  'smallyoung') { }}
   <button
     disabled
     lay-event="apply"
@@ -85,7 +371,7 @@
   >
     已申请
   </button>
-   {{# } else { }}
+  {{# } else { }}
   <button
     disabled
     lay-event="apply"
@@ -93,5 +379,5 @@
   >
     已使用
   </button>
-   {{# } }}
+  {{# } }}
 </script>

@@ -64,6 +64,12 @@ knife4j:
     username: oa-api-doc
     password: 123456
 
+jodconverter:
+  local:
+    enabled: true
+    portNumbers: 8100
+    maxTasksPerProcess: 10
+
 jwt:
   tokenHeader: Authorization
   tokenHead: smallyoung

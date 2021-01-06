@@ -9,16 +9,34 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0"
     />
-    <meta name="referrer" content="no-referrer">
+    <meta name="referrer" content="no-referrer" />
     <link rel="stylesheet" href="./layui/css/layui.css" media="all" />
     <link rel="stylesheet" href="./contextMenu/index.css" />
     <link rel="stylesheet" href="/style/common.css" media="all" />
-
+    <script src="https://cdn.bootcdn.net/ajax/libs/print-js/1.5.0/print.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/core-js/3.6.5/minified.min.js"></script>
     <script>
       ;/^http(s*):\/\//.test(location.href) ||
         alert('请先部署到 localhost 下再访问')
     </script>
+    <style>
+      @font-face {
+        font-family: 'heiti_regular';
+        src: url('./font/heiti_regular.ttf');
+      }
+      @font-face {
+        font-family: 'fangsong_regular';
+        src: url('./font/fangsong_regular.ttf');
+      }
+      @font-face {
+        font-family: 'fangzhengxiaosong';
+        src: url('./font/fangzhengxiaosong.ttf');
+      }
+      @font-face {
+        font-family: 'kaiti_regular';
+        src: url('./font/kaiti_regular.ttf');
+      }
+    </style>
     <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
     <!--[if lt IE 9]>
       <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
@@ -30,6 +48,7 @@
     <script src="./axios/index.js"></script>
     <script src="./layui/layui.js"></script>
     <script src="./contextMenu/index.js"></script>
+    <script src="./print/index.js"></script>
 
     <script>
       layui
