@@ -2,6 +2,7 @@ package cn.smallyoung.oa;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +19,9 @@ import org.springframework.web.filter.CorsFilter;
 @EnableJpaAuditing(auditorAwareRef = "springSecurityAuditorAware")
 public class OaApplication {
 
+    @Value("${jwt.tokenHeader}")
+    private String tokenHeader;
+    
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
