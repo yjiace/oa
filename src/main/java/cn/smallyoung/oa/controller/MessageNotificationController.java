@@ -45,9 +45,10 @@ public class MessageNotificationController {
      */
     @GetMapping(value = "findMessageCount")
     @ApiOperation(value = "查询未读信息总数")
-    public Long findMessageCount(){
+    public Long findMessageCount() {
         return messageNotificationService.unreadCount(sysUserService.currentlyLoggedInUser());
     }
+
     /**
      * 分页查询所有
      *
@@ -99,11 +100,11 @@ public class MessageNotificationController {
             @ApiImplicitParam(name = "ids", value = "主键ID", dataType = "List")
     })
     public List<MessageNotification> deleteMessageNotification(@RequestParam(value = "ids") List<Long> ids) {
-        if(CollUtil.isEmpty(ids)){
+        if (CollUtil.isEmpty(ids)) {
             throw new NullPointerException("参数错误");
         }
         List<MessageNotification> messageNotifications = messageNotificationService.findByIdIn(ids);
-        if(CollUtil.isNotEmpty(messageNotifications)){
+        if (CollUtil.isNotEmpty(messageNotifications)) {
             messageNotifications.forEach(m -> m.setIsDelete("Y"));
             messageNotificationService.save(messageNotifications);
         }
@@ -122,11 +123,11 @@ public class MessageNotificationController {
             @ApiImplicitParam(name = "ids", value = "主键ID列表", dataType = "List")
     })
     public List<MessageNotification> readingMessageNotification(@RequestParam(value = "ids") List<Long> ids) {
-        if(CollUtil.isEmpty(ids)){
+        if (CollUtil.isEmpty(ids)) {
             throw new NullPointerException("参数错误");
         }
         List<MessageNotification> messageNotifications = messageNotificationService.findByIdIn(ids);
-        if(CollUtil.isNotEmpty(messageNotifications)){
+        if (CollUtil.isNotEmpty(messageNotifications)) {
             LocalDateTime now = LocalDateTime.now();
             messageNotifications.forEach(m -> {
                 m.setStatus("Read");
