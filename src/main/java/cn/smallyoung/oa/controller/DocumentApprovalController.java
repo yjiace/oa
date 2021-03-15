@@ -53,7 +53,7 @@ public class DocumentApprovalController {
             @ApiImplicitParam(name = "limit", value = "页数", dataType = "Integer")
     })
     public Page<DocumentApproval> findAll(@RequestParam(defaultValue = "1") Integer page,
-                                  HttpServletRequest request, @RequestParam(defaultValue = "10") Integer limit) {
+                                          HttpServletRequest request, @RequestParam(defaultValue = "10") Integer limit) {
         Map<String, Object> map = WebUtils.getParametersStartingWith(request, "search_");
         map.put("AND_EQ_initiatorUsername", sysUserService.currentlyLoggedInUser());
         return documentApprovalService.findAll(map, PageRequest.of(page - 1, limit,
@@ -123,7 +123,7 @@ public class DocumentApprovalController {
             throw new RuntimeException(error);
         }
         String username = sysUserService.currentlyLoggedInUser();
-        if(!approval.getNode().getUser().equals(username)){
+        if (!approval.getNode().getUser().equals(username)) {
             String error = String.format("您【%s】当前不可对本次审批【%s】进行操作", username, id);
             log.error(error);
             throw new RuntimeException(error);
@@ -191,7 +191,7 @@ public class DocumentApprovalController {
     @SystemOperationLog(module = "审批", methods = "提交审批",
             serviceClass = DocumentApprovalService.class, way = SysOperationLogWayEnum.UserAfter)
     public DocumentApproval submitForApproval(DocumentApprovalVO documentApprovalVO) {
-        if(CollectionUtil.isEmpty(documentApprovalVO.getUsername())){
+        if (CollectionUtil.isEmpty(documentApprovalVO.getUsername())) {
             throw new NullPointerException("参数错误");
         }
         return documentApprovalService.submitForApproval(documentApprovalVO);
