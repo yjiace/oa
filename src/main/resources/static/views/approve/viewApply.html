@@ -217,13 +217,14 @@
   </div>
 </div>
 <script>
-  layui.use(['table', 'admin', 'form', 'laytpl'], function () {
+  layui.use(['table', 'admin', 'form', 'laytpl', 'writeWord'], function () {
     var $ = layui.$,
       admin = layui.admin,
       table = layui.table,
       view = layui.view,
       form = layui.form,
       laytpl = layui.laytpl
+    writeWord = layui.writeWord
     var applyList = []
     var file = null
     var router = layui.router()
@@ -333,104 +334,6 @@
         window.utils.viewFile(data[i])
       })
     }
-    function renderWord(data, canEdit, canInput) {
-      console.log(data)
-      var data = data || {
-        jimi: '内部机密文件',
-        title: '武警第一机动总队机动第六支队参谋部呈件',
-        fuTitle: '参管呈 [ 2020 ]           号',
-        chengyue: '呈阅《XXXXXXXXXXX》',
-        bushou: '部首长',
-        content: '请输入正文',
-        name: '姓名',
-        time: window.utils.format('yyyy年MM月dd日'),
-        kezhang: '',
-        chengbanren: '',
-        dianhua: '',
-        approve: [],
-      }
-      view('writeWord')
-        .render('approve/writeWord', data)
-        .done(function () {
-          var width = $('#writeWord').width()
-          var height = (width * 297) / 210
-          $('#templete_1 .content').height(height * 0.8 + 1)
-          $('#templete_1 .content')
-            .children()
-            .height(height * 0.8)
-          if (canInput) {
-            // 审批
-            $('#templete_1 .right .edit').on('click', function (e) {
-              var el = $(this)
-              var text = el.text()
-              var dataIndex = el.data('index')
-              layer.prompt(
-                {
-                  formType: 2,
-                  value: text,
-                  title: '请输入文本',
-                  area: ['300px', '200px'], //自定义文本域宽高
-                },
-                function (value, index, elem) {
-                  el.text(value)
-                  data.approve[dataIndex].approveContent = value
-                  layer.close(index)
-                }
-              )
-            })
-          }
-          if (canEdit) {
-            // 内容编辑
-            $('#templete_1 .edit').on('click', function (e) {
-              var el = $(this)
-              var text = el.text()
-              var key = el.data('key')
-              layer.prompt(
-                {
-                  formType: 2,
-                  value: text,
-                  title: '请输入文本',
-                  area: ['300px', '200px'], //自定义文本域宽高
-                },
-                function (value, index, elem) {
-                  el.text(value)
-                  data[key] = value
-                  layer.close(index)
-                }
-              )
-            })
-            // 底部编辑
-            $('#templete_1 .bottom span').on('click', function (e) {
-              var el = $(this).find('i')
-              var text = el.text()
-              var key = el.data('key')
-              layer.prompt(
-                {
-                  formType: 2,
-                  value: text,
-                  title: '请输入文本',
-                  area: ['300px', '200px'], //自定义文本域宽高
-                },
-                function (value, index, elem) {
-                  el.text(value)
-                  data[key] = value
-                  layer.close(index)
-                }
-              )
-            })
-          }
-        })
-      $('#writePrint').on('click', function () {
-        $('#templete_1').jqprint({})
-        // printJS({
-        //   printable:'writeWord',
-        //   css:'/style/print.css',
-        //   type:'html',
-        //   scanStyles:false,
-        // })
-      })
-      return data
-    }
     if (router.search && router.search.id) {
       admin
         .reqAsync({
@@ -469,7 +372,12 @@
               wordData.canApprove = true
             }
             console.log(userInfo.username, res.data.node)
-            renderWord(wordData, false, canInput)
+            writeWord.render({
+              data: wordData,
+              canEdit: false,
+              template: wordData.template,
+              canApprove: canInput,
+            })
 
             // 渲染按钮
             if (

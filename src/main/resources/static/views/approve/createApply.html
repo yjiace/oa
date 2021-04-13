@@ -12,7 +12,7 @@
 <!-- 布局 -->
 <div class="layui-fluid">
   <div class="layui-card">
-    <div class="layui-row" style="display: flex;">
+    <div class="layui-row" style="display: flex">
       <div>
         <button
           style="margin: 15px"
@@ -22,6 +22,14 @@
         >
           打印/预览
         </button>
+        <div class="layui-form" action="" style="display: inline">
+          <div class="layui-input-inline">
+            <select lay-filter="templateSelect" name="template" lay-verify="">
+              <option value="template1">模版1</option>
+              <option value="template2">模版2</option>
+            </select>
+          </div>
+        </div>
         <div
           id="writeWord"
           style="
@@ -192,5 +200,7 @@
 <script>
   layui
     .use('fileApplyCreate', layui.factory('fileApplyCreate'))
-    .use(['admin', 'table', 'view'], function () {})
+    .use(['admin', 'form', 'view'], function () {
+      layui.form.render()
+    })
 </script>
